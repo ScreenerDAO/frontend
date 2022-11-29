@@ -1,0 +1,93 @@
+{
+  "name": "materio-mui-react-nextjs-admin-template-free",
+  "description": "Most Powerful & Comprehensive Free MUI React NextJS Admin Dashboard Template built for developers! 🚀",
+  "license": "MIT",
+  "version": "1.0.0",
+  "author": {
+    "name": "ThemeSelection",
+    "url": "https://themeselection.com/"
+  },
+  "bugs": {
+    "url": "https://github.com/themeselection/materio-mui-react-nextjs-admin-template-free/issues"
+  },
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/themeselection/materio-mui-react-nextjs-admin-template-free.git"
+  },
+  "homepage": "https://themeselection.com/products/materio-free-mui-react-nextjs-admin-template/",
+  "keywords": [
+    "react",
+    "javascript",
+    "admin",
+    "typescript",
+    "dashboard",
+    "material-design",
+    "nextjs",
+    "material-ui",
+    "admin-dashboard",
+    "free",
+    "mui",
+    "admin-template",
+    "admin-panel",
+    "freebies",
+    "nextjs-template",
+    "react-dashboard",
+    "themeselection"
+  ],
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next export",
+    "lint": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
+  },
+  "dependencies": {
+    "@emotion/cache": "^11.6.0",
+    "@emotion/react": "^11.10.5",
+    "@emotion/server": "^11.4.0",
+    "@emotion/styled": "^11.10.5",
+    "@mui/icons-material": "^5.10.15",
+    "@mui/lab": "^5.0.0-alpha.70",
+    "@mui/material": "^5.10.15",
+    "@mui/x-data-grid": "^5.17.8",
+    "@popperjs/core": "^2.11.2",
+    "@rainbow-me/rainbowkit": "^0.8.0",
+    "@reduxjs/toolkit": "^1.9.0",
+    "apexcharts-clevision": "3.28.5",
+    "clsx": "^1.1.1",
+    "ethers": "^5.7.2",
+    "mdi-material-ui": "^7.1.0",
+    "next": "12.0.4",
+    "nft.storage": "^7.0.0",
+    "nprogress": "^0.2.0",
+    "react": "17.0.2",
+    "react-apexcharts": "^1.3.9",
+    "react-datepicker": "^4.5.0",
+    "react-dom": "17.0.2",
+    "react-hook-form": "^7.39.6",
+    "react-perfect-scrollbar": "^1.5.8",
+    "react-popper": "^2.2.5",
+    "react-redux": "^8.0.5",
+    "react-search-autocomplete": "^8.2.1",
+    "styled-components": "^5.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "16.11.11",
+    "@types/nprogress": "^0.2.0",
+    "@types/react": "17.0.37",
+    "@types/react-datepicker": "^4.3.2",
+    "@typescript-eslint/eslint-plugin": "^5.6.0",
+    "@typescript-eslint/parser": "^5.11.0",
+    "eslint": "^7.32.0",
+    "eslint-config-next": "12.0.4",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-import": "^2.25.4",
+    "next-transpile-modules": "^9.0.0",
+    "prettier": "2.5.1",
+    "typescript": "4.5.2"
+  }
+}
