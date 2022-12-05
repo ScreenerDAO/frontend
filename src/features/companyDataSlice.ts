@@ -45,7 +45,11 @@ export const {
     setCompanyName, 
     setCompanyCountry, 
     setCompanyTicker,
-    setFinancialStatemets 
+    setFinancialStatemets
 } = companyDataSlice.actions
+
+export {
+    initialState
+}
 
 export default companyDataSlice.reducer

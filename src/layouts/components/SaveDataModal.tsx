@@ -7,22 +7,19 @@ import DialogTitle from '@mui/material/DialogTitle';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { useAppSelector } from '../../hooks';
-import { ICompanyData, IFinancialStatement } from 'src/types/CompanyDataTypes';
+import { ICompanyData } from 'src/types/CompanyDataTypes';
 import { Alert, Step, StepContent, StepLabel, Stepper } from '@mui/material';
 import { NFTStorage } from 'nft.storage';
-// import { useAccount, useContractWrite, usePrepareContractWrite } from 'wagmi'
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi'
 import { nftStorageApiKey, registriesContractAddress, registriesContractABI } from 'src/metadata'
+import { IGeneral } from 'src/features/general';
 
 interface ISaveDataModalProps {
     handleClose: () => void
 }
 
-const getYearsArray = (financials: { [key: number]: IFinancialStatement }) => {
-    return Object.keys(financials).map(key => Number(key)).sort()
-}
-
 const SaveDataModal = (props: ISaveDataModalProps) => {
-    const [errors, setErrors] = React.useState<React.ReactElement[]>([])
+    const [errors, setErrors] = React.useState<React.ReactElement[] | null>(null)
     const newCompanyData = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData)
 
     React.useEffect(() => {
@@ -62,18 +59,15 @@ const SaveDataModal = (props: ISaveDataModalProps) => {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            <DialogTitle id="alert-dialog-title">
-                Saving data...
-            </DialogTitle>
+            <DialogTitle id="alert-dialog-title">Saving data...</DialogTitle>
 
             <DialogContent>
-                {
-                    errors.length > 0 ?
-                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                            {<>{errors}</>}
-                        </Box>
-                        :
-                        <SaveDataStepper newCompanyData={newCompanyData} />
+                {(errors == null || errors!.length > 0) ?
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        {<>{errors}</>}
+                    </Box>
+                    :
+                    <SaveDataStepper newCompanyData={newCompanyData} />
                 }
             </DialogContent>
 
@@ -85,55 +79,60 @@ const SaveDataModal = (props: ISaveDataModalProps) => {
 }
 
 const SaveDataStepper = (props: { newCompanyData: ICompanyData }) => {
-    const [state, setState] = React.useState<{activeStep: number, cid: string}>({
+    const [state, setState] = React.useState<{ activeStep: number, cid: string }>({
         activeStep: 0,
         cid: ""
     })
+    const companyId = useAppSelector((state: { general: IGeneral }) => state.general.selectedId)
+    const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.companyName)
+    const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.ticker)
+    const isNewCompany = useAppSelector((state: { general: IGeneral }) => state.general.isNewCompany)
 
-    // const { address, connector, isConnected } = useAccount()
+    const {
+        config,
+        error: prepareError,
+        isError: isPrepareError
+    } = usePrepareContractWrite({
+        address: registriesContractAddress,
+        abi: registriesContractABI,
+        functionName: isNewCompany ? 'addNewCompany' : 'editCompany',
+        args: isNewCompany ? [companyName, companyTicker, state.cid] : [companyId, companyName, companyTicker, state.cid]
+    })
 
-    // const { config } = usePrepareContractWrite({
-    //     address: registriesContractAddress,
-    //     abi: registriesContractABI,
-    //     functionName: 'addNewCompany',
-    //     args: [props.newCompanyData.companyName, props.newCompanyData.ticker, state.cid]
-    // })
-
-    // const { data, isLoading, isSuccess, write } = useContractWrite(config)
-
-    // const createNewCompany = async () => await write?.()
+    const { data, error, isError, write } = useContractWrite(config)
+    const { isLoading, isSuccess } = useWaitForTransaction({ hash: data?.hash })
 
     React.useEffect(() => {
         const callback = async () => {
             if (state.activeStep == 0) {
-                // let client = new NFTStorage({ token: nftStorageApiKey })
-                // let hash = await client.storeBlob(new Blob([JSON.stringify(props.newCompanyData)]))
+                let client = new NFTStorage({ token: nftStorageApiKey })
+                let hash = await client.storeBlob(new Blob([JSON.stringify(props.newCompanyData)]))
 
-                // if (hash) {
-                //     setState(prevState => ({
-                //         ...prevState,
-                //         activeStep: 1,
-                //         cid: hash
-                //     }))
-                // }
+                if (hash) {
+                    setState(prevState => ({
+                        ...prevState,
+                        activeStep: 1,
+                        cid: hash
+                    }))
+                }
             }
 
             if (state.activeStep == 1) {
-                // console.log(createNewCompany())
+                write?.()
             }
         }
 
         callback()
     }, [state.activeStep])
 
-    // React.useEffect(() => {
-    //     // if (isSuccess) {
-    //     //     setState(prevState => ({
-    //     //         ...prevState,
-    //     //         activeStep: 2
-    //     //     }))
-    //     // }
-    // }, [isSuccess])
+    React.useEffect(() => {
+        if (isSuccess) {
+            setState(prevState => ({
+                ...prevState,
+                activeStep: 2
+            }))
+        }
+    }, [isSuccess])
 
     return (
         <Stepper activeStep={state.activeStep} orientation="vertical">
@@ -149,14 +148,21 @@ const SaveDataStepper = (props: { newCompanyData: ICompanyData }) => {
                 <StepLabel>Updating company status on Ethereum network</StepLabel>
 
                 <StepContent>
-                    <StepSpinner />
+                    {(isPrepareError || isError) ?
+                        <>
+                            <Alert severity='error' style={{ marginBottom: '10px' }}>{(prepareError || error)?.message}</Alert>
+                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                <Button variant='contained' onClick={() => write?.()}>Try again</Button>
+                            </div>
+                        </>
+                        :
+                        <StepSpinner />
+                    }
                 </StepContent>
             </Step>
 
-            {state.activeStep == 2 ?
+            {state.activeStep == 2 &&
                 <Alert severity="success" sx={{ marginTop: '20px' }}>Company successfully saved!</Alert>
-                :
-                null
             }
         </Stepper>
     )

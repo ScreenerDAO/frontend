@@ -46,6 +46,8 @@ import { publicProvider } from 'wagmi/providers/public';
 
 import { Provider } from 'react-redux'
 import store from '../store'
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
+import { THEGRAPH_API_URL } from 'src/metadata'
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -70,6 +72,11 @@ const wagmiClient = createClient({
     autoConnect: true,
     connectors,
     provider
+})
+
+const client = new ApolloClient({
+    uri: THEGRAPH_API_URL,
+    cache: new InMemoryCache()
 })
 
 // ** Pace Loader
@@ -104,19 +111,21 @@ const App = (props: ExtendedAppProps) => {
                 <meta name='viewport' content='initial-scale=1, width=device-width' />
             </Head>
 
-            <WagmiConfig client={wagmiClient}>
-                <RainbowKitProvider coolMode chains={chains}> 
-                    <Provider store={store}>
-                        <SettingsProvider>
-                            <SettingsConsumer>
-                                {({ settings }) => {
-                                    return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
-                                }}
-                            </SettingsConsumer>
-                        </SettingsProvider>
-                    </Provider>
-                </RainbowKitProvider> 
-            </WagmiConfig>  
+            <ApolloProvider client={client}>
+                <WagmiConfig client={wagmiClient}>
+                    <RainbowKitProvider coolMode chains={chains}>
+                        <Provider store={store}>
+                            <SettingsProvider>
+                                <SettingsConsumer>
+                                    {({ settings }) => {
+                                        return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
+                                    }}
+                                </SettingsConsumer>
+                            </SettingsProvider>
+                        </Provider>
+                    </RainbowKitProvider>
+                </WagmiConfig>
+            </ ApolloProvider>
         </CacheProvider>
     )
 }

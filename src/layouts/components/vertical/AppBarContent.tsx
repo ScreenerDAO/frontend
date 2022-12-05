@@ -20,37 +20,14 @@ import NotificationDropdown from 'src/@core/layouts/components/shared-components
 
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
+import SearchBar from '../SearchBar'
 
-const items = [{ id: 0, name: 'Cobol' }, { id: 1, name: 'JavaScript' }, { id: 2, name: 'Basic' }, { id: 3, name: 'PHP' }, { id: 4, name: 'Java' }]
-
-const handleOnSearch = (string: any, results: any) => {
-    // onSearch will have as the first callback parameter
-    // the string searched and for the second the results.
-    console.log(string, results)
-}
-
-const handleOnHover = (result: any) => {
-    // the item hovered
-    console.log(result)
-}
-
-const handleOnSelect = (item: any) => {
-    // the item selected
-    console.log(item)
-}
-
-const handleOnFocus = () => {
-    console.log('Focused')
-}
-
-const formatResult = (item: any) => {
-    return (
-        <>
-            <span style={{ display: 'block', textAlign: 'left' }}>id: {item.id}</span>
-            <span style={{ display: 'block', textAlign: 'left' }}>name: {item.name}</span>
-        </>
-    )
-}
+import { BriefcasePlusOutline } from 'mdi-material-ui'
+import { useRouter } from 'next/router'
+import { useAppDispatch } from 'src/hooks'
+import { setIsNewCompany } from 'src/features/general'
+import { setCompanyData, initialState } from 'src/features/companyDataSlice'
+import { setCompanyData as setNewCompanyData, initialState as newCompanyInitialState } from 'src/features/newCompanyDataSlice'
 
 interface Props {
     hidden: boolean
@@ -66,6 +43,10 @@ const AppBarContent = (props: Props) => {
     // ** Hook
     const hiddenSm = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
 
+    const router = useRouter()
+
+    const dispatch = useAppDispatch()
+
     return (
         <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             {hidden ? (
@@ -80,15 +61,7 @@ const AppBarContent = (props: Props) => {
 
             {!hidden ? (
                 <div style={{ width: 400, zIndex: 1000 }}>
-                    <ReactSearchAutocomplete
-                        items={items}
-                        onSearch={handleOnSearch}
-                        onHover={handleOnHover}
-                        onSelect={handleOnSelect}
-                        onFocus={handleOnFocus}
-                        autoFocus
-                        formatResult={formatResult}
-                    />
+                    <SearchBar />
                 </div>
             ) : null}
 
@@ -108,11 +81,28 @@ const AppBarContent = (props: Props) => {
                         />
                     </Box>
                 )} */}
+
+
+                <IconButton color='inherit' aria-haspopup='true' title='Add company' onClick={() => {
+                    dispatch(setCompanyData(initialState))
+                    dispatch(setNewCompanyData(newCompanyInitialState))
+                    
+                    router.push('/edit-records', undefined, {shallow: true})
+                }}>
+                    <BriefcasePlusOutline />
+                </IconButton>
+
                 <ModeToggler settings={settings} saveSettings={saveSettings} />
                 <NotificationDropdown />
                 {/* <UserDropdown /> */}
                 <div style={{ marginLeft: '10px' }}>
-                    <ConnectButton chainStatus={'icon'} accountStatus={'avatar'} showBalance={false} />
+                    <Box sx={{ display: { xs: 'none', md: 'initial' } }}>
+                        <ConnectButton chainStatus={'full'} accountStatus={'full'} showBalance={false} />
+                    </Box>
+
+                    <Box sx={{ display: { xs: 'initial', md: 'none' } }}>
+                        <ConnectButton chainStatus={'icon'} accountStatus={'avatar'} showBalance={false} />
+                    </Box>
                 </div>
             </Box>
         </Box>

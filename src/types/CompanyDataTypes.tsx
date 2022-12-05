@@ -2,6 +2,14 @@ import { IBalanceSheet } from './BalanceSheetTypes'
 import { ICashFlow } from './CashFlowTypes'
 import { IIncomeStatement } from './IncomeStatementTypes'
 
+interface ICompanyEthData {
+    id: number
+    name: string
+    ticker: string
+    country: string
+    dataHash: string
+}
+
 interface ICompanyData {
     companyName: string
     ticker: string
@@ -19,6 +27,7 @@ interface IFinancialStatement {
 }
 
 export type {
+    ICompanyEthData,
     ICompanyData,
     IFinancialStatement 
 }

@@ -138,7 +138,18 @@ const FinancialStatements = (props: IFinancialStatementsProps): React.ReactEleme
         )
     }
 
-    return <></>
+    return (
+        <Grid item xs={12} md={12}>
+            <Card sx={{
+                height: '500px', 
+                display: 'flex', 
+                flexDirection: 'column',
+                justifyContent: 'center'
+            }}>
+                <div style={{textAlign: 'center'}}>This company doesn't have any financials added yet!</div>
+            </Card>
+        </Grid>
+    )
 }
 
 export default FinancialStatements

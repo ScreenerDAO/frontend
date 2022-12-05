@@ -4,7 +4,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
-import { Modal, Box, Button, Typography, TextField } from '@mui/material';
+import { Dialog, Box, Button, Typography, TextField } from '@mui/material';
 import { DataGrid, GridActionsCellItem, GridColumns, GridEventListener, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowParams, GridRowsProp, GridToolbarContainer, MuiEvent } from '@mui/x-data-grid';
 import EditFinancialStatements from './EditFinancialStatement';
 import { ICompanyData, IFinancialStatement } from 'src/types/CompanyDataTypes';
@@ -13,18 +13,6 @@ import { addNewYear } from 'src/features/newCompanyDataSlice';
 
 const getYearsArray = (financials: { [key: number]: IFinancialStatement }) => {
     return Object.keys(financials).map(key => Number(key)).sort()
-}
-
-const getSelectedYearsArray = (yearsArray: number[], minAndMax: number[]) => {
-    let newArray = []
-
-    for (const year of yearsArray) {
-        if (year >= minAndMax[0] && year <= minAndMax[1]) {
-            newArray.push(year)
-        }
-    }
-
-    return newArray
 }
 
 interface EditToolbarProps {
@@ -58,7 +46,7 @@ const FinancialStatementsList = () => {
         const [rows, setRows] = React.useState<GridRowsProp>([]);
         const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
 
-        const financials = useAppSelector((state: {newCompanyData: ICompanyData}) => state.newCompanyData.financialStatements)
+        const financials = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.financialStatements)
 
         React.useEffect(() => {
             const initialRows = []
@@ -102,10 +90,11 @@ const FinancialStatementsList = () => {
         const columns: GridColumns = [
             { field: 'year', headerName: 'Year', editable: true },
             { field: 'balanceSheet', headerName: 'BalanceSheet', type: 'boolean', width: 220 },
-            { field: 'incomeStatement', headerName: 'IncomeStatement', type: 'boolean', width: 220, editable: false},
-            { field: 'cashFlowStatement', headerName: 'Cash flow statement', type: 'boolean', width: 220, editable: false},
-            { field: 'annualReport', headerName: 'Annual report', type: 'boolean', width: 220, editable: false},
-            { field: 'actions', type: 'actions', headerName: 'Actions', width: 100, cellClassName: 'actions',
+            { field: 'incomeStatement', headerName: 'IncomeStatement', type: 'boolean', width: 220, editable: false },
+            { field: 'cashFlowStatement', headerName: 'Cash flow statement', type: 'boolean', width: 220, editable: false },
+            { field: 'annualReport', headerName: 'Annual report', type: 'boolean', width: 220, editable: false },
+            {
+                field: 'actions', type: 'actions', headerName: 'Actions', width: 100, cellClassName: 'actions',
                 getActions: ({ id }) => {
                     const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
@@ -175,154 +164,154 @@ const FinancialStatementsList = () => {
                 }}
             />
         )
-        }
+    }
 
-        const UpdateYearFinancialsModal = () => {
-            return (
-                <Modal
-                    open={editFinancialsModal}
-                    onClose={() => setEditFinancialsModal(false)}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                >
-                    <Box sx={style2}>
-                        <EditFinancialStatements year={selectedYear} closeModal={() => setEditFinancialsModal(false)} />
-                    </Box>
-                </Modal>
-            )
-        }
-
+    const UpdateYearFinancialsModal = () => {
         return (
-            <Box
-                sx={{
-                    height: 500,
-                    '& .actions': {
-                        color: 'text.secondary',
-                    },
-                    '& .textPrimary': {
-                        color: 'text.primary',
-                    },
-                }}
+            <Dialog
+                open={editFinancialsModal}
+                onClose={() => setEditFinancialsModal(false)}
             >
-                <YearsList />
-
-                <UpdateYearFinancialsModal />
-            </Box>
-        );
+                <Box sx={{    
+                    display: 'flex',
+                    flexDirection: 'column',
+                    maxHeight: '90vh',
+                    padding: '25px'
+                }}>
+                    <EditFinancialStatements year={selectedYear} closeModal={() => setEditFinancialsModal(false)} />
+                </Box>
+            </Dialog>
+        )
     }
 
-    const EditToolbar = (props: EditToolbarProps) => {
-        const { setRows, setRowModesModel } = props;
+    return (
+        <Box
+            sx={{
+                height: 500,
+                '& .actions': {
+                    color: 'text.secondary',
+                },
+                '& .textPrimary': {
+                    color: 'text.primary',
+                },
+            }}
+        >
+            <YearsList />
 
-        const [open, setOpen] = React.useState(false);
-        const handleOpen = () => setOpen(true);
-        const handleClose = () => setOpen(false);
+            <UpdateYearFinancialsModal />
+        </Box>
+    );
+}
 
-        const dispatch = useAppDispatch()
+const EditToolbar = (props: EditToolbarProps) => {
+    const { setRows, setRowModesModel } = props;
+    const [newYearModalOpen, setNewYearModalOpen] = React.useState(false);
+    const dispatch = useAppDispatch()
 
-        const addRecordListener = (newYear: number) => {
-            dispatch(addNewYear(newYear))
+    const addRecordListener = (newYear: number) => {
+        dispatch(addNewYear(newYear))
 
-            setRows((oldRows) => [...oldRows, {
-                id: newYear,
-                year: newYear,
-                balanceSheet: false,
-                incomeStatement: false,
-                cashFlow: false
-            }])
+        setRows((oldRows) => [...oldRows, {
+            id: newYear,
+            year: newYear,
+            balanceSheet: false,
+            incomeStatement: false,
+            cashFlow: false
+        }])
 
-            setRowModesModel((oldModel) => ({
-                ...oldModel,
-                [newYear]: { mode: GridRowModes.View, fieldToFocus: 'name' }
-            }))
-        }
+        setRowModesModel((oldModel) => ({
+            ...oldModel,
+            [newYear]: { mode: GridRowModes.View, fieldToFocus: 'name' }
+        }))
+    }
 
-        const NewYearModal = () => {
-            const [newYear, setNewYear] = React.useState<number>(2020)
+    const NewYearModal = () => {
+        const [newYear, setNewYear] = React.useState<number>(2020)
 
-            return (
-                <Modal
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                >
-                    <Box sx={style}>
-                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                            What year financial data do you want to add?
-                        </Typography>
-                        <TextField
-                            id="filled-number"
-                            label="Year"
-                            type="number"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            variant="standard"
-                            style={{
-                                width: '200px',
-                                marginTop: '20px',
-                                alignSelf: 'center'
-                            }}
-                            value={newYear}
-                            onChange={(ev) => setNewYear(Number(ev.target.value))}
-                        />
-                        <Button
-                            variant="contained"
-                            style={{
-                                width: '120px',
-                                marginTop: '25px',
-                                alignSelf: 'center'
-                            }}
-                            onClick={() => {
-                                addRecordListener(newYear)
-                                handleClose()
-                            }}
-                        >
-                            Add year
-                        </Button>
-                    </Box>
-                </Modal>
-            )
-        }
 
         return (
-            <GridToolbarContainer>
-                <Button color="primary" startIcon={<AddIcon />} onClick={handleOpen}>Add record</Button>
+            <Dialog
+                open={newYearModalOpen}
+                onClose={() => setNewYearModalOpen(false)}
+            >
+                <Box sx={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        What year financial data do you want to add?
+                    </Typography>
 
-                <NewYearModal />
-            </GridToolbarContainer>
-        );
+                    <TextField
+                        id="filled-number"
+                        label="Year"
+                        type="number"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        variant="standard"
+                        style={{
+                            width: '200px',
+                            marginTop: '20px',
+                            alignSelf: 'center'
+                        }}
+                        value={newYear}
+                        onChange={(ev) => setNewYear(Number(ev.target.value))}
+                    />
+
+                    <Button
+                        variant="contained"
+                        style={{
+                            width: '120px',
+                            marginTop: '25px',
+                            alignSelf: 'center'
+                        }}
+                        onClick={() => {
+                            addRecordListener(newYear)
+                            setNewYearModalOpen(false)
+                        }}
+                    >
+                        Add year
+                    </Button>
+                </Box>
+            </Dialog>
+        )
     }
 
-    const style = {
-        position: 'absolute' as 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: '600px',
-        bgcolor: 'background.paper',
-        border: '1 px solid grey',
-        borderRadius: '10px',
-        boxShadow: 24,
-        p: 4,
-        display: 'flex',
-        flexDirection: 'column'
-    };
+    return (
+        <GridToolbarContainer>
+            <Button color="primary" startIcon={<AddIcon />} onClick={() => setNewYearModalOpen(true)}>Add record</Button>
 
-    const style2 = {
-        position: 'absolute' as 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        bgcolor: 'background.paper',
-        border: '1 px solid grey',
-        borderRadius: '10px',
-        boxShadow: 24,
-        p: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        maxHeight: '90vh'
-    };
+            <NewYearModal />
+        </GridToolbarContainer>
+    );
+}
 
-    export default FinancialStatementsList
+// const style = {
+//     position: 'absolute' as 'absolute',
+//     top: '50%',
+//     left: '50%',
+//     transform: 'translate(-50%, -50%)',
+//     width: '600px',
+//     bgcolor: 'background.paper',
+//     border: '1 px solid grey',
+//     borderRadius: '10px',
+//     boxShadow: 24,
+//     p: 4,
+//     display: 'flex',
+//     flexDirection: 'column'
+// };
+
+const style2 = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    border: '1 px solid grey',
+    borderRadius: '10px',
+    boxShadow: 24,
+    p: 4,
+    display: 'flex',
+    flexDirection: 'column',
+    maxHeight: '90vh'
+};
+
+export default FinancialStatementsList

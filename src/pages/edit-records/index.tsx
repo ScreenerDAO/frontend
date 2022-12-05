@@ -20,13 +20,15 @@ import TabAccount from 'src/views/account-settings/TabAccount'
 import TabSecurity from 'src/views/account-settings/TabSecurity'
 import React from 'react'
 import { useAppDispatch, useAppSelector } from 'src/hooks'
-import { IGeneral } from 'src/features/general'
+import { IGeneral, setIsNewCompany } from 'src/features/general'
 import { ICompanyData } from 'src/types/CompanyDataTypes'
 import { Button, Grid, Tab, Tabs, TextField } from '@mui/material'
-import { setCompanyCountry, setCompanyData, setCompanyName, setCompanyTicker } from 'src/features/companyDataSlice'
+import { setCompanyCountry, setCompanyData, setCompanyName, setCompanyTicker } from 'src/features/newCompanyDataSlice'
 import FinancialStatementsList from 'src/layouts/components/FinancialStatementsList'
 import SaveDataModal from 'src/layouts/components/SaveDataModal'
 import { initialState } from 'src/features/newCompanyDataSlice'
+import SaveIcon from '@mui/icons-material/Save';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 // const Tab = styled(MuiTab)<TabProps>(({ theme }) => ({
 //     [theme.breakpoints.down('md')]: {
@@ -85,13 +87,21 @@ const EditRecords = () => {
     const [tabIndex, setTabIndex] = React.useState(0)
 
     const dispatch = useAppDispatch()
-    const newCompany = useAppSelector((state: { general: IGeneral }) => state.general.newCompany)
+    const newCompany = useAppSelector((state: { general: IGeneral }) => state.general.isNewCompany)
     const companyData = useAppSelector((state: { companyData: ICompanyData }) => state.companyData)
 
-    React.useEffect(() => {
-        // dispatch(setCompanyData(data))
-        // dispatch(setNewCompanyData(data))
-    }, [])
+    const Title = () => {
+        const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["companyName"])
+        const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["ticker"])
+
+        return (
+            <div>
+                <h2 style={{ marginLeft: '30px' }}>
+                    {(companyName == "" && companyTicker == "") ? "New company" : `${companyName} (${companyTicker})`}
+                </h2>
+            </div>
+        )
+    }
 
     const CompanyName = () => {
         const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["companyName"])
@@ -155,9 +165,7 @@ const EditRecords = () => {
             <Grid container spacing={3}>
                 <Grid item xs={12} md={12}>
                     <Card style={{ display: 'flex' }}>
-                        <div>
-                            <h2 style={{ marginLeft: '30px' }}>New company</h2>
-                        </div>
+                        <Title />
 
                         <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto', marginRight: '15px' }}>
                             <Button
@@ -171,14 +179,41 @@ const EditRecords = () => {
                                         dispatch(setCompanyData(companyData))
                                     }
                                 }}
+                                sx={{ display: { xs: 'none', md: 'block' } }}
                             >Reset</Button>
+
+                            <DeleteOutlineIcon
+                                onClick={() => {
+                                    if (newCompany) {
+                                        dispatch(setCompanyData(initialState))
+                                    }
+                                    else {
+                                        dispatch(setCompanyData(companyData))
+                                    }
+                                }}
+                                sx={{
+                                    display: { xs: 'block', md: 'none' },
+                                    marginLeft: '15px',
+                                    fontSize: '35px'
+                                }}
+                            />
 
                             <Button
                                 variant='contained'
                                 color="primary"
                                 style={{ marginLeft: '15px' }}
                                 onClick={() => setSaveData(true)}
+                                sx={{ display: { xs: 'none', md: 'block' } }}
                             >Submit</Button>
+
+                            <SaveIcon
+                                onClick={() => setSaveData(true)}
+                                sx={{
+                                    display: { xs: 'block', md: 'none' },
+                                    marginLeft: '15px',
+                                    fontSize: '35px'
+                                }}
+                            />
                         </div>
                     </Card>
                 </Grid>
