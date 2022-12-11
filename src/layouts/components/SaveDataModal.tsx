@@ -10,9 +10,10 @@ import { useAppSelector } from '../../hooks';
 import { ICompanyData } from 'src/types/CompanyDataTypes';
 import { Alert, Step, StepContent, StepLabel, Stepper } from '@mui/material';
 import { NFTStorage } from 'nft.storage';
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi'
-import { nftStorageApiKey, registriesContractAddress, registriesContractABI } from 'src/metadata'
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction, useAccount, useNetwork, useSwitchNetwork, useConnect } from 'wagmi'
+import { nftStorageApiKey, registriesContractAddress, registriesContractABI, chainId } from 'src/metadata'
 import { IGeneral } from 'src/features/general';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 interface ISaveDataModalProps {
     handleClose: () => void
@@ -83,24 +84,6 @@ const SaveDataStepper = (props: { newCompanyData: ICompanyData }) => {
         activeStep: 0,
         cid: ""
     })
-    const companyId = useAppSelector((state: { general: IGeneral }) => state.general.selectedId)
-    const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.companyName)
-    const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.ticker)
-    const isNewCompany = useAppSelector((state: { general: IGeneral }) => state.general.isNewCompany)
-
-    const {
-        config,
-        error: prepareError,
-        isError: isPrepareError
-    } = usePrepareContractWrite({
-        address: registriesContractAddress,
-        abi: registriesContractABI,
-        functionName: isNewCompany ? 'addNewCompany' : 'editCompany',
-        args: isNewCompany ? [companyName, companyTicker, state.cid] : [companyId, companyName, companyTicker, state.cid]
-    })
-
-    const { data, error, isError, write } = useContractWrite(config)
-    const { isLoading, isSuccess } = useWaitForTransaction({ hash: data?.hash })
 
     React.useEffect(() => {
         const callback = async () => {
@@ -117,22 +100,13 @@ const SaveDataStepper = (props: { newCompanyData: ICompanyData }) => {
                 }
             }
 
-            if (state.activeStep == 1) {
-                write?.()
-            }
+            // if (state.activeStep == 1) {
+            //     write?.()
+            // }
         }
 
         callback()
     }, [state.activeStep])
-
-    React.useEffect(() => {
-        if (isSuccess) {
-            setState(prevState => ({
-                ...prevState,
-                activeStep: 2
-            }))
-        }
-    }, [isSuccess])
 
     return (
         <Stepper activeStep={state.activeStep} orientation="vertical">
@@ -148,16 +122,7 @@ const SaveDataStepper = (props: { newCompanyData: ICompanyData }) => {
                 <StepLabel>Updating company status on Ethereum network</StepLabel>
 
                 <StepContent>
-                    {(isPrepareError || isError) ?
-                        <>
-                            <Alert severity='error' style={{ marginBottom: '10px' }}>{(prepareError || error)?.message}</Alert>
-                            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                <Button variant='contained' onClick={() => write?.()}>Try again</Button>
-                            </div>
-                        </>
-                        :
-                        <StepSpinner />
-                    }
+                    <SaveDataToEthereumStep cid={state.cid} setState={setState} />
                 </StepContent>
             </Step>
 
@@ -165,6 +130,102 @@ const SaveDataStepper = (props: { newCompanyData: ICompanyData }) => {
                 <Alert severity="success" sx={{ marginTop: '20px' }}>Company successfully saved!</Alert>
             }
         </Stepper>
+    )
+}
+
+const SaveDataToEthereumStep = (props: {
+    cid: string, 
+    setState: React.Dispatch<React.SetStateAction<{
+        activeStep: number;
+        cid: string;
+    }>>
+}) => {
+    const companyId = useAppSelector((state: { general: IGeneral }) => state.general.selectedId)
+    const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.companyName)
+    const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.ticker)
+    const isNewCompany = useAppSelector((state: { general: IGeneral }) => state.general.isNewCompany)
+
+    const { isConnected, connector } = useAccount()
+    const { chain } = useNetwork()
+    const {
+        config,
+        error: prepareError,
+        isError: isPrepareError
+    } = usePrepareContractWrite({
+        address: registriesContractAddress,
+        abi: registriesContractABI,
+        functionName: isNewCompany ? 'addNewCompany' : 'editCompany',
+        args: isNewCompany ? [companyName, companyTicker, props.cid] : [companyId, companyName, companyTicker, props.cid]
+    })
+    const { data, error, isError, write } = useContractWrite(config)
+    const { isLoading, isSuccess } = useWaitForTransaction({ hash: data?.hash })
+
+    const calledOnce = React.useRef(false)
+
+    React.useEffect(() => {
+        if (calledOnce.current) return
+
+        if (!isConnected || chain?.id != chainId || (isPrepareError || isError)) return
+
+        calledOnce.current = true
+
+        write?.()
+    }, [isConnected, chain, isPrepareError, isError])
+
+    React.useEffect(() => {
+        if (isSuccess) {
+            props.setState(prevState => ({
+                ...prevState,
+                activeState: 2
+            }))
+        }
+    }, [isSuccess])
+
+    if (!isConnected) {
+        return <WalletNotConnected />
+    }
+
+    if (chain?.id != chainId) {
+        return <WrongChain />
+    }
+
+    if (isPrepareError || isError) {
+        return (
+            <>
+                <Alert severity='error' style={{ marginBottom: '10px' }}>{(prepareError || error)?.message}</Alert>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Button variant='contained' onClick={() => write?.()}>Try again</Button>
+                </div>
+            </>
+        )
+    }
+
+    return <StepSpinner />
+}
+
+const WalletNotConnected = () => {
+    return (
+        <>
+            <Alert severity='error' style={{ marginBottom: '10px'}}>Wallet not connected!</Alert>
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+                <ConnectButton />
+            </div>
+        </>
+    )
+}
+
+const WrongChain = () => {
+    const { switchNetwork } = useSwitchNetwork({
+        chainId: chainId
+    })
+
+    return (
+        <>
+            <Alert severity='error' style={{marginBottom: '10px'}}>Wrong network!</Alert>
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+                <Button variant='contained' onClick={() => switchNetwork?.()}>Switch network</Button>
+            </div>
+        </>
     )
 }
 

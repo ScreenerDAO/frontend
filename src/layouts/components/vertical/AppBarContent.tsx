@@ -28,6 +28,7 @@ import { useAppDispatch } from 'src/hooks'
 import { setIsNewCompany } from 'src/features/general'
 import { setCompanyData, initialState } from 'src/features/companyDataSlice'
 import { setCompanyData as setNewCompanyData, initialState as newCompanyInitialState } from 'src/features/newCompanyDataSlice'
+import Tooltip from '@mui/material/Tooltip';
 
 interface Props {
     hidden: boolean
@@ -82,17 +83,19 @@ const AppBarContent = (props: Props) => {
                     </Box>
                 )} */}
 
+                <Tooltip title="Add company">
+                    <IconButton color='inherit' aria-haspopup='true' onClick={() => {
+                        dispatch(setCompanyData(initialState))
+                        dispatch(setNewCompanyData(newCompanyInitialState))
 
-                <IconButton color='inherit' aria-haspopup='true' title='Add company' onClick={() => {
-                    dispatch(setCompanyData(initialState))
-                    dispatch(setNewCompanyData(newCompanyInitialState))
-                    
-                    router.push('/edit-records', undefined, {shallow: true})
-                }}>
-                    <BriefcasePlusOutline />
-                </IconButton>
+                        router.push('/edit-records', undefined, { shallow: true })
+                    }}>
+                        <BriefcasePlusOutline />
+                    </IconButton>
+                </Tooltip>
 
                 <ModeToggler settings={settings} saveSettings={saveSettings} />
+                
                 <NotificationDropdown />
                 {/* <UserDropdown /> */}
                 <div style={{ marginLeft: '10px' }}>

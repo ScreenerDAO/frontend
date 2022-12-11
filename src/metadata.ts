@@ -3,11 +3,13 @@ const registriesContractABI = [{"anonymous":false,"inputs":[{"indexed":false,"in
 const nftStorageApiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDI0RjRhMzE4ZkRjNzFBY0I3NEY5NDNlQ2E3MmVmNjBEZmM0NjMzODQiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY2ODM3NDgyOTgzOCwibmFtZSI6InRlc3QifQ.7D7Kd7qjkqD03pwe9vD6fytRaEetOMHCf2vIYorvg1c"
 const alchemyApiKey = "RIvwjz04WgXuvDJ47-XbO1zc5vtdbIDr"
 const THEGRAPH_API_URL = 'https://api.studio.thegraph.com/query/38337/screenerdao-test/v0.0.3'
+const chainId = 5
 
 export {
     registriesContractAddress,
     registriesContractABI,
     nftStorageApiKey,
     alchemyApiKey,
-    THEGRAPH_API_URL
+    THEGRAPH_API_URL,
+    chainId
 }

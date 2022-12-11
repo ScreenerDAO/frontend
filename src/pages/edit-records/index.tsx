@@ -29,6 +29,7 @@ import SaveDataModal from 'src/layouts/components/SaveDataModal'
 import { initialState } from 'src/features/newCompanyDataSlice'
 import SaveIcon from '@mui/icons-material/Save';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { useAccount } from 'wagmi'
 
 // const Tab = styled(MuiTab)<TabProps>(({ theme }) => ({
 //     [theme.breakpoints.down('md')]: {
@@ -82,17 +83,17 @@ const a11yProps = (index: number) => {
 }
 
 const EditRecords = () => {
-    // const [currentTab, setCurrentTab] = useState<string>('companyInfo')
-    const [saveData, setSaveData] = useState(false)
+    const [saveDataModalOpen, setSaveDataModalOpen] = useState(false)
     const [tabIndex, setTabIndex] = React.useState(0)
 
     const dispatch = useAppDispatch()
+
     const newCompany = useAppSelector((state: { general: IGeneral }) => state.general.isNewCompany)
     const companyData = useAppSelector((state: { companyData: ICompanyData }) => state.companyData)
 
     const Title = () => {
-        const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["companyName"])
-        const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["ticker"])
+        const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["companyName"] as string)
+        const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["ticker"] as string)
 
         return (
             <div>
@@ -202,12 +203,12 @@ const EditRecords = () => {
                                 variant='contained'
                                 color="primary"
                                 style={{ marginLeft: '15px' }}
-                                onClick={() => setSaveData(true)}
+                                onClick={() => setSaveDataModalOpen(true)}
                                 sx={{ display: { xs: 'none', md: 'block' } }}
                             >Submit</Button>
 
                             <SaveIcon
-                                onClick={() => setSaveData(true)}
+                                onClick={() => setSaveDataModalOpen(true)}
                                 sx={{
                                     display: { xs: 'block', md: 'none' },
                                     marginLeft: '15px',
@@ -291,7 +292,7 @@ const EditRecords = () => {
                 </Grid>
             </Grid>
 
-            {saveData ? <SaveDataModal handleClose={() => setSaveData(false)} /> : null}
+            {saveDataModalOpen ? <SaveDataModal handleClose={() => setSaveDataModalOpen(false)} /> : null}
         </>
     )
 }

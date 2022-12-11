@@ -53,6 +53,7 @@ const SearchBar = () => {
             autoFocus
             formatResult={formatResult}
             maxResults={10}
+            placeholder="Search company..."
         />
     )
 }
