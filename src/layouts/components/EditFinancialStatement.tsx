@@ -116,14 +116,14 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
             {activeStep === steps.length ?
                 (
                     <React.Fragment>
-                        <Typography sx={{ mt: 2, mb: 1 }}>
+                        <div>
                             <p>Upload the annual report to complete the process:</p>
-                            {/* <input type="file" /> */}
+
                             <Upload {...uploadProps} maxCount={1} onChange={handleFileUpload} onRemove={handleFileRemove}>
                                 <AntButton icon={<UploadOutlined />}>Upload</AntButton>
                             </Upload>
-                            {/* <input onChange={ev => console.log(ev.target.files[0])} type={'file'} /> */}
-                        </Typography>
+                        </ div>
+
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                             <Box sx={{ flex: '1 1 auto' }} />
                             <Button onClick={handleSubmit}>Done</Button>
