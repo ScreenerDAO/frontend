@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 interface IGeneral {
     isNewCompany: boolean
     selectedId: number
+    companyLoading: boolean
 }
 
 const initialState: IGeneral = {
     isNewCompany: false,
-    selectedId: 0
+    selectedId: 0,
+    companyLoading: false
 }
 
 export const generalSlice = createSlice({
@@ -19,12 +21,16 @@ export const generalSlice = createSlice({
         },
         setId: (state, action: PayloadAction<number>) => {
             state.selectedId = action.payload
+        },
+        setCompanyLoading: (state, action: PayloadAction<boolean>) => {
+            state.companyLoading = action.payload
         }
     }
 })
 
 export const {
-    setIsNewCompany: setIsNewCompany
+    setIsNewCompany: setIsNewCompany,
+    setCompanyLoading: setCompanyLoading
 } = generalSlice.actions
 
 export type {

@@ -99,42 +99,40 @@ const SaveDataStepper = (props: { newCompanyData: ICompanyData }) => {
                     }))
                 }
             }
-
-            // if (state.activeStep == 1) {
-            //     write?.()
-            // }
         }
 
         callback()
     }, [state.activeStep])
 
     return (
-        <Stepper activeStep={state.activeStep} orientation="vertical">
-            <Step key='Saving data on Filecoin network'>
-                <StepLabel>Saving data on Filecoin network</StepLabel>
+        <>
+            <Stepper activeStep={state.activeStep} orientation="vertical">
+                <Step key='Saving data on Filecoin network'>
+                    <StepLabel>Saving data on Filecoin network</StepLabel>
 
-                <StepContent>
-                    <StepSpinner />
-                </StepContent>
-            </Step>
+                    <StepContent>
+                        <StepSpinner />
+                    </StepContent>
+                </Step>
 
-            <Step key='Updating company status on Ethereum network'>
-                <StepLabel>Updating company status on Ethereum network</StepLabel>
+                <Step key='Updating company status on Ethereum network'>
+                    <StepLabel>Updating company status on Ethereum network</StepLabel>
 
-                <StepContent>
-                    <SaveDataToEthereumStep cid={state.cid} setState={setState} />
-                </StepContent>
-            </Step>
+                    <StepContent>
+                        <SaveDataToEthereumStep cid={state.cid} setState={setState} />
+                    </StepContent>
+                </Step>
+            </Stepper>
 
             {state.activeStep == 2 &&
                 <Alert severity="success" sx={{ marginTop: '20px' }}>Company successfully saved!</Alert>
             }
-        </Stepper>
+        </>
     )
 }
 
 const SaveDataToEthereumStep = (props: {
-    cid: string, 
+    cid: string,
     setState: React.Dispatch<React.SetStateAction<{
         activeStep: number;
         cid: string;
@@ -163,20 +161,22 @@ const SaveDataToEthereumStep = (props: {
     const calledOnce = React.useRef(false)
 
     React.useEffect(() => {
-        if (calledOnce.current) return
+        if (!(!write || isLoading)) {
+            if (calledOnce.current) return
 
-        if (!isConnected || chain?.id != chainId || (isPrepareError || isError)) return
+            if (!isConnected || chain?.id != chainId || (isPrepareError || isError)) return
 
-        calledOnce.current = true
+            calledOnce.current = true
 
-        write?.()
-    }, [isConnected, chain, isPrepareError, isError])
+            write?.()
+        }
+    }, [isConnected, chain, isPrepareError, isError, write, isLoading])
 
     React.useEffect(() => {
         if (isSuccess) {
             props.setState(prevState => ({
                 ...prevState,
-                activeState: 2
+                activeStep: 2
             }))
         }
     }, [isSuccess])
@@ -206,8 +206,8 @@ const SaveDataToEthereumStep = (props: {
 const WalletNotConnected = () => {
     return (
         <>
-            <Alert severity='error' style={{ marginBottom: '10px'}}>Wallet not connected!</Alert>
-            <div style={{display: 'flex', justifyContent: 'center'}}>
+            <Alert severity='error' style={{ marginBottom: '10px' }}>Wallet not connected!</Alert>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <ConnectButton />
             </div>
         </>
@@ -221,8 +221,8 @@ const WrongChain = () => {
 
     return (
         <>
-            <Alert severity='error' style={{marginBottom: '10px'}}>Wrong network!</Alert>
-            <div style={{display: 'flex', justifyContent: 'center'}}>
+            <Alert severity='error' style={{ marginBottom: '10px' }}>Wrong network!</Alert>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <Button variant='contained' onClick={() => switchNetwork?.()}>Switch network</Button>
             </div>
         </>

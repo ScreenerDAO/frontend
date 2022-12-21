@@ -44,6 +44,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
+    "@ant-design/icons": "^4.8.0",
     "@apollo/client": "^3.5.6",
     "@emotion/cache": "^11.6.0",
     "@emotion/react": "^11.10.5",
@@ -56,6 +57,7 @@
     "@popperjs/core": "^2.11.2",
     "@rainbow-me/rainbowkit": "^0.8.0",
     "@reduxjs/toolkit": "^1.9.0",
+    "antd": "^5.1.0",
     "apexcharts-clevision": "3.28.5",
     "clsx": "^1.1.1",
     "ethers": "^5.7.2",

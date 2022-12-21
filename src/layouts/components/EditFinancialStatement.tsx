@@ -8,6 +8,13 @@ import Typography from '@mui/material/Typography';
 import EditableBalanceSheet from './EditableBalanceSheet';
 import EditableIncomeStatement from './EditableIncomeStatement';
 import EditableCashFlow from './EditableCashFlowStatement';
+import { UploadOutlined } from '@ant-design/icons';
+import { Button as AntButton, Upload } from 'antd';
+import { UploadChangeParam, UploadFile, UploadProps } from 'antd/es/upload/interface';
+import { NFTStorage } from 'nft.storage';
+import { nftStorageApiKey } from 'src/metadata';
+import { useAppDispatch, useAppSelector } from 'src/hooks';
+import { setAnnualReportHash } from 'src/features/newCompanyDataSlice';
 
 const steps = ['Balance sheet', 'Income statement', 'Cash flow statement'];
 
@@ -18,6 +25,14 @@ interface IEditFinancialStatementsProps {
 
 const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.ReactElement => {
     const [activeStep, setActiveStep] = React.useState(0);
+
+    const dispatch = useAppDispatch()
+
+    const file = useAppSelector((state) => state.newCompanyData.financialStatements[props.year].annualReportHash)
+
+    const uploadProps: UploadProps = {
+        defaultFileList: file ? [{uid: '1', name: file, status: 'done'}] : [],
+    }
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -62,6 +77,26 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
         }
     }
 
+    const handleFileUpload = async (params: UploadChangeParam<UploadFile<any>>) => {
+        if (params.file.originFileObj) {
+            let client = new NFTStorage({ token: nftStorageApiKey })
+
+            let hash = await client.store({
+                name: params.file.name,
+                description: params.file.name,
+                image: params.file.originFileObj as any
+            })
+            
+            dispatch(setAnnualReportHash({ year: props.year, hash: hash.ipnft }))
+        }
+    }
+
+    const handleFileRemove = async (params: UploadFile<any>) => {
+        if (file == params.name) {
+            dispatch(setAnnualReportHash({ year: props.year, hash: '' }))
+        }
+    }
+
     return (
         <Box>
             <Stepper activeStep={activeStep}>
@@ -83,7 +118,11 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
                     <React.Fragment>
                         <Typography sx={{ mt: 2, mb: 1 }}>
                             <p>Upload the annual report to complete the process:</p>
-                            <input type="file" />
+                            {/* <input type="file" /> */}
+                            <Upload {...uploadProps} maxCount={1} onChange={handleFileUpload} onRemove={handleFileRemove}>
+                                <AntButton icon={<UploadOutlined />}>Upload</AntButton>
+                            </Upload>
+                            {/* <input onChange={ev => console.log(ev.target.files[0])} type={'file'} /> */}
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                             <Box sx={{ flex: '1 1 auto' }} />

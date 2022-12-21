@@ -49,7 +49,13 @@ const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
                     }
     
                     row.push(
-                        <TableCell key={colIndex + 1} align="right">{props.data.financialStatements[props.yearsSelected[colIndex]].balanceSheet![BalanceSheetOrderedElements[rowIndex].key as keyof IBalanceSheet]}</TableCell>
+                        <TableCell key={colIndex + 1} align="right">
+                            {props.data.financialStatements[props.yearsSelected[colIndex]].balanceSheet ?
+                                props.data.financialStatements[props.yearsSelected[colIndex]].balanceSheet![BalanceSheetOrderedElements[rowIndex].key as keyof IBalanceSheet]
+                                :
+                                '-'
+                            }
+                        </TableCell>
                     )
                 }
     
