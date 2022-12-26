@@ -1,80 +1,32 @@
-// ** Icon imports
-import Login from 'mdi-material-ui/Login'
-import Table from 'mdi-material-ui/Table'
-import CubeOutline from 'mdi-material-ui/CubeOutline'
-import HomeOutline from 'mdi-material-ui/HomeOutline'
-import FormatLetterCase from 'mdi-material-ui/FormatLetterCase'
 import AccountCogOutline from 'mdi-material-ui/AccountCogOutline'
-import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
-import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline'
-import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
-import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
-
-// ** Type import
+import { Domain, ClipboardTextOutline } from 'mdi-material-ui'
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
+import { useAppSelector } from 'src/hooks'
+import { ICompanyData } from 'src/types/CompanyDataTypes'
 
 const navigation = (): VerticalNavItemsType => {
-  return [
-    {
-      title: 'Screener',
-      icon: HomeOutline,
-      path: '/'
-    },
-    {
-      title: 'Edit records',
-      icon: AccountCogOutline,
-      path: '/edit-records'
-    },
-    {
-      sectionTitle: 'Pages'
-    },
-    {
-      title: 'Login',
-      icon: Login,
-      path: '/pages/login',
-      openInNewTab: true
-    },
-    {
-      title: 'Register',
-      icon: AccountPlusOutline,
-      path: '/pages/register',
-      openInNewTab: true
-    },
-    {
-      title: 'Error',
-      icon: AlertCircleOutline,
-      path: '/pages/error',
-      openInNewTab: true
-    },
-    {
-      sectionTitle: 'User Interface'
-    },
-    {
-      title: 'Typography',
-      icon: FormatLetterCase,
-      path: '/typography'
-    },
-    {
-      title: 'Icons',
-      path: '/icons',
-      icon: GoogleCirclesExtended
-    },
-    {
-      title: 'Cards',
-      icon: CreditCardOutline,
-      path: '/cards'
-    },
-    {
-      title: 'Tables',
-      icon: Table,
-      path: '/tables'
-    },
-    {
-      icon: CubeOutline,
-      title: 'Form Layouts',
-      path: '/form-layouts'
-    }
-  ]
+    const companyTicker = useAppSelector((state: { companyData: ICompanyData }) => state.companyData.ticker)
+
+    return [
+        {
+            title: 'List of companies',
+            icon: ClipboardTextOutline,
+            path: '/list-companies'
+        },
+        {
+            sectionTitle: companyTicker ? `${companyTicker} Fundamentals` : 'Fundamentals'
+        },
+        {
+            title: 'Company overview',
+            icon: Domain,
+            path: '/company-overview'
+        },
+        {
+            title: 'Edit records',
+            icon: AccountCogOutline,
+            path: '/edit-records'
+        }
+    ]
 }
 
 export default navigation

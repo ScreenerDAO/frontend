@@ -1,12 +1,11 @@
-import Grid from '@mui/material/Grid'
-import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
-import { useAppSelector } from 'src/hooks'
-import React from 'react'
-import FinancialStatements from 'src/layouts/components/FinancialStatements'
-import { ICompanyData } from 'src/types/CompanyDataTypes'
-import { Card, CircularProgress } from '@mui/material'
-import SearchBar from 'src/layouts/components/SearchBar'
-import { IGeneral } from 'src/features/general'
+import React from 'react';
+import { Card, CircularProgress, Grid } from '@mui/material';
+import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts';
+import FinancialStatements from 'src/layouts/components/FinancialStatements';
+import SearchBar from 'src/layouts/components/SearchBar';
+import { useAppSelector } from 'src/hooks';
+import { ICompanyData } from 'src/types/CompanyDataTypes';
+import { IGeneral } from 'src/features/general';
 
 const Dashboard = () => {
     const data = useAppSelector((state: { companyData: ICompanyData }) => state.companyData)
@@ -22,23 +21,26 @@ const Dashboard = () => {
     )
 }
 
-const CompanyDashboard = (props: { data: ICompanyData }) => {
+const CompanyDashboard = ({ data }: { data: ICompanyData }) => {
     return (
         <Grid container spacing={3}>
-            <Grid item xs={12} md={12} sx={{ display: { xs: 'block', md: 'none' }, marginBottom: '10px' }}>
+            <Grid
+                item
+                xs={12}
+                md={12}
+                sx={{ display: { xs: 'block', md: 'none' }, marginBottom: '10px' }}
+            >
                 <SearchBar />
             </Grid>
-
             <Grid item xs={12} md={12}>
                 <Card>
-                    <h2 style={{ marginLeft: '40px' }}>{props.data.companyName} ({props.data.ticker})</h2>
+                    <h2 style={{ marginLeft: '40px' }}>#{1} {data.companyName} ({data.ticker})</h2>
                 </Card>
             </Grid>
-
-            <FinancialStatements companyData={props.data} />
+            <FinancialStatements companyData={data} />
         </Grid>
-    )
-}
+    );
+};
 
 const EmptyCompanyDashboard = () => {
     const companyLoading = useAppSelector((state: { general: IGeneral }) => state.general.companyLoading)

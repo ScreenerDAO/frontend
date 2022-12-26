@@ -1,12 +1,10 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
-import { setCompanyData } from 'src/features/companyDataSlice'
-import { setCompanyLoading, setIsNewCompany } from 'src/features/general'
-import { setCompanyData as setNewCompanyData } from 'src/features/newCompanyDataSlice'
-import { getCompanyData } from 'src/generalMethods'
+import { selectCompany } from 'src/helpers/generalMethods'
 import { useAppDispatch } from 'src/hooks'
 import { ICompanyEthData } from 'src/types/CompanyDataTypes'
 import React from 'react'
+import { useRouter } from 'next/router'
 
 const COMPANIES_QUERY = gql`
     query Companies($text: String!) {
@@ -37,21 +35,16 @@ const SearchBar = () => {
     }, [])
 
     const dispatch = useAppDispatch()
+    const router = useRouter()
 
     const handleOnSearch = (string: string) => {
         getCompanies({ variables: { text: string } })
     }
 
     const handleOnSelect = async (item: ICompanyEthData) => {
-        dispatch(setCompanyLoading(true))
+        router.push('/company-overview')
 
-        let companyData = await getCompanyData(item.dataHash)
-
-        dispatch(setIsNewCompany(false))
-        dispatch(setCompanyData(companyData))
-        dispatch(setNewCompanyData(companyData))
-
-        dispatch(setCompanyLoading(false))
+        selectCompany(item, dispatch)
     }
 
     return (

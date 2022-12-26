@@ -6,6 +6,7 @@ import { IIncomeStatement } from 'src/types/IncomeStatementTypes'
 
 // Define the initial state using that type
 const initialState: ICompanyData = {
+    id: null,
     companyName: "",
     ticker: "",
     country: "",
@@ -73,10 +74,10 @@ const cfInitialState: ICashFlow = {
 
 export const newCompanyDataSlice = createSlice({
     name: 'newCompanyData',
-    // `createSlice` will infer the state type from the `initialState` argument
     initialState,
     reducers: {
         setCompanyData: (state, action: PayloadAction<ICompanyData>) => {
+            state.id = action.payload.id
             state.companyName = action.payload.companyName
             state.ticker = action.payload.ticker
             state.country = action.payload.country

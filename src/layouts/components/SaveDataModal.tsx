@@ -14,6 +14,7 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction, useAc
 import { nftStorageApiKey, registriesContractAddress, registriesContractABI, chainId } from 'src/metadata'
 import { IGeneral } from 'src/features/general';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { saveCompanyData } from 'src/helpers/generalMethods';
 
 interface ISaveDataModalProps {
     handleClose: () => void
@@ -88,14 +89,13 @@ const SaveDataStepper = (props: { newCompanyData: ICompanyData }) => {
     React.useEffect(() => {
         const callback = async () => {
             if (state.activeStep == 0) {
-                let client = new NFTStorage({ token: nftStorageApiKey })
-                let hash = await client.storeBlob(new Blob([JSON.stringify(props.newCompanyData)]))
+                let hash = await saveCompanyData(props.newCompanyData)
 
                 if (hash) {
                     setState(prevState => ({
                         ...prevState,
                         activeStep: 1,
-                        cid: hash
+                        cid: hash as string
                     }))
                 }
             }
@@ -138,12 +138,11 @@ const SaveDataToEthereumStep = (props: {
         cid: string;
     }>>
 }) => {
-    const companyId = useAppSelector((state: { general: IGeneral }) => state.general.selectedId)
+    const companyId = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.id)
     const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.companyName)
     const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.ticker)
-    const isNewCompany = useAppSelector((state: { general: IGeneral }) => state.general.isNewCompany)
 
-    const { isConnected, connector } = useAccount()
+    const { isConnected } = useAccount()
     const { chain } = useNetwork()
     const {
         config,
@@ -152,8 +151,8 @@ const SaveDataToEthereumStep = (props: {
     } = usePrepareContractWrite({
         address: registriesContractAddress,
         abi: registriesContractABI,
-        functionName: isNewCompany ? 'addNewCompany' : 'editCompany',
-        args: isNewCompany ? [companyName, companyTicker, props.cid] : [companyId, companyName, companyTicker, props.cid]
+        functionName: companyId ? 'editCompany' : 'addNewCompany',
+        args: companyId ? [companyId, companyName, companyTicker, props.cid] : [companyName, companyTicker, props.cid]
     })
     const { data, error, isError, write } = useContractWrite(config)
     const { isLoading, isSuccess } = useWaitForTransaction({ hash: data?.hash })

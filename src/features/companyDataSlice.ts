@@ -6,6 +6,7 @@ import { IIncomeStatement } from 'src/types/IncomeStatementTypes'
 
 // Define the initial state using that type
 const initialState: ICompanyData = {
+    id: null,
     companyName: "",
     ticker: "",
     country: "",
@@ -15,11 +16,12 @@ const initialState: ICompanyData = {
 
 export const companyDataSlice = createSlice({
     name: 'companyData',
-    // `createSlice` will infer the state type from the `initialState` argument
     initialState,
     reducers: {
         setCompanyData: (state, action: PayloadAction<ICompanyData>) => {
+            state.id = action.payload.id
             state.companyName = action.payload.companyName
+            state.ticker = action.payload.ticker
             state.country = action.payload.country
             state.financialStatements = action.payload.financialStatements
         },

@@ -4,13 +4,12 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import IncomeStatement from './IncomeStatement';
+import AnnualReports from './AnnualReports';
 import Slider from '@mui/material/Slider';
 import { ICompanyData, IFinancialStatement } from '../../types/CompanyDataTypes';
 import { Grid, Card } from '@mui/material';
-
-const getYearsArray = (financials: { [key: number]: IFinancialStatement }) => {
-    return Object.keys(financials).map(key => Number(key)).sort()
-}
+import { assertNonNullType } from 'graphql';
+import { getYearsArray } from '../../helpers/financialStatements'
 
 const getSelectedYearsArray = (yearsArray: number[], minAndMax: number[]) => {
     let newArray = []
@@ -112,12 +111,13 @@ const FinancialStatements = (props: IFinancialStatementsProps): React.ReactEleme
                                 onChange={(event: React.SyntheticEvent, newValue: number) => setTabIndex(newValue)}
                                 aria-label="basic tabs example"
                                 variant="scrollable"
-                                scrollButtons
+                                scrollButtons="auto"
                                 allowScrollButtonsMobile
                             >
                                 <Tab label="Balance sheet" {...a11yProps(0)} />
                                 <Tab label="Income statement" {...a11yProps(1)} />
-                                <Tab label="Cash flow statement" {...a11yProps(2)} />
+                                <Tab label="Cash flow" {...a11yProps(2)} />
+                                <Tab label="Annual reports" {...a11yProps(3)} />
                             </Tabs>
                         </Box >
 
@@ -131,6 +131,10 @@ const FinancialStatements = (props: IFinancialStatementsProps): React.ReactEleme
 
                         <TabPanel value={tabIndex} index={2}>
                             Item Three
+                        </TabPanel>
+
+                        <TabPanel value={tabIndex} index={3}>
+                            <AnnualReports data={props.companyData} />
                         </TabPanel>
                     </Card>
                 </Grid>

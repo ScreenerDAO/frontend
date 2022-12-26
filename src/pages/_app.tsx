@@ -13,7 +13,6 @@ import { createEmotionCache } from 'src/@core/utils/create-emotion-cache'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 import '../../styles/globals.css'
 import '@rainbow-me/rainbowkit/styles.css';
-
 import {
     getDefaultWallets,
     RainbowKitProvider,
@@ -29,6 +28,7 @@ import { Provider } from 'react-redux'
 import store from '../store'
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
 import { THEGRAPH_API_URL } from 'src/metadata'
+import React from 'react'
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -73,9 +73,12 @@ if (themeConfig.routingLoader) {
     })
 }
 
-// ** Configure JSS & ClassName
 const App = (props: ExtendedAppProps) => {
     const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
+
+    React.useEffect(() => {
+        console.log('App.tsx useEffect')
+    }, [])
 
     // Variables
     const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)

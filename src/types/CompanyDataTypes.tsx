@@ -6,11 +6,11 @@ interface ICompanyEthData {
     id: number
     name: string
     ticker: string
-    country: string
     dataHash: string
 }
 
 interface ICompanyData {
+    id: number | null
     companyName: string
     ticker: string
     country: string

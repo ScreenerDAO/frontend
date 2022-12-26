@@ -100,7 +100,7 @@ const AppBarContent = (props: Props) => {
                 {/* <UserDropdown /> */}
                 <div style={{ marginLeft: '10px' }}>
                     <Box sx={{ display: { xs: 'none', md: 'initial' } }}>
-                        <ConnectButton chainStatus={'full'} accountStatus={'full'} showBalance={false} />
+                        <ConnectButton chainStatus={'icon'} accountStatus={'full'} showBalance={false} />
                     </Box>
 
                     <Box sx={{ display: { xs: 'initial', md: 'none' } }}>
