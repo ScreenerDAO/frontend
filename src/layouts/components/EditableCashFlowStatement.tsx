@@ -69,7 +69,7 @@ const EditableCashFlow = (props: IEditableCashFlowProps): React.ReactElement => 
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <TableContainer component={Paper} style={{ maxHeight: '400px', marginTop: '40px' }}>
+            <TableContainer component={Paper} style={{ marginTop: '40px' }}>
                 <Table aria-label='simple table'>
                     <TableHead>
                         <TableRow>

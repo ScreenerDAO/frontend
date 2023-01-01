@@ -26,9 +26,10 @@ import {
 import { publicProvider } from 'wagmi/providers/public';
 import { Provider } from 'react-redux'
 import store from '../store'
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
+import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client'
 import { THEGRAPH_API_URL } from 'src/metadata'
 import React from 'react'
+import { selectCompany } from 'src/helpers/generalMethods'
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -40,15 +41,14 @@ const clientSideEmotionCache = createEmotionCache()
 
 const { chains, provider } = configureChains(
     [chain.mainnet, chain.polygon, chain.optimism, chain.arbitrum, chain.goerli],
-    [
-        // alchemyProvider({ apiKey: alchemyApiKey }),
-        publicProvider()
-    ]
-);
+    [publicProvider()]
+)
+
 const { connectors } = getDefaultWallets({
     appName: 'My RainbowKit App',
     chains
-});
+})
+
 const wagmiClient = createClient({
     autoConnect: true,
     connectors,
@@ -60,7 +60,6 @@ const client = new ApolloClient({
     cache: new InMemoryCache()
 })
 
-// ** Pace Loader
 if (themeConfig.routingLoader) {
     Router.events.on('routeChangeStart', () => {
         NProgress.start()
@@ -73,15 +72,25 @@ if (themeConfig.routingLoader) {
     })
 }
 
+const COMPANY_QUERY = gql`
+    query Company($id: ID!) {
+        company(id: $id) {
+            id
+            name
+            ticker
+            dataHash
+        }
+    }
+`
+
 const App = (props: ExtendedAppProps) => {
     const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
+    const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
 
     React.useEffect(() => {
-        console.log('App.tsx useEffect')
+        client.query({query: COMPANY_QUERY, variables: {id: "0"}})
+        .then((result) => selectCompany(result.data.company, store.dispatch))
     }, [])
-
-    // Variables
-    const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
 
     return (
         <CacheProvider value={emotionCache}>

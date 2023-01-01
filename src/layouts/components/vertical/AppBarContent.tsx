@@ -25,7 +25,6 @@ import SearchBar from '../SearchBar'
 import { BriefcasePlusOutline } from 'mdi-material-ui'
 import { useRouter } from 'next/router'
 import { useAppDispatch } from 'src/hooks'
-import { setIsNewCompany } from 'src/features/general'
 import { setCompanyData, initialState } from 'src/features/companyDataSlice'
 import { setCompanyData as setNewCompanyData, initialState as newCompanyInitialState } from 'src/features/newCompanyDataSlice'
 import Tooltip from '@mui/material/Tooltip';

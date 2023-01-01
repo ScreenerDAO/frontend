@@ -23,7 +23,7 @@ export const companyDataSlice = createSlice({
             state.companyName = action.payload.companyName
             state.ticker = action.payload.ticker
             state.country = action.payload.country
-            state.financialStatements = action.payload.financialStatements
+            state.financialStatements = action.payload.financialStatements ?? {}
         },
         setCompanyName: (state, action: PayloadAction<string>) => {
             state.companyName = action.payload

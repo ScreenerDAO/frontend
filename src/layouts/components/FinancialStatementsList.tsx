@@ -12,6 +12,8 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { addNewYear } from 'src/features/newCompanyDataSlice';
 
 const getYearsArray = (financials: { [key: number]: IFinancialStatement }) => {
+    if (!financials) return []
+
     return Object.keys(financials).map(key => Number(key)).sort()
 }
 
@@ -176,7 +178,11 @@ const FinancialStatementsList = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     maxHeight: '90vh',
-                    padding: '25px'
+                    paddingLeft: { xs: '10px', sm: '25px' },
+                    paddingRight: { xs: '10px', sm: '25px' },
+                    paddingTop: '25px',
+                    paddingBottom: '25px',
+                    overflowY: 'auto'
                 }}>
                     <EditFinancialStatements year={selectedYear} closeModal={() => setEditFinancialsModal(false)} />
                 </Box>

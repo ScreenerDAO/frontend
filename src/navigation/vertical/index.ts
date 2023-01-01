@@ -1,5 +1,4 @@
-import AccountCogOutline from 'mdi-material-ui/AccountCogOutline'
-import { Domain, ClipboardTextOutline } from 'mdi-material-ui'
+import { Domain, ClipboardTextOutline, ArchiveEditOutline } from 'mdi-material-ui'
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
 import { useAppSelector } from 'src/hooks'
 import { ICompanyData } from 'src/types/CompanyDataTypes'
@@ -23,7 +22,7 @@ const navigation = (): VerticalNavItemsType => {
         },
         {
             title: 'Edit records',
-            icon: AccountCogOutline,
+            icon: ArchiveEditOutline,
             path: '/edit-records'
         }
     ]

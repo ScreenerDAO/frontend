@@ -1,10 +1,14 @@
 import * as React from 'react'
-import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material'
 import { IBalanceSheet, BalanceSheetOrderedElements } from "../../types/BalanceSheetTypes"
 import { useAppSelector, useAppDispatch } from '../../hooks'
-import { ICompanyData } from 'src/types/CompanyDataTypes'
 import { setBalanceSheet } from 'src/features/newCompanyDataSlice'
 import { useForm, Controller, SubmitHandler } from "react-hook-form"
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import { balanceSheetTypesNames, balanceSheetStructure } from 'src/types/FinancialStatementsTypes'
+import EditInputElement, { StatementType } from './EditInputElement'
+import AccordionWrapper from './AccordionWrapper'
 
 interface IEditableBalanceSheetProps {
     year: number
@@ -20,14 +24,14 @@ const EditableBalanceSheet = (props: IEditableBalanceSheetProps): React.ReactEle
     });
     const dispatch = useAppDispatch()
 
-    const balanceSheet = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.financialStatements[props.year].balanceSheet)
+    const balanceSheet = useAppSelector((state: { newCompanyData: any }) => state.newCompanyData.financialStatements[props.year].balanceSheet)
 
     const onSubmit: SubmitHandler<IBalanceSheet> = data => {
         for (const key in data) {
             data[key as keyof IBalanceSheet] = Number(data[key as keyof IBalanceSheet])
         }
 
-        dispatch(setBalanceSheet({year: props.year, balanceSheet: data}))
+        dispatch(setBalanceSheet({ year: props.year, balanceSheet: data }))
 
         props.handleNext()
     }
@@ -51,26 +55,9 @@ const EditableBalanceSheet = (props: IEditableBalanceSheetProps): React.ReactEle
         )
     }
 
-    const TableRows = (): React.ReactElement => {
-        let rows: Array<React.ReactElement> = []
-
-        for (let rowIndex = 0; rowIndex < BalanceSheetOrderedElements.length; rowIndex++) {
-            rows.push(
-                <TableRow key={rowIndex}>
-                    <TableCell component="th">{BalanceSheetOrderedElements[rowIndex].description}</TableCell>
-                    <TableCell align='right'>
-                        <InputField rowIndex={rowIndex} />
-                    </TableCell>
-                </TableRow>
-            )
-        }
-
-        return <>{rows}</>
-    }
-
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <TableContainer component={Paper} style={{ maxHeight: '400px', marginTop: '40px' }}>
+            {/* <TableContainer component={Paper} style={{ marginTop: '40px' }}>
                 <Table aria-label="simple table">
                     <TableHead>
                         <TableRow>
@@ -80,9 +67,19 @@ const EditableBalanceSheet = (props: IEditableBalanceSheetProps): React.ReactEle
                         <TableRows />
                     </TableBody>
                 </Table>
-            </TableContainer>
+            </TableContainer> */}
 
-            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+            <div style={{ marginTop: '40px' }}>
+                {balanceSheetStructure.map((element, index) => (
+                    <AccordionWrapper 
+                        key={index}  
+                        row={element}
+                        statementType={StatementType.BalanceSheet}
+                    />
+                ))}
+            </div>
+
+            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 6 }}>
                 <Button
                     color="inherit"
                     disabled={props.activeStep === 0}
