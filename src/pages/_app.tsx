@@ -30,6 +30,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client
 import { THEGRAPH_API_URL } from 'src/metadata'
 import React from 'react'
 import { selectCompany } from 'src/helpers/generalMethods'
+import { setCompanyLoading } from 'src/features/general'
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -88,8 +89,9 @@ const App = (props: ExtendedAppProps) => {
     const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
 
     React.useEffect(() => {
+        store.dispatch(setCompanyLoading(true))
         client.query({query: COMPANY_QUERY, variables: {id: "0"}})
-        .then((result) => selectCompany(result.data.company, store.dispatch))
+            .then((result) => selectCompany(result.data.company, store.dispatch))
     }, [])
 
     return (

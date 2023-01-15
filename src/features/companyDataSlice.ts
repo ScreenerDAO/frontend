@@ -10,8 +10,9 @@ const initialState: ICompanyData = {
     companyName: "",
     ticker: "",
     country: "",
-    financialStatements: {
-    }
+    // currency: null,
+    financialStatements: {},
+    annualReports: {}
 }
 
 export const companyDataSlice = createSlice({
@@ -23,31 +24,36 @@ export const companyDataSlice = createSlice({
             state.companyName = action.payload.companyName
             state.ticker = action.payload.ticker
             state.country = action.payload.country
-            state.financialStatements = action.payload.financialStatements ?? {}
+            // state.currency = action.payload.currency
+            state.financialStatements = action.payload.financialStatements
+            state.annualReports = action.payload.annualReports 
         },
-        setCompanyName: (state, action: PayloadAction<string>) => {
-            state.companyName = action.payload
-        },
-        setCompanyTicker: (state, action: PayloadAction<string>) => {
-            state.ticker = action.payload
-        },
-        setCompanyCountry: (state, action: PayloadAction<string>) => {
-            state.country = action.payload
-        },
-        setFinancialStatemets: (state, action: PayloadAction<{
-            [key: number]: IFinancialStatement;
-        }>) => {
-            state.financialStatements = action.payload
-        }
+        // setCompanyName: (state, action: PayloadAction<string>) => {
+        //     state.companyName = action.payload
+        // },
+        // setCompanyTicker: (state, action: PayloadAction<string>) => {
+        //     state.ticker = action.payload
+        // },
+        // setCompanyCountry: (state, action: PayloadAction<string>) => {
+        //     state.country = action.payload
+        // },
+        // // setCompanyCurrency: (state, action: PayloadAction<number>) => {
+        // //     state.currency = action.payload
+        // // },
+        // setFinancialStatemets: (state, action: PayloadAction<{
+        //     [key: number]: IFinancialStatement;
+        // }>) => {
+        //     state.financialStatements = action.payload
+        // }
     },
 })
 
 export const { 
     setCompanyData, 
-    setCompanyName, 
-    setCompanyCountry, 
-    setCompanyTicker,
-    setFinancialStatemets
+    // setCompanyName, 
+    // setCompanyCountry, 
+    // setCompanyTicker,
+    // setFinancialStatemets
 } = companyDataSlice.actions
 
 export {

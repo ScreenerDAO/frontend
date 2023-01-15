@@ -7,13 +7,23 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { IIncomeStatement, IncomeStatementOrderedElements } from "../../types/IncomeStatementTypes"
-import { ICompanyData } from '../../types/CompanyDataTypes';
+import { ICompanyData, StatementType } from '../../types/CompanyDataTypes';
 import { TextField } from '@mui/material';
 import FinancialStatementField from './FinancialStatementField';
+import { incomeStatementTypesNames } from 'src/types/FinancialStatementsTypes';
+import { useAppSelector } from 'src/hooks';
 
 interface IIncomeStatementProps {
     data: ICompanyData
     yearsArray: number[]
+    selectedLabels: {
+        statement: StatementType,
+        label: number
+    }[],
+    setSelectedLabels: (labels: {
+        statement: StatementType,
+        label: number
+    }[]) => void
 }
 
 const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
@@ -27,7 +37,7 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        <TableRows />
+                        <Rows />
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -37,7 +47,7 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
     const TableHeaders = () => {
         return (
             <>
-                <TableCell></TableCell>
+                <TableCell sx={{minWidth: '250px'}}></TableCell>
 
                 {
                     props.yearsArray.map(dataElement => {
@@ -50,36 +60,86 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
         )
     }
 
-    const TableRows = (): React.ReactElement => {
-        let rows: Array<React.ReactElement> = []
+    const Rows = () => {
+        return (
+            <>
+                <Row label={1} />
+                <Row label={2} />
+                <Row label={3} bold={true} />
+                <Row label={5} />
+                <Row label={6} />
+                <Row label={7} />
+                <Row label={8} bold={true} />
+                <Row label={9} />
+                <Row label={11} />
+                <Row label={12} />
+                <Row label={13} />
+                <Row label={14} />
+                <Row label={15} />
+                <Row label={16} />
+                <Row label={17} bold={true} />
+                <Row label={18}  />
+                <Row label={19} bold={true} />
+                <Row label={20} />
+                <Row label={21} bold={true} />
+            </>
+        )
+    }
 
-        for (let rowIndex = 0; rowIndex < IncomeStatementOrderedElements.length; rowIndex++) {
-            let row: Array<React.ReactElement> = []
+    const Row = ({ label, bold }: { label: number, bold?: boolean }): React.ReactElement => {
+        const selected = props.selectedLabels.filter(label => label.statement === StatementType.IncomeStatement).map(label => label.label).includes(label)
+        
+        return (
+            <TableRow 
+                hover
+                selected={selected}
+                onClick={() => {
+                    let selectedLabels = props.selectedLabels
 
-            for (let colIndex = 0; colIndex < props.yearsArray.length; colIndex++) {
-                if (colIndex == 0) {
-                    row.push(
-                        <TableCell key={colIndex} component="th">
-                            <FinancialStatementField fieldData={IncomeStatementOrderedElements[rowIndex]} h1Fields={[]} h3Fields={['GrossProfit', 'OperatingIncome', 'EarningsBeforeTaxes', 'NetIncome']} />
-                        </TableCell>
-                    )
+                    if (selected) {
+                        props.setSelectedLabels(props.selectedLabels.filter(cLabel => cLabel.label !== label))
+
+                        return
+                    }
+
+                    selectedLabels.push({
+                        statement: StatementType.IncomeStatement,
+                        label
+                    })
+
+                    props.setSelectedLabels(selectedLabels)
+                }}
+            >
+                <TableCell component="th" sx={{ fontWeight: bold ? 900 : 'initial' }}>
+                    {incomeStatementTypesNames[label]}
+                </TableCell>
+
+                {
+                    props.yearsArray.map((year, index) => {
+                        return (
+                            <TableCell align="right" key={index} sx={{ fontWeight: bold ? 900 : 'initial' }}>
+                                <CellValue value={props.data.financialStatements[year].incomeStatement[label]} />
+                            </TableCell>
+                        )
+                    })
                 }
+            </ TableRow>
+        )
+    }
 
-                row.push(
-                    <TableCell key={colIndex + 1} align="right">
-                        {props.data.financialStatements[props.yearsArray[colIndex]].incomeStatement ?
-                            props.data.financialStatements[props.yearsArray[colIndex]].incomeStatement![IncomeStatementOrderedElements[rowIndex].key as keyof IIncomeStatement]
-                            :
-                            '-'
-                        }
-                    </TableCell>
-                )
-            }
+    const CellValue = ({ value }: { value: string }) => {
+        let valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
+        let number = Number(value)
 
-            rows.push(<TableRow key={rowIndex}>{row}</TableRow>)
+        if (isNaN(number) || number === 0) {
+            return <>-</>
         }
 
-        return <>{rows}</>
+        if (valuesAsMillions) {
+            return <>{parseFloat((number / 1000000).toFixed(2)).toLocaleString()}</>
+        }
+
+        return <>{number.toLocaleString()}</>
     }
 
     return <StatementTable />

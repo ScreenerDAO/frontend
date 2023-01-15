@@ -7,73 +7,136 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { IBalanceSheet, BalanceSheetOrderedElements } from "../../types/BalanceSheetTypes"
-import { ICompanyData } from '../../types/CompanyDataTypes';
+import { ICompanyData, StatementType } from '../../types/CompanyDataTypes';
 import FinancialStatementField from './FinancialStatementField';
+import { IElement, IElementsGroup, balanceSheetStructure, balanceSheetTypesNames } from 'src/types/FinancialStatementsTypes';
+import { useAppSelector } from 'src/hooks';
 
 interface IBalanceSheetProps {
     data: ICompanyData
     yearsSelected: number[]
+    selectedLabels: {
+        statement: StatementType,
+        label: number
+    }[],
+    setSelectedLabels: (labels: {
+        statement: StatementType,
+        label: number
+    }[]) => void
 }
 
 const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
+
     const TableHeaders = () => {
         return (
             <>
-                <TableCell></TableCell>
+                <TableCell sx={{ minWidth: '250px' }}></TableCell>
 
                 {
-                props.yearsSelected.map(dataElement => {
-                    return (
-                        <TableCell align="right" key={dataElement}>{dataElement}</TableCell>
-                    )
-                })
+                    props.yearsSelected.map(dataElement => {
+                        return (
+                            <TableCell align="right" key={dataElement}>{dataElement}</TableCell>
+                        )
+                    })
                 }
             </>
         )
     }
 
-    const TableRows = (): React.ReactElement => {
-        let rows: Array<React.ReactElement> = []
+    const ElementGroupRows = ({ element }: { element: IElementsGroup }): React.ReactElement => {
+        return (
+            <>
+                {
+                    element.elements.map((cElement, index) => {
+                        if (cElement && (cElement as IElementsGroup).total) {
+                            return (
+                                <ElementGroupRows element={cElement as IElementsGroup} key={index} />
+                            )
+                        }
 
-        if (props.yearsSelected.length > 0) {
-            for (let rowIndex = 0; rowIndex < BalanceSheetOrderedElements.length; rowIndex++) {
-                let row: Array<React.ReactElement> = []
-    
-                for (let colIndex = 0; colIndex < props.yearsSelected.length; colIndex++) {
-                    if (colIndex == 0) {
-                        row.push(
-                            <TableCell key={colIndex} component="th">
-                                <FinancialStatementField fieldData={BalanceSheetOrderedElements[rowIndex]} h1Fields={["TotalAssets", "TotalLiabilities", "TotalEquity"]} h3Fields={["TotalCurrentAssets", "TotalNonCurrentAssets", "TotalCurrentLiabilities", "TotalNonCurrentLiabilities"]} />
+                        return (
+                            <Row label={(cElement as IElement).label} key={index} />
+                        )
+                    })
+                }
+
+
+                <Row label={element.total.label} bold={true} />
+            </>
+        )
+    }
+
+    const Row = ({ label, bold }: { label: number, bold?: boolean }): React.ReactElement => {
+        const selected = props.selectedLabels.filter(label => label.statement === StatementType.BalanceSheet).map(label => (label.label)).includes(label)
+
+        return (
+            <TableRow
+                hover
+                selected={selected}
+                onClick={() => {
+                    let selectedLabels = props.selectedLabels
+
+                    if (selected) {
+                        props.setSelectedLabels(props.selectedLabels.filter(cLabel => cLabel.label !== label))
+
+                        return
+                    }
+
+                    selectedLabels.push({
+                        statement: StatementType.BalanceSheet,
+                        label
+                    })
+
+                    props.setSelectedLabels(selectedLabels)
+                }}
+            >
+                <TableCell component="th" sx={{ fontWeight: bold ? 900 : 'initial' }}>
+                    {balanceSheetTypesNames[label]}
+                </TableCell>
+
+                {
+                    props.yearsSelected.map((year, index) => {
+                        return (
+                            <TableCell align="right" key={index} sx={{ fontWeight: bold ? 900 : 'initial' }}>
+                                <CellValue value={props.data.financialStatements[year].balanceSheet[label]} />
                             </TableCell>
                         )
-                    }
-    
-                    const balanceSheet = props.data.financialStatements[props.yearsSelected[colIndex]].balanceSheet
-
-                    row.push(
-                        <TableCell key={colIndex + 1} align="right">
-                            {balanceSheet && balanceSheet![BalanceSheetOrderedElements[rowIndex].key as keyof IBalanceSheet] ?
-                                balanceSheet![BalanceSheetOrderedElements[rowIndex].key as keyof IBalanceSheet]
-                                :
-                                '-'
-                            }
-                        </TableCell>
-                    )
+                    })
                 }
-    
-                rows.push(<TableRow key={rowIndex}>{row}</TableRow>)
-            }
+            </ TableRow>
+        )
+    }
+
+    const CellValue = ({ value }: { value: string }) => {
+        let valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
+        let number = Number(value)
+
+        if (isNaN(number) || number === 0) {
+            return <>-</>
         }
 
-        return <>{rows}</>
+        if (valuesAsMillions) {
+            return <>{parseFloat((number / 1000000).toFixed(2)).toLocaleString()}</>
+        }
+
+        return <>{number.toLocaleString()}</>
     }
+
+    const TableRows = (): React.ReactElement => (<>{
+        balanceSheetStructure.map((row, rowIndex) => {
+            return (
+                <ElementGroupRows element={row} key={rowIndex} />
+            )
+        })
+    }</>)
+
 
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                        <TableHeaders />            
+                        <TableHeaders />
                     </TableRow>
                 </TableHead>
                 <TableBody>

@@ -15,6 +15,7 @@ import { NFTStorage } from 'nft.storage';
 import { nftStorageApiKey } from 'src/metadata';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { setAnnualReportHash } from 'src/features/newCompanyDataSlice';
+import { saveFile } from 'src/helpers/generalMethods';
 
 const steps = ['Balance sheet', 'Income statement', 'Cash flow statement'];
 
@@ -27,8 +28,7 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
     const [activeStep, setActiveStep] = React.useState(0);
 
     const dispatch = useAppDispatch()
-
-    const file = useAppSelector((state) => state.newCompanyData.financialStatements[props.year].annualReportHash)
+    const file = useAppSelector((state) => state.newCompanyData.annualReports[props.year])
 
     const uploadProps: UploadProps = {
         defaultFileList: file ? [{uid: '1', name: file, status: 'done'}] : [],
@@ -79,21 +79,15 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
 
     const handleFileUpload = async (params: UploadChangeParam<UploadFile<any>>) => {
         if (params.file.originFileObj) {
-            let client = new NFTStorage({ token: nftStorageApiKey })
-
-            let hash = await client.store({
-                name: params.file.name,
-                description: params.file.name,
-                image: params.file.originFileObj as any
-            })
+            let hash = await saveFile(params.file.originFileObj)
             
-            dispatch(setAnnualReportHash({ year: props.year, hash: hash.ipnft }))
+            dispatch(setAnnualReportHash({ year: props.year, hash: hash }))
         }
     }
 
     const handleFileRemove = async (params: UploadFile<any>) => {
         if (file == params.name) {
-            dispatch(setAnnualReportHash({ year: props.year, hash: '' }))
+            dispatch(setAnnualReportHash({ year: props.year, hash: "" }))
         }
     }
 
@@ -113,6 +107,7 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
                     );
                 })}
             </Stepper>
+
             {activeStep === steps.length ?
                 (
                     <React.Fragment>

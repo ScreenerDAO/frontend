@@ -4,9 +4,11 @@ import { IIncomeStatement, IncomeStatementOrderedElements } from '../../types/In
 import { useAppDispatch, useAppSelector } from '../../hooks'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { ICompanyData } from 'src/types/CompanyDataTypes'
-import { setIncomeStatement } from 'src/features/newCompanyDataSlice'
 import EditInputElement, { StatementType } from './EditInputElement'
 import AccordionWrapper from './AccordionWrapper'
+import { AutofillOperation } from 'src/types/FinancialStatementsTypes'
+import MillionsSwitch from './MillionsSwitch'
+import { changeValuesAsMillions } from 'src/features/general'
 
 interface IEditableIncomeStatementProps {
     year: number
@@ -17,88 +19,152 @@ interface IEditableIncomeStatementProps {
 }
 
 const EditableIncomeStatement = (props: IEditableIncomeStatementProps): React.ReactElement => {
+    const valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
+
     const { control, handleSubmit } = useForm<IIncomeStatement>({
         mode: 'onChange'
     });
-    const dispatch = useAppDispatch()
-
-    const incomeStatement = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.financialStatements[props.year].incomeStatement)
 
     const onSubmit: SubmitHandler<IIncomeStatement> = data => {
-        for (const key in data) {
-            data[key as keyof IIncomeStatement] = Number(data[key as keyof IIncomeStatement])
-        }
-
-        dispatch(setIncomeStatement({ year: props.year, incomeStatement: data }))
-
         props.handleNext()
-    }
-
-    const InputField = (_props: { rowIndex: number }) => {
-        return (
-            <Controller
-                name={IncomeStatementOrderedElements[_props.rowIndex].key as keyof IIncomeStatement}
-                defaultValue={incomeStatement != null ? incomeStatement[IncomeStatementOrderedElements[_props.rowIndex].key as keyof IIncomeStatement] : undefined}
-                control={control}
-                render={({ field }) => (
-                    <TextField
-                        variant="standard"
-                        type="number"
-                        autoComplete="off"
-                        sx={{ input: { textAlign: "center" } }}
-                        {...field}
-                    />
-                )}
-            />
-        )
     }
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div style={{ marginTop: '40px', display: 'flex', flexDirection: 'column' }}>
-                <EditInputElement autoComplete={false} label={1} statementType={StatementType.IncomeStatement} />
-
-                <EditInputElement autoComplete={false} label={2} statementType={StatementType.IncomeStatement} />
-
-                <Divider sx={{ marginTop: "20px" }} />
-
-                <EditInputElement autoComplete={true} label={3} statementType={StatementType.IncomeStatement} />
-
-                <div style={{marginTop: '10px'}}>
-                    <AccordionWrapper
-                        row={{ title: 4, elements: [5, 6, 7], total: 8 }}
-                        statementType={StatementType.IncomeStatement}
-                    />
-                </div>
-
-                <Divider sx={{ marginTop: "20px" }} />
-
-                <EditInputElement autoComplete={true} label={9} statementType={StatementType.IncomeStatement} />
-
-                <div style={{marginTop: '10px'}}>
-                    <AccordionWrapper
-                        row={{ title: 10, elements: [11, 12, 13], total: 14 }}
-                        statementType={StatementType.IncomeStatement}
-                    />
-                </div>
-
-                <Divider sx={{ marginTop: "20px" }} />
-
-                <EditInputElement autoComplete={false} label={15} statementType={StatementType.IncomeStatement} />
-
-                <EditInputElement autoComplete={false} label={16} statementType={StatementType.IncomeStatement} />
-
-                <Divider sx={{ marginTop: "20px" }} />
-
-                <EditInputElement autoComplete={true} label={17} statementType={StatementType.IncomeStatement} />
-
-                <EditInputElement autoComplete={false} label={18} statementType={StatementType.IncomeStatement} />
-
-                <Divider sx={{ marginTop: "20px" }} />
-
-                <EditInputElement autoComplete={true} label={19} statementType={StatementType.IncomeStatement} />
+            <div style={{ paddingLeft: '20px', marginTop: '20px', marginBottom: '20px' }}>
+                <MillionsSwitch />
             </div>
 
+            <div>
+                <EditInputElement
+                    label={1}
+                    statementType={StatementType.IncomeStatement}
+                    year={props.year}
+                    valuesAsThousands={valuesAsMillions}
+                />
+
+                <EditInputElement
+                    label={2}
+                    statementType={StatementType.IncomeStatement}
+                    year={props.year}
+                    valuesAsThousands={valuesAsMillions}
+                />
+
+                <Divider sx={{ marginTop: "20px" }} />
+
+                <EditInputElement
+                    label={3}
+                    statementType={StatementType.IncomeStatement}
+                    year={props.year}
+                    valuesAsThousands={valuesAsMillions}
+                    autofillElements={[
+                        { label: 1, operation: AutofillOperation.Add },
+                        { label: 2, operation: AutofillOperation.Subtract }
+                    ]}
+                />
+
+                <div style={{ marginTop: '10px' }}>
+                    <AccordionWrapper
+                        elements={{
+                            title: 4,
+                            elements: [
+                                { label: 5, operation: AutofillOperation.Add },
+                                { label: 6, operation: AutofillOperation.Add },
+                                { label: 7, operation: AutofillOperation.Add }
+                            ],
+                            total: { label: 8, operation: AutofillOperation.Add }
+                        }}
+                        statementType={StatementType.IncomeStatement}
+                        year={props.year}
+                        valuesAsThousands={valuesAsMillions}
+                    />
+                </div>
+
+                <Divider sx={{ marginTop: "20px" }} />
+
+                <EditInputElement
+                    label={9}
+                    statementType={StatementType.IncomeStatement}
+                    year={props.year}
+                    valuesAsThousands={valuesAsMillions}
+                    autofillElements={[
+                        { label: 3, operation: AutofillOperation.Add },
+                        { label: 8, operation: AutofillOperation.Subtract }
+                    ]}
+                />
+
+                <div style={{ marginTop: '10px' }}>
+                    <AccordionWrapper
+                        elements={{
+                            title: 10,
+                            elements: [
+                                { label: 11, operation: AutofillOperation.Add },
+                                { label: 12, operation: AutofillOperation.Subtract },
+                                { label: 13, operation: AutofillOperation.Add },
+                                { label: 14, operation: AutofillOperation.Add },
+                                { label: 15, operation: AutofillOperation.Add }
+                            ],
+                            total: { label: 16, operation: AutofillOperation.Add }
+                        }}
+                        statementType={StatementType.IncomeStatement}
+                        year={props.year}
+                        valuesAsThousands={valuesAsMillions}
+                    />
+                </div>
+
+                <Divider sx={{ marginTop: "20px" }} />
+
+                <EditInputElement
+                    label={17}
+                    statementType={StatementType.IncomeStatement}
+                    year={props.year}
+                    valuesAsThousands={valuesAsMillions}
+                    autofillElements={[
+                        { label: 9, operation: AutofillOperation.Add },
+                        { label: 16, operation: AutofillOperation.Add }
+                    ]}
+                />
+
+                <EditInputElement
+                    label={18}
+                    statementType={StatementType.IncomeStatement}
+                    year={props.year}
+                    valuesAsThousands={valuesAsMillions}
+                />
+
+                <Divider sx={{ marginTop: "20px" }} />
+
+                <EditInputElement
+                    label={19}
+                    statementType={StatementType.IncomeStatement}
+                    year={props.year}
+                    valuesAsThousands={valuesAsMillions}
+                    autofillElements={[
+                        { label: 17, operation: AutofillOperation.Add },
+                        { label: 18, operation: AutofillOperation.Subtract }
+                    ]}
+                />
+
+                <EditInputElement
+                    label={20}
+                    statementType={StatementType.IncomeStatement}
+                    year={props.year}
+                    valuesAsThousands={valuesAsMillions}
+                />
+
+                <Divider sx={{ marginTop: "20px" }} />
+
+                <EditInputElement
+                    label={21}
+                    statementType={StatementType.IncomeStatement}
+                    year={props.year}
+                    valuesAsThousands={valuesAsMillions}
+                    autofillElements={[
+                        { label: 19, operation: AutofillOperation.Add },
+                        { label: 20, operation: AutofillOperation.Subtract }
+                    ]}
+                />
+            </div>
 
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 6 }}>
                 <Button

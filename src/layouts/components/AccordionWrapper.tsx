@@ -1,47 +1,75 @@
 import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { Typography } from "antd";
-import { balanceSheetTypesNames } from "src/types/FinancialStatementsTypes";
+import { AutofillOperation, IElement, IElementsGroup, balanceSheetTypesNames } from "src/types/FinancialStatementsTypes";
 import EditInputElement, { StatementType, getLabelName } from "./EditInputElement";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-interface IRow {
-    title: number;
-    elements: Array<number | IRow>;
-    total: number;
-}
-
 interface IProps {
-    row: IRow;
+    elements: IElementsGroup;
     statementType: StatementType;
+    year: number;
+    valuesAsThousands: boolean;
 }
 
-const AccordionWrapper = ({ row, statementType }: IProps) => {
+const getAutofillElements = (elements: Array<IElement | IElementsGroup>) => {
+    let values: IElement[] = []
+
+    elements.forEach((element) => {
+        if (element && (element as IElementsGroup).total) {
+            values.push((element as IElementsGroup).total)
+        } 
+        else {
+            values.push(element as IElement)
+        }
+    });
+
+    return values;
+}
+
+const AccordionWrapper = ({ elements: row, statementType, year, valuesAsThousands }: IProps) => {
     return (
         <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>{getLabelName(row.title, statementType)}</Typography>
             </AccordionSummary>
 
             <AccordionDetails>
                 <div>
                     {row.elements.map((element, index) => {
-                        if (typeof element === "number") {
+                        if (element && (element as IElementsGroup).total) {
                             return (
-                                <EditInputElement autoComplete={false} label={element} statementType={statementType} />
-                            );
+                                <div style={{ marginTop: '10px' }}>
+                                    <AccordionWrapper
+                                        key={index}
+                                        elements={element as IElementsGroup}
+                                        statementType={statementType}
+                                        year={year}
+                                        valuesAsThousands={valuesAsThousands}
+                                    />
+                                </div>
+                            )
                         }
+
                         return (
-                            <AccordionWrapper 
-                                key={index} 
-                                row={element}
+                            <EditInputElement
+                                key={index}
+                                label={(element as IElement).label}
                                 statementType={statementType}
+                                year={year}
+                                valuesAsThousands={valuesAsThousands}
                             />
                         )
                     })}
                 </div>
 
                 <div style={{ marginTop: '20px' }}>
-                    <EditInputElement autoComplete={true} label={row.total} statementType={statementType} />
+                    <EditInputElement
+                        label={row.total.label}
+                        statementType={statementType}
+                        year={year}
+                        valuesAsThousands={valuesAsThousands}
+                        autofillElements={getAutofillElements(row.elements)}
+                    />
                 </div>
             </AccordionDetails>
         </Accordion>

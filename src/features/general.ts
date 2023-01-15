@@ -2,10 +2,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface IGeneral {
     companyLoading: boolean
+    valuesAsMillions: boolean
+    logarithmicScale: boolean
 }
 
 const initialState: IGeneral = {
-    companyLoading: false
+    companyLoading: false,
+    valuesAsMillions: false,
+    logarithmicScale: false
 }
 
 export const generalSlice = createSlice({
@@ -14,12 +18,20 @@ export const generalSlice = createSlice({
     reducers: {
         setCompanyLoading: (state, action: PayloadAction<boolean>) => {
             state.companyLoading = action.payload
+        },
+        changeValuesAsMillions: (state) => {
+            state.valuesAsMillions = !state.valuesAsMillions
+        },
+        changeLogarithmicScale: (state) => {
+            state.logarithmicScale = !state.logarithmicScale
         }
     }
 })
 
 export const {
-    setCompanyLoading: setCompanyLoading
+    setCompanyLoading: setCompanyLoading,
+    changeValuesAsMillions: changeValuesAsMillions,
+    changeLogarithmicScale: changeLogarithmicScale
 } = generalSlice.actions
 
 export type {

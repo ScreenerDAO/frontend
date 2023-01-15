@@ -5,7 +5,7 @@ import React from 'react'
 import { useAppDispatch, useAppSelector } from 'src/hooks'
 import { IGeneral } from 'src/features/general'
 import { ICompanyData } from 'src/types/CompanyDataTypes'
-import { Button, CircularProgress, Grid, Tab, Tabs, TextField } from '@mui/material'
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, Slide, Tab, Tabs, TextField } from '@mui/material'
 import { setCompanyCountry, setCompanyData, setCompanyName, setCompanyTicker } from 'src/features/newCompanyDataSlice'
 import FinancialStatementsList from 'src/layouts/components/FinancialStatementsList'
 import SaveDataModal from 'src/layouts/components/SaveDataModal'
@@ -13,6 +13,8 @@ import { initialState } from 'src/features/newCompanyDataSlice'
 import SaveIcon from '@mui/icons-material/Save';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import SearchBar from 'src/layouts/components/SearchBar'
+import { TransitionProps } from '@mui/material/transitions'
+import { currencies } from 'src/types/FinancialStatementsTypes'
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -39,22 +41,68 @@ const a11yProps = (index: number) => ({
     'aria-controls': `simple-tabpanel-${index}`,
 })
 
+const Transition = React.forwardRef(function Transition(
+    props: TransitionProps & {
+        children: React.ReactElement<any, any>;
+    },
+    ref: React.Ref<unknown>,
+) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
+
+const ResetDataModal = ({
+    open,
+    handleClose,
+    resetData
+}: {
+    open: boolean,
+    handleClose: () => void
+    resetData: () => void
+}) => {
+    return (
+
+        <Dialog
+            open={open}
+            TransitionComponent={Transition}
+            keepMounted
+            onClose={handleClose}
+            aria-describedby="alert-dialog-slide-description"
+        >
+            <DialogTitle>{"Do you want to reset the data?"}</DialogTitle>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-slide-description">
+                    All the data added deleted or updated in this session
+                    will be lost
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleClose}>Disagree</Button>
+                <Button onClick={() => {
+                    resetData()
+                    handleClose()
+                }}>Agree</Button>
+            </DialogActions>
+        </Dialog>
+    );
+}
+
 const EditRecords = () => {
     const [saveDataModalOpen, setSaveDataModalOpen] = useState(false)
+    const [resetDataModalOpen, setResetDataModalOpen] = useState(false)
     const [tabIndex, setTabIndex] = React.useState(0)
 
     const dispatch = useAppDispatch()
     const companyData = useAppSelector((state: { companyData: ICompanyData }) => state.companyData)
     const companyLoading = useAppSelector((state: { general: IGeneral }) => state.general.companyLoading)
 
-    const resetButtonCallback = () => {
+    const resetData = () => {
         if (companyData.id == null) {
             dispatch(setCompanyData(initialState))
-            
+
             return
         }
-        
-        dispatch(setCompanyData(companyData))   
+
+        dispatch(setCompanyData(companyData))
     }
 
     const CompanyDashboard = () => (
@@ -67,12 +115,12 @@ const EditRecords = () => {
                         <Button
                             variant='contained'
                             color="secondary"
-                            onClick={resetButtonCallback}
+                            onClick={() => setResetDataModalOpen(true)}
                             sx={{ display: { xs: 'none', md: 'block' } }}
                         >Reset</Button>
 
                         <DeleteOutlineIcon
-                            onClick={resetButtonCallback}
+                            onClick={() => setResetDataModalOpen(true)}
                             sx={{
                                 display: { xs: 'block', md: 'none' },
                                 marginLeft: '15px',
@@ -121,6 +169,7 @@ const EditRecords = () => {
                             <CompanyName />
                             <CompanyTicker />
                             <CompanyCountry />
+                            {/* <CompanyCurrency /> */}
                         </React.Fragment>
                     </TabPanel>
 
@@ -131,17 +180,20 @@ const EditRecords = () => {
             </Grid>
 
             {saveDataModalOpen ? <SaveDataModal handleClose={() => setSaveDataModalOpen(false)} /> : null}
+            {resetDataModalOpen ? <ResetDataModal open={resetDataModalOpen} handleClose={() => setResetDataModalOpen(false)} resetData={resetData} /> : null}
         </>
     )
 
     const Title = () => {
         const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["companyName"] as string)
         const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["ticker"] as string)
+        const companyId = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.id)
 
         return (
             <div>
                 <h2 style={{ marginLeft: '30px' }}>
-                    {(companyName == "" && companyTicker == "") ? "New company" : `${companyName} (${companyTicker})`}
+                    {/* {(companyName == "" && companyTicker == "") ? "New company" : `${companyName} (${companyTicker})`} */}
+                    {!companyId ? "New company" : `${companyName} (${companyTicker})`}
                 </h2>
             </div>
         )
@@ -203,6 +255,33 @@ const EditRecords = () => {
             />
         )
     }
+
+    // const CompanyCurrency = () => {
+    //     const companyCurrency = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.currency)
+
+    //     return (
+    //         <FormControl>
+    //             <InputLabel>Currency</InputLabel>
+
+    //             <Select
+    //                 label="Currency"
+    //                 value={companyCurrency}
+    //                 variant="standard"
+    //                 style={{
+    //                     marginTop: '10px'
+    //                 }}
+    //             >
+    //                 {
+    //                     Object.keys(currencies).map((currency, index) => {
+    //                         return (
+    //                             <MenuItem key={index} value={currency}>{currencies[Number(currency)].code}</MenuItem>
+    //                         )
+    //                     })
+    //                 }
+    //             </Select>
+    //         </FormControl>
+    //     )
+    // }
 
     return (
         <Grid container spacing={3}>

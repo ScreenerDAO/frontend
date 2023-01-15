@@ -4,12 +4,16 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
-import { Dialog, Box, Button, Typography, TextField } from '@mui/material';
-import { DataGrid, GridActionsCellItem, GridColumns, GridEventListener, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowParams, GridRowsProp, GridToolbarContainer, MuiEvent } from '@mui/x-data-grid';
+import { Dialog, Box, Button, Typography, TextField, InputAdornment, Tooltip, Alert, DialogContent } from '@mui/material';
+import { DataGrid, GridActionsCellItem, GridColumns, GridEventListener, GridRenderCellParams, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowParams, GridRowsProp, GridToolbarContainer, GridValueFormatterParams, MuiEvent } from '@mui/x-data-grid';
 import EditFinancialStatements from './EditFinancialStatement';
 import { ICompanyData, IFinancialStatement } from 'src/types/CompanyDataTypes';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { addNewYear } from 'src/features/newCompanyDataSlice';
+import { addNewYear, deleteYear } from 'src/features/newCompanyDataSlice';
+import { StatementType } from 'src/types/CompanyDataTypes';
+import { useStore } from 'react-redux';
+import { RootState } from 'src/store';
+
 
 const getYearsArray = (financials: { [key: number]: IFinancialStatement }) => {
     if (!financials) return []
@@ -27,6 +31,8 @@ interface EditToolbarProps {
 const FinancialStatementsList = () => {
     const [editFinancialsModal, setEditFinancialsModal] = React.useState<boolean>(false)
     const [selectedYear, setSelectedYear] = React.useState<number>(0)
+
+    const dispatch = useAppDispatch()
 
     const handleEditClick = (id: GridRowId) => () => {
         setSelectedYear(id as number)
@@ -48,26 +54,28 @@ const FinancialStatementsList = () => {
         const [rows, setRows] = React.useState<GridRowsProp>([]);
         const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
 
-        const financials = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.financialStatements)
+        const annualReports = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.annualReports)
+        const store = useStore<RootState>()
 
         React.useEffect(() => {
             const initialRows = []
 
+            const financials = store.getState().newCompanyData.financialStatements
             const yearsArray = getYearsArray(financials)
 
             for (const year of yearsArray) {
                 initialRows.push({
                     id: year,
                     year: year,
-                    balanceSheet: financials[year].balanceSheet != undefined,
-                    incomeStatement: financials[year].incomeStatement != undefined,
-                    cashFlowStatement: financials[year].cashFlow != undefined,
-                    annualReport: financials[year].annualReportHash != undefined
+                    balanceSheet: StatementType.BalanceSheet,
+                    incomeStatement: StatementType.IncomeStatement,
+                    cashFlowStatement: StatementType.CashFlowStatement,
+                    annualReport: annualReports[year] != undefined
                 })
             }
 
             setRows(initialRows)
-        }, [financials])
+        }, [])
 
         const handleSaveClick = (id: GridRowId) => () => {
             setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
@@ -75,6 +83,8 @@ const FinancialStatementsList = () => {
 
         const handleDeleteClick = (id: GridRowId) => () => {
             setRows(rows.filter((row) => row.id !== id));
+
+            dispatch(deleteYear(id as number))
         };
 
         const handleCancelClick = (id: GridRowId) => () => {
@@ -89,12 +99,32 @@ const FinancialStatementsList = () => {
             }
         };
 
+        const RenderStatement = (params: GridValueFormatterParams<StatementType>) => {
+            const element = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.financialStatements[params.id as number]?.[params.value as StatementType])
+
+            if (element) {
+                return Object.keys(element).length > 0
+            }
+
+            return true
+        }
+
+        const RenderReport = (params: GridValueFormatterParams<StatementType>) => {
+            const element = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.annualReports[params.id as number])
+
+            if (element) {
+                return true
+            }
+
+            return false
+        }
+
         const columns: GridColumns = [
             { field: 'year', headerName: 'Year', editable: true },
-            { field: 'balanceSheet', headerName: 'BalanceSheet', type: 'boolean', width: 220 },
-            { field: 'incomeStatement', headerName: 'IncomeStatement', type: 'boolean', width: 220, editable: false },
-            { field: 'cashFlowStatement', headerName: 'Cash flow statement', type: 'boolean', width: 220, editable: false },
-            { field: 'annualReport', headerName: 'Annual report', type: 'boolean', width: 220, editable: false },
+            { field: 'balanceSheet', headerName: 'BalanceSheet', type: 'boolean', width: 220, editable: false, valueGetter: RenderStatement },
+            { field: 'incomeStatement', headerName: 'IncomeStatement', type: 'boolean', width: 220, editable: false, valueGetter: RenderStatement },
+            { field: 'cashFlowStatement', headerName: 'Cash flow statement', type: 'boolean', width: 220, editable: false, valueGetter: RenderStatement },
+            { field: 'annualReport', headerName: 'Annual report', type: 'boolean', width: 220, editable: false, valueGetter: RenderReport },
             {
                 field: 'actions', type: 'actions', headerName: 'Actions', width: 100, cellClassName: 'actions',
                 getActions: ({ id }) => {
@@ -139,6 +169,7 @@ const FinancialStatementsList = () => {
         const processRowUpdate = (newRow: GridRowModel) => {
             const updatedRow = { ...newRow, isNew: false };
             setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+
             return updatedRow;
         };
 
@@ -174,7 +205,7 @@ const FinancialStatementsList = () => {
                 open={editFinancialsModal}
                 onClose={() => setEditFinancialsModal(false)}
             >
-                <Box sx={{    
+                <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     maxHeight: '90vh',
@@ -191,17 +222,15 @@ const FinancialStatementsList = () => {
     }
 
     return (
-        <Box
-            sx={{
-                height: 500,
-                '& .actions': {
-                    color: 'text.secondary',
-                },
-                '& .textPrimary': {
-                    color: 'text.primary',
-                },
-            }}
-        >
+        <Box sx={{
+            height: 500,
+            '& .actions': {
+                color: 'text.secondary',
+            },
+            '& .textPrimary': {
+                color: 'text.primary',
+            },
+        }}>
             <YearsList />
 
             <UpdateYearFinancialsModal />
@@ -220,9 +249,10 @@ const EditToolbar = (props: EditToolbarProps) => {
         setRows((oldRows) => [...oldRows, {
             id: newYear,
             year: newYear,
-            balanceSheet: false,
-            incomeStatement: false,
-            cashFlow: false
+            balanceSheet: StatementType.BalanceSheet,
+            incomeStatement: StatementType.IncomeStatement,
+            cashFlowStatement: StatementType.CashFlowStatement,
+            annualReport: false
         }])
 
         setRowModesModel((oldModel) => ({
@@ -233,7 +263,9 @@ const EditToolbar = (props: EditToolbarProps) => {
 
     const NewYearModal = () => {
         const [newYear, setNewYear] = React.useState<number>(2020)
+        const [error, setError] = React.useState(false)
 
+        const store = useStore<RootState>()
 
         return (
             <Dialog
@@ -262,6 +294,8 @@ const EditToolbar = (props: EditToolbarProps) => {
                         onChange={(ev) => setNewYear(Number(ev.target.value))}
                     />
 
+                    {error ? <Alert severity="error" sx={{ marginTop: '20px' }}>Selected year already exists</Alert> : null}
+
                     <Button
                         variant="contained"
                         style={{
@@ -270,6 +304,12 @@ const EditToolbar = (props: EditToolbarProps) => {
                             alignSelf: 'center'
                         }}
                         onClick={() => {
+                            if (Object.keys(store.getState().newCompanyData.financialStatements).map(key => Number(key)).includes(newYear)) {
+                                setError(true)
+
+                                return
+                            }
+
                             addRecordListener(newYear)
                             setNewYearModalOpen(false)
                         }}
@@ -289,35 +329,5 @@ const EditToolbar = (props: EditToolbarProps) => {
         </GridToolbarContainer>
     );
 }
-
-// const style = {
-//     position: 'absolute' as 'absolute',
-//     top: '50%',
-//     left: '50%',
-//     transform: 'translate(-50%, -50%)',
-//     width: '600px',
-//     bgcolor: 'background.paper',
-//     border: '1 px solid grey',
-//     borderRadius: '10px',
-//     boxShadow: 24,
-//     p: 4,
-//     display: 'flex',
-//     flexDirection: 'column'
-// };
-
-const style2 = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    bgcolor: 'background.paper',
-    border: '1 px solid grey',
-    borderRadius: '10px',
-    boxShadow: 24,
-    p: 4,
-    display: 'flex',
-    flexDirection: 'column',
-    maxHeight: '90vh'
-};
 
 export default FinancialStatementsList

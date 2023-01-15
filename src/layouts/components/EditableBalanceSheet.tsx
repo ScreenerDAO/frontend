@@ -1,14 +1,13 @@
 import * as React from 'react'
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material'
-import { IBalanceSheet, BalanceSheetOrderedElements } from "../../types/BalanceSheetTypes"
-import { useAppSelector, useAppDispatch } from '../../hooks'
-import { setBalanceSheet } from 'src/features/newCompanyDataSlice'
+import { Box, Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material'
 import { useForm, Controller, SubmitHandler } from "react-hook-form"
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { balanceSheetTypesNames, balanceSheetStructure } from 'src/types/FinancialStatementsTypes'
+import { AutofillOperation, balanceSheetStructure, balanceSheetTypesNames } from 'src/types/FinancialStatementsTypes'
 import EditInputElement, { StatementType } from './EditInputElement'
 import AccordionWrapper from './AccordionWrapper'
+import { IStatement } from 'src/types/CompanyDataTypes'
+import MillionsSwitch from './MillionsSwitch'
+import { useAppDispatch, useAppSelector } from 'src/hooks'
+import { changeValuesAsMillions } from 'src/features/general'
 
 interface IEditableBalanceSheetProps {
     year: number
@@ -19,65 +18,47 @@ interface IEditableBalanceSheetProps {
 }
 
 const EditableBalanceSheet = (props: IEditableBalanceSheetProps): React.ReactElement => {
-    const { control, handleSubmit } = useForm<IBalanceSheet>({
+    const valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
+
+    const { control, handleSubmit } = useForm<IStatement>({
         mode: 'onChange'
     });
-    const dispatch = useAppDispatch()
 
-    const balanceSheet = useAppSelector((state: { newCompanyData: any }) => state.newCompanyData.financialStatements[props.year].balanceSheet)
-
-    const onSubmit: SubmitHandler<IBalanceSheet> = data => {
-        for (const key in data) {
-            data[key as keyof IBalanceSheet] = Number(data[key as keyof IBalanceSheet])
-        }
-
-        dispatch(setBalanceSheet({ year: props.year, balanceSheet: data }))
-
+    const onSubmit: SubmitHandler<IStatement> = data => {
         props.handleNext()
-    }
-
-    const InputField = (_props: { rowIndex: number }) => {
-        return (
-            <Controller
-                name={BalanceSheetOrderedElements[_props.rowIndex].key as keyof IBalanceSheet}
-                defaultValue={balanceSheet != null ? balanceSheet[BalanceSheetOrderedElements[_props.rowIndex].key as keyof IBalanceSheet] : undefined}
-                control={control}
-                render={({ field }) => (
-                    <TextField
-                        variant="standard"
-                        type='number'
-                        autoComplete="off"
-                        sx={{ input: { textAlign: 'center' } }}
-                        {...field}
-                    />
-                )}
-            />
-        )
     }
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            {/* <TableContainer component={Paper} style={{ marginTop: '40px' }}>
-                <Table aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        <TableRows />
-                    </TableBody>
-                </Table>
-            </TableContainer> */}
+            <div style={{ paddingLeft: '20px', marginTop: '20px', marginBottom: '20px' }}>
+                <MillionsSwitch />
+            </div>
 
-            <div style={{ marginTop: '40px' }}>
+            <div>
                 {balanceSheetStructure.map((element, index) => (
-                    <AccordionWrapper 
-                        key={index}  
-                        row={element}
+                    <AccordionWrapper
+                        key={index}
+                        elements={element}
                         statementType={StatementType.BalanceSheet}
+                        year={props.year}
+                        valuesAsThousands={valuesAsMillions}
                     />
                 ))}
             </div>
+
+            <div style={{ marginTop: '20px' }}>
+                <EditInputElement
+                    label={52}
+                    statementType={StatementType.BalanceSheet}
+                    year={props.year}
+                    valuesAsThousands={valuesAsMillions}
+                    autofillElements={[
+                        { label: 43, operation: AutofillOperation.Add },
+                        { label: 51, operation: AutofillOperation.Add }
+                    ]}
+                />
+            </div>
+
 
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 6 }}>
                 <Button

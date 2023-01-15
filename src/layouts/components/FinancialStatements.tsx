@@ -6,10 +6,13 @@ import Box from '@mui/material/Box';
 import IncomeStatement from './IncomeStatement';
 import AnnualReports from './AnnualReports';
 import Slider from '@mui/material/Slider';
-import { ICompanyData, IFinancialStatement } from '../../types/CompanyDataTypes';
-import { Grid, Card } from '@mui/material';
+import { ICompanyData, IFinancialStatement, StatementType } from '../../types/CompanyDataTypes';
+import { Grid, Card, FormControlLabel, Switch } from '@mui/material';
 import { assertNonNullType } from 'graphql';
 import { getYearsArray } from '../../helpers/financialStatements'
+import MillionsSwitch from './MillionsSwitch';
+import Chart from './Chart';
+import LogarithmicScaleSwitch from './LogarithmicScale';
 
 const getSelectedYearsArray = (yearsArray: number[], minAndMax: number[]) => {
     let newArray = []
@@ -75,10 +78,15 @@ interface IFinancialStatementsProps {
 
 const FinancialStatements = (props: IFinancialStatementsProps): React.ReactElement => {
     const [tabIndex, setTabIndex] = React.useState(0);
+    const [yearsSelected, setYearsSelected] = React.useState<number[]>([]);
+    const [selectedLabels, setSelectedLabels] = React.useState<{
+        statement: StatementType,
+        label: number
+    }[]>([])
+
+    const [random, setRandom] = React.useState(0)
 
     const years = getYearsArray(props.companyData.financialStatements)
-
-    const [yearsSelected, setYearsSelected] = React.useState<number[]>([]);
 
     React.useEffect(() => {
         setYearsSelected([years[0], years[years.length - 1]])
@@ -89,23 +97,40 @@ const FinancialStatements = (props: IFinancialStatementsProps): React.ReactEleme
             <>
                 <Grid item xs={12} md={12}>
                     <Card>
+                        <Box sx={{ marginLeft: '5%', paddingTop: '10px', paddingBottom: '10px' }}>
+                            <MillionsSwitch />
+                            <LogarithmicScaleSwitch />
+                        </Box>
+
                         <Slider
                             value={yearsSelected}
                             getAriaLabel={(value: number) => `${value}`}
                             step={1}
                             valueLabelDisplay="auto"
-                            marks={getSliderMarks(years)}
+                            marks
                             min={years[0]}
                             max={years[years.length - 1]}
                             onChange={(event: Event, newValue: number | number[]) => setYearsSelected(newValue as number[])}
-                            sx={{ width: '80%', marginLeft: '10%' }}
+                            sx={{ width: '90%', marginLeft: '5%' }}
                         />
                     </Card>
                 </Grid>
 
+                {(tabIndex === 0 || tabIndex === 1 || tabIndex === 2) && selectedLabels.length > 0 ?
+                    <Grid item xs={12} md={12}>
+                        <Card style={{ height: '300px', paddingLeft: '20px', paddingRight: '20px', paddingTop: '10px' }}>
+                            <Chart
+                                years={years}
+                                yearsSelected={yearsSelected}
+                                selectedLabels={selectedLabels}
+                            />
+                        </Card>
+                    </Grid> : null
+                }
+
                 <Grid item xs={12} md={12}>
                     <Card>
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent:  'center' }}>
+                        <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'center' }}>
                             <Tabs
                                 value={tabIndex}
                                 onChange={(event: React.SyntheticEvent, newValue: number) => setTabIndex(newValue)}
@@ -122,11 +147,27 @@ const FinancialStatements = (props: IFinancialStatementsProps): React.ReactEleme
                         </Box >
 
                         <TabPanel value={tabIndex} index={0}>
-                            <BalanceSheet data={props.companyData} yearsSelected={getSelectedYearsArray(years.reverse(), yearsSelected)} />
+                            <BalanceSheet
+                                data={props.companyData}
+                                yearsSelected={getSelectedYearsArray(years, yearsSelected)}
+                                selectedLabels={selectedLabels}
+                                setSelectedLabels={labels => {
+                                    setSelectedLabels(labels)
+                                    setRandom(Math.random())
+                                }}
+                            />
                         </TabPanel>
 
                         <TabPanel value={tabIndex} index={1}>
-                            <IncomeStatement data={props.companyData} yearsArray={getSelectedYearsArray(years.reverse(), yearsSelected)} />
+                            <IncomeStatement 
+                                data={props.companyData} 
+                                yearsArray={getSelectedYearsArray(years, yearsSelected)} 
+                                selectedLabels={selectedLabels}
+                                setSelectedLabels={labels => {
+                                    setSelectedLabels(labels)
+                                    setRandom(Math.random())
+                                }}
+                            />
                         </TabPanel>
 
                         <TabPanel value={tabIndex} index={2}>
@@ -145,12 +186,12 @@ const FinancialStatements = (props: IFinancialStatementsProps): React.ReactEleme
     return (
         <Grid item xs={12} md={12}>
             <Card sx={{
-                height: '500px', 
-                display: 'flex', 
+                height: '500px',
+                display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center'
             }}>
-                <div style={{textAlign: 'center'}}>This company doesn't have any financials added yet!</div>
+                <div style={{ textAlign: 'center' }}>This company doesn't have any financials added yet!</div>
             </Card>
         </Grid>
     )

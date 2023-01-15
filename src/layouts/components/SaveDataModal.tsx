@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { ICompanyData } from 'src/types/CompanyDataTypes';
 import { Alert, Step, StepContent, StepLabel, Stepper } from '@mui/material';
 import { NFTStorage } from 'nft.storage';
@@ -15,6 +15,7 @@ import { nftStorageApiKey, registriesContractAddress, registriesContractABI, cha
 import { IGeneral } from 'src/features/general';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { saveCompanyData } from 'src/helpers/generalMethods';
+import { setCompanyData } from 'src/features/companyDataSlice';
 
 interface ISaveDataModalProps {
     handleClose: () => void
@@ -141,7 +142,9 @@ const SaveDataToEthereumStep = (props: {
     const companyId = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.id)
     const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.companyName)
     const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.ticker)
+    const companyData = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData)
 
+    const dispatch = useAppDispatch()
     const { isConnected } = useAccount()
     const { chain } = useNetwork()
     const {
@@ -177,6 +180,8 @@ const SaveDataToEthereumStep = (props: {
                 ...prevState,
                 activeStep: 2
             }))
+
+            dispatch(setCompanyData(companyData))
         }
     }, [isSuccess])
 

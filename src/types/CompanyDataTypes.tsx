@@ -14,20 +14,39 @@ interface ICompanyData {
     companyName: string
     ticker: string
     country: string
+    // currency: number | null
     financialStatements: {
         [key: number]: IFinancialStatement
+    },
+    annualReports: {
+        [key: number]: string 
     }
 }
 
+interface IStatement {
+    [key: number]: string
+}
+
 interface IFinancialStatement {
-    annualReportHash: string | null,
-    balanceSheet: IBalanceSheet | null
-    incomeStatement: IIncomeStatement | null
-    cashFlow: ICashFlow | null
+    // annualReportHash: string | null,
+    balanceSheet: IStatement
+    incomeStatement: IStatement
+    cashFlow: IStatement
+}
+
+enum StatementType {
+    BalanceSheet="balanceSheet",
+    IncomeStatement="incomeStatement",
+    CashFlowStatement="cashFlow"
+}
+
+export {
+    StatementType
 }
 
 export type {
     ICompanyEthData,
     ICompanyData,
+    IStatement,
     IFinancialStatement 
 }

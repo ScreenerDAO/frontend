@@ -9,13 +9,26 @@ import { IGeneral } from 'src/features/general';
 
 const Dashboard = () => {
     const data = useAppSelector((state: { companyData: ICompanyData }) => state.companyData)
+    const companyLoading = useAppSelector((state: { general: IGeneral }) => state.general.companyLoading)
 
     return (
         <ApexChartWrapper>
-            {data.companyName == "" && data.ticker == "" ?
+            {/* {data.companyName == "" && data.ticker == "" ?
                 <EmptyCompanyDashboard />
                 :
                 <CompanyDashboard data={data} />
+            } */}
+            {companyLoading ?
+                <div style={{
+                    height: '400px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}><CircularProgress /></div>
+                :
+                <CompanyDashboard data={data} />
+
             }
         </ApexChartWrapper>
     )

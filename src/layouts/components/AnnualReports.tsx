@@ -3,21 +3,43 @@ import { DataGrid, GridActionsCellItem, GridColumns, GridEventListener, GridRend
 import { ICompanyData } from 'src/types/CompanyDataTypes';
 import { getYearsArray } from 'src/helpers/financialStatements';
 import Image from 'next/image'
+import { Button } from '@mui/material';
+
+const openIpfs = (ipfsLink: string) => {
+    window.open(`https://ipfs.io/ipfs/${ipfsLink}`, '_blank')
+}
+
+const openReport = (pdfLink: string) => {
+    window.open(`https://${pdfLink}.ipfs.w3s.link/`, '_blank')
+}
 
 interface IAnnualReportsProps {
     data: ICompanyData
 }
 
-const RenderPdfIcon = (props: GridRenderCellParams) => {
-    console.log(props.row)
-    if (props.row.pdfLink && props.row.pdfLink !== '-') {
+const RenderIpfs = (props: GridRenderCellParams) => {
+    if (props.row.ipfsLink && props.row.ipfsLink !== '-') {
         return (
-            <a href={`https://ipfs.io/ipfs/${props.row.pdfLink}`} target="_blank">
-                <Image width={40} height={40} src="/images/pdf.png" alt="PDF icon" /> 
-            </a>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                {/* <Image width={40} height={40} src="/images/pdf.png" alt="PDF icon" /> */}
+                <Button variant="text" onClick={() => openIpfs(props.row.ipfsLink)}>Open report</Button>
+            </div>
         )
     } else {
-        return <div>-</div>
+        return <div style={{ textAlign: 'center' }}>-</div>
+    }
+}
+
+const RenderPdfIcon = (props: GridRenderCellParams) => {
+    if (props.row.pdfLink && props.row.pdfLink !== '-') {
+        return (
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                {/* <Image width={40} height={40} src="/images/pdf.png" alt="PDF icon" /> */}
+                <Button variant="text" onClick={() => openReport(props.row.pdfLink)}>Open report</Button>
+            </div>
+        )
+    } else {
+        return <div style={{ textAlign: 'center' }}>-</div>
     }
 }
 
@@ -25,7 +47,7 @@ const AnnualReports = (props: IAnnualReportsProps) => {
     const [rows, setRows] = React.useState<GridRowsProp>([]);
     const columns: GridColumns = [
         { field: 'year', headerName: 'Year', width: 100, editable: false },
-        { field: 'ipfsLink', headerName: 'IPFS link', width: 200, editable: false },
+        { field: 'ipfsLink', headerName: 'IPFS link', width: 200, editable: false, renderCell: RenderIpfs },
         { field: 'pdfLink', headerName: 'PDF link', width: 200, editable: false, renderCell: RenderPdfIcon }
     ]
 
@@ -39,8 +61,8 @@ const AnnualReports = (props: IAnnualReportsProps) => {
                 initialRows.push({
                     id: year,
                     year: year,
-                    ipfsLink: props.data.financialStatements[year].annualReportHash ?? '-',
-                    pdfLink: props.data.financialStatements[year].annualReportHash
+                    ipfsLink: props.data.annualReports[year] ?? '-',
+                    pdfLink: props.data.annualReports[year]
                 })
             }
 
