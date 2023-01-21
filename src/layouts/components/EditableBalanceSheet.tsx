@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Box, Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material'
-import { useForm, Controller, SubmitHandler } from "react-hook-form"
-import { AutofillOperation, balanceSheetStructure, balanceSheetTypesNames } from 'src/types/FinancialStatementsTypes'
+import { Box, Button } from '@mui/material'
+import { useForm, SubmitHandler } from "react-hook-form"
+import { AutofillOperation, balanceSheetStructure } from 'src/types/FinancialStatementsTypes'
 import EditInputElement, { StatementType } from './EditInputElement'
 import AccordionWrapper from './AccordionWrapper'
 import { IStatement } from 'src/types/CompanyDataTypes'

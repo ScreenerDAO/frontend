@@ -35,7 +35,7 @@ const MultipleValuesModal = ({ open, closeModal, setValue }: IProps) => {
             <DialogContent>
                 <DialogContentText sx={{ paddingTop: '5px' }}>
                     {[...Array(numberInputs).keys()].map((i) => (
-                        <FormControl variant="outlined" sx={{width: '100%', marginBottom: '10px'}}>
+                        <FormControl key={i} variant="outlined" sx={{width: '100%', marginBottom: '10px'}}>
                             <InputLabel>{`Value ${i + 1}`}</InputLabel>
                             <OutlinedInput
                                 fullWidth

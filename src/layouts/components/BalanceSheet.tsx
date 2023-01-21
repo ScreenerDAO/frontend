@@ -11,26 +11,32 @@ import { ICompanyData, StatementType } from '../../types/CompanyDataTypes';
 import FinancialStatementField from './FinancialStatementField';
 import { IElement, IElementsGroup, balanceSheetStructure, balanceSheetTypesNames } from 'src/types/FinancialStatementsTypes';
 import { useAppSelector } from 'src/hooks';
+import { IChartLabel } from './FinancialStatements';
 
 interface IBalanceSheetProps {
     data: ICompanyData
     yearsSelected: number[]
-    selectedLabels: {
-        statement: StatementType,
-        label: number
-    }[],
-    setSelectedLabels: (labels: {
-        statement: StatementType,
-        label: number
-    }[]) => void
+    selectedLabels: IChartLabel[],
+    setSelectedLabels: (labels: IChartLabel[]) => void
 }
 
 const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
+    // const labelsWithData = []
+
+    // for (const label of Object.keys(balanceSheetStructure)) {
+    //     for (const year of props.yearsSelected) {
+    //         if (props.data.financialStatements[year].balanceSheet[label] && props.data.balanceSheet[year][label] !== 0) {
+    //             labelsWithData.push(label)
+
+    //             break
+    //         }
+    //     }
+    // }
 
     const TableHeaders = () => {
         return (
             <>
-                <TableCell sx={{ minWidth: '250px' }}></TableCell>
+                <TableCell sx={{ minWidth: '250px', position: 'sticky', left: 0, backgroundColor: 'white' }}></TableCell>
 
                 {
                     props.yearsSelected.map(dataElement => {
@@ -84,13 +90,14 @@ const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
 
                     selectedLabels.push({
                         statement: StatementType.BalanceSheet,
-                        label
+                        label,
+                        type: 'bar'
                     })
 
                     props.setSelectedLabels(selectedLabels)
                 }}
             >
-                <TableCell component="th" sx={{ fontWeight: bold ? 900 : 'initial' }}>
+                <TableCell component="th" sx={{ fontWeight: bold ? 900 : 'initial', position: 'sticky', left: 0, backgroundColor: 'white' }}>
                     {balanceSheetTypesNames[label]}
                 </TableCell>
 

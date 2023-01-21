@@ -253,11 +253,6 @@ const balanceSheetStructure: IElementsGroup[] = [
     }
 ]
 
-
-
-
-
-
 const incomeStatementTypesNames: { [key: number]: string } = {
     1: "Revenue",
     2: "Cost of revenue",
@@ -279,7 +274,8 @@ const incomeStatementTypesNames: { [key: number]: string } = {
     18: "Income tax",
     19: "Net income",
     20: "Minority interest",
-    21: "Net income to common shareholders"
+    21: "Net income to common shareholders",
+    22: "Depreciation and amortization"
 }
 
 const cashFlowStatementTypes: { [key: number]: string } = {

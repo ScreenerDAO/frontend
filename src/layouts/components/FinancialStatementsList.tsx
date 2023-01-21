@@ -262,7 +262,7 @@ const EditToolbar = (props: EditToolbarProps) => {
     }
 
     const NewYearModal = () => {
-        const [newYear, setNewYear] = React.useState<number>(2020)
+        const [newYear, setNewYear] = React.useState<number>()
         const [error, setError] = React.useState(false)
 
         const store = useStore<RootState>()
@@ -292,6 +292,7 @@ const EditToolbar = (props: EditToolbarProps) => {
                         }}
                         value={newYear}
                         onChange={(ev) => setNewYear(Number(ev.target.value))}
+                        autoFocus
                     />
 
                     {error ? <Alert severity="error" sx={{ marginTop: '20px' }}>Selected year already exists</Alert> : null}
@@ -304,13 +305,16 @@ const EditToolbar = (props: EditToolbarProps) => {
                             alignSelf: 'center'
                         }}
                         onClick={() => {
-                            if (Object.keys(store.getState().newCompanyData.financialStatements).map(key => Number(key)).includes(newYear)) {
-                                setError(true)
-
-                                return
+                            if (newYear) {
+                                if (Object.keys(store.getState().newCompanyData.financialStatements).map(key => Number(key)).includes(newYear)) {
+                                    setError(true)
+    
+                                    return
+                                }
+                                
+                                addRecordListener(newYear)
                             }
 
-                            addRecordListener(newYear)
                             setNewYearModalOpen(false)
                         }}
                     >

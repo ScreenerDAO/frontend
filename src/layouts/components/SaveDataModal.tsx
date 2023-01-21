@@ -181,7 +181,7 @@ const SaveDataToEthereumStep = (props: {
                 activeStep: 2
             }))
 
-            dispatch(setCompanyData(companyData))
+            // dispatch(setCompanyData(companyData))
         }
     }, [isSuccess])
 

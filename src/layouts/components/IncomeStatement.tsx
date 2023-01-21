@@ -12,18 +12,13 @@ import { TextField } from '@mui/material';
 import FinancialStatementField from './FinancialStatementField';
 import { incomeStatementTypesNames } from 'src/types/FinancialStatementsTypes';
 import { useAppSelector } from 'src/hooks';
+import { IChartLabel } from './FinancialStatements';
 
 interface IIncomeStatementProps {
     data: ICompanyData
     yearsArray: number[]
-    selectedLabels: {
-        statement: StatementType,
-        label: number
-    }[],
-    setSelectedLabels: (labels: {
-        statement: StatementType,
-        label: number
-    }[]) => void
+    selectedLabels: IChartLabel[],
+    setSelectedLabels: (labels: IChartLabel[]) => void
 }
 
 const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
@@ -47,12 +42,12 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
     const TableHeaders = () => {
         return (
             <>
-                <TableCell sx={{minWidth: '250px'}}></TableCell>
+                <TableCell sx={{minWidth: '250px', position: 'sticky', left: 0, backgroundColor: 'white'}}></TableCell>
 
                 {
-                    props.yearsArray.map(dataElement => {
+                    props.yearsArray.map((dataElement, index) => {
                         return (
-                            <TableCell key={dataElement} align="right">{dataElement}</TableCell>
+                            <TableCell key={index} align="right">{dataElement}</TableCell>
                         )
                     })
                 }
@@ -68,6 +63,7 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
                 <Row label={3} bold={true} />
                 <Row label={5} />
                 <Row label={6} />
+                <Row label={22} />
                 <Row label={7} />
                 <Row label={8} bold={true} />
                 <Row label={9} />
@@ -104,13 +100,14 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
 
                     selectedLabels.push({
                         statement: StatementType.IncomeStatement,
-                        label
+                        label,
+                        type: 'bar'
                     })
 
                     props.setSelectedLabels(selectedLabels)
                 }}
             >
-                <TableCell component="th" sx={{ fontWeight: bold ? 900 : 'initial' }}>
+                <TableCell component="th" sx={{ fontWeight: bold ? 900 : 'initial', position: 'sticky', left: 0, backgroundColor: 'white' }}>
                     {incomeStatementTypesNames[label]}
                 </TableCell>
 

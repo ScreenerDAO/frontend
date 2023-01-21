@@ -7,12 +7,15 @@ import IncomeStatement from './IncomeStatement';
 import AnnualReports from './AnnualReports';
 import Slider from '@mui/material/Slider';
 import { ICompanyData, IFinancialStatement, StatementType } from '../../types/CompanyDataTypes';
-import { Grid, Card, FormControlLabel, Switch } from '@mui/material';
+import { Grid, Card, FormControlLabel, Switch, FormControl, InputLabel, MenuItem, Select, IconButton, Typography, Paper } from '@mui/material';
 import { assertNonNullType } from 'graphql';
 import { getYearsArray } from '../../helpers/financialStatements'
 import MillionsSwitch from './MillionsSwitch';
-import Chart from './Chart';
+import Chart, { getLabel } from './Chart';
+import Chart2 from './Chart2';
 import LogarithmicScaleSwitch from './LogarithmicScale';
+import { balanceSheetTypesNames } from 'src/types/FinancialStatementsTypes';
+import CloseIcon from '@mui/icons-material/Close';
 
 const getSelectedYearsArray = (yearsArray: number[], minAndMax: number[]) => {
     let newArray = []
@@ -76,13 +79,27 @@ interface IFinancialStatementsProps {
     companyData: ICompanyData
 }
 
+interface IChartLabel {
+    statement: StatementType,
+    label: number
+    type: string
+}
+
 const FinancialStatements = (props: IFinancialStatementsProps): React.ReactElement => {
     const [tabIndex, setTabIndex] = React.useState(0);
     const [yearsSelected, setYearsSelected] = React.useState<number[]>([]);
-    const [selectedLabels, setSelectedLabels] = React.useState<{
-        statement: StatementType,
-        label: number
-    }[]>([])
+    const [selectedLabels, setSelectedLabels] = React.useState<IChartLabel[]>([
+        {
+            label: 1,
+            statement: StatementType.IncomeStatement,
+            type: "bar"
+        },
+        {
+            label: 19,
+            statement: StatementType.IncomeStatement,
+            type: "bar"
+        }
+    ])
 
     const [random, setRandom] = React.useState(0)
 
@@ -118,12 +135,63 @@ const FinancialStatements = (props: IFinancialStatementsProps): React.ReactEleme
 
                 {(tabIndex === 0 || tabIndex === 1 || tabIndex === 2) && selectedLabels.length > 0 ?
                     <Grid item xs={12} md={12}>
-                        <Card style={{ height: '300px', paddingLeft: '20px', paddingRight: '20px', paddingTop: '10px' }}>
-                            <Chart
-                                years={years}
-                                yearsSelected={yearsSelected}
-                                selectedLabels={selectedLabels}
-                            />
+                        <Card style={{ paddingLeft: '20px', paddingRight: '20px', paddingTop: '10px', paddingBottom: '10px' }}>
+
+                            <div style={{ height: '300px' }}>
+                                <Chart2
+                                    years={years}
+                                    yearsSelected={yearsSelected}
+                                    selectedLabels={selectedLabels}
+                                />
+                            </div>
+
+                            <Grid item xs={12} md={12} style={{ marginTop: '25px' }}>
+                                <Grid container spacing={2}>
+                                    {
+                                        selectedLabels.map((label, index) => {
+                                            return (
+                                                <Grid item xs={12} md={6} lg={4} key={index}>
+                                                    <Paper sx={{ padding: '10px', height: '60px' }}>
+                                                        <Grid container>
+                                                            <Grid item xs={6} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                                                <Typography fontSize={16}>{getLabel(label)}</Typography>
+                                                            </Grid>
+
+                                                            <Grid item xs={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                                                <FormControl size="small">
+                                                                    <Select
+                                                                        value={label.type}
+                                                                        sx={{width: '90px'}}
+                                                                        onChange={ev => {
+                                                                            let newLabels = [...selectedLabels]
+                                                                            newLabels[index].type = ev.target.value as string
+                                                                            setSelectedLabels(newLabels)
+                                                                            setRandom(Math.random())
+                                                                        }}
+                                                                    >
+                                                                        <MenuItem value={'bar'}>Bar</MenuItem>
+                                                                        <MenuItem value={'line'}>Line</MenuItem>
+                                                                    </Select>
+                                                                </FormControl>
+                                                            </Grid>
+
+                                                            <Grid item xs={2} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                                                <IconButton onClick={() => {
+                                                                    let newLabels = [...selectedLabels]
+                                                                    newLabels.splice(index, 1)
+                                                                    setSelectedLabels(newLabels)
+                                                                }}>
+                                                                    <CloseIcon />
+                                                                </IconButton>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Paper>
+                                                </Grid>
+                                            )
+                                        })
+                                    }
+                                </Grid>
+                            </Grid>
                         </Card>
                     </Grid> : null
                 }
@@ -159,9 +227,9 @@ const FinancialStatements = (props: IFinancialStatementsProps): React.ReactEleme
                         </TabPanel>
 
                         <TabPanel value={tabIndex} index={1}>
-                            <IncomeStatement 
-                                data={props.companyData} 
-                                yearsArray={getSelectedYearsArray(years, yearsSelected)} 
+                            <IncomeStatement
+                                data={props.companyData}
+                                yearsArray={getSelectedYearsArray(years, yearsSelected)}
                                 selectedLabels={selectedLabels}
                                 setSelectedLabels={labels => {
                                     setSelectedLabels(labels)
@@ -198,4 +266,8 @@ const FinancialStatements = (props: IFinancialStatementsProps): React.ReactEleme
 }
 
 export default FinancialStatements
+
+export type {
+    IChartLabel
+}
 

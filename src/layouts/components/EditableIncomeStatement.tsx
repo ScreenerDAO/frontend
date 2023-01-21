@@ -70,6 +70,7 @@ const EditableIncomeStatement = (props: IEditableIncomeStatementProps): React.Re
                             elements: [
                                 { label: 5, operation: AutofillOperation.Add },
                                 { label: 6, operation: AutofillOperation.Add },
+                                { label: 22, operation: AutofillOperation.Add },
                                 { label: 7, operation: AutofillOperation.Add }
                             ],
                             total: { label: 8, operation: AutofillOperation.Add }
