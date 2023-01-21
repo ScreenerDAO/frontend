@@ -38,6 +38,7 @@ const MultipleValuesModal = ({ open, closeModal, setValue }: IProps) => {
                         <FormControl key={i} variant="outlined" sx={{width: '100%', marginBottom: '10px'}}>
                             <InputLabel>{`Value ${i + 1}`}</InputLabel>
                             <OutlinedInput
+                                autoFocus
                                 fullWidth
                                 type='number'
                                 label={`Value ${i + 1}`}
