@@ -4,7 +4,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
-import { Dialog, Box, Button, Typography, TextField, InputAdornment, Tooltip, Alert, DialogContent } from '@mui/material';
+import { Dialog, Box, Button, Typography, TextField, InputAdornment, Tooltip, Alert, DialogContent, FormControl } from '@mui/material';
 import { DataGrid, GridActionsCellItem, GridColumns, GridEventListener, GridRenderCellParams, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowParams, GridRowsProp, GridToolbarContainer, GridValueFormatterParams, MuiEvent } from '@mui/x-data-grid';
 import EditFinancialStatements from './EditFinancialStatement';
 import { ICompanyData, IFinancialStatement } from 'src/types/CompanyDataTypes';
@@ -184,7 +184,13 @@ const FinancialStatementsList = () => {
                 onRowEditStop={handleRowEditStop}
                 processRowUpdate={processRowUpdate}
                 components={{
-                    Toolbar: EditToolbar,
+                    Toolbar: (props: EditToolbarProps) => (
+                        <EditToolbar 
+                            editToolbarProps={props} 
+                            setSelectedYear={setSelectedYear} 
+                            setEditFinancialsModal={setEditFinancialsModal} 
+                        />
+                    )
                 }}
                 componentsProps={{
                     toolbar: { setRows, setRowModesModel },
@@ -238,8 +244,13 @@ const FinancialStatementsList = () => {
     );
 }
 
-const EditToolbar = (props: EditToolbarProps) => {
-    const { setRows, setRowModesModel } = props;
+const EditToolbar = (props: {
+    editToolbarProps: EditToolbarProps
+    setSelectedYear: (year: number) => void
+    setEditFinancialsModal: (open: boolean) => void
+
+}) => {
+    const { setRows, setRowModesModel } = props.editToolbarProps;
     const [newYearModalOpen, setNewYearModalOpen] = React.useState(false);
     const dispatch = useAppDispatch()
 
@@ -267,12 +278,28 @@ const EditToolbar = (props: EditToolbarProps) => {
 
         const store = useStore<RootState>()
 
+        const submit = () => {
+            if (newYear) {
+                if (Object.keys(store.getState().newCompanyData.financialStatements).map(key => Number(key)).includes(newYear)) {
+                    setError(true)
+
+                    return
+                }
+
+                addRecordListener(newYear)
+            }
+
+            setNewYearModalOpen(false)
+            props.setSelectedYear(newYear as number)
+            props.setEditFinancialsModal(true)
+        }
+
         return (
             <Dialog
                 open={newYearModalOpen}
                 onClose={() => setNewYearModalOpen(false)}
             >
-                <Box sx={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
+                <form onSubmit={submit} style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         What year financial data do you want to add?
                     </Typography>
@@ -304,23 +331,11 @@ const EditToolbar = (props: EditToolbarProps) => {
                             marginTop: '25px',
                             alignSelf: 'center'
                         }}
-                        onClick={() => {
-                            if (newYear) {
-                                if (Object.keys(store.getState().newCompanyData.financialStatements).map(key => Number(key)).includes(newYear)) {
-                                    setError(true)
-    
-                                    return
-                                }
-                                
-                                addRecordListener(newYear)
-                            }
-
-                            setNewYearModalOpen(false)
-                        }}
+                        onClick={submit}
                     >
                         Add year
                     </Button>
-                </Box>
+                </form>
             </Dialog>
         )
     }
