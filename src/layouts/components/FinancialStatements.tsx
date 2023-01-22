@@ -14,8 +14,8 @@ import MillionsSwitch from './MillionsSwitch';
 import Chart, { getLabel } from './Chart';
 import Chart2 from './Chart2';
 import LogarithmicScaleSwitch from './LogarithmicScale';
-import { balanceSheetTypesNames } from 'src/types/FinancialStatementsTypes';
 import CloseIcon from '@mui/icons-material/Close';
+import { balanceSheetTypesNames, incomeStatementTypesNames } from 'src/types/FinancialStatementsTypes';
 
 const getSelectedYearsArray = (yearsArray: number[], minAndMax: number[]) => {
     let newArray = []
@@ -29,26 +29,11 @@ const getSelectedYearsArray = (yearsArray: number[], minAndMax: number[]) => {
     return newArray
 }
 
-const getSliderMarks = (yearsArray: number[]): { value: number, label: string }[] => {
-    let sliderMarks: { value: number, label: string }[] = []
-
-    for (let year of yearsArray) {
-        sliderMarks.push({
-            value: year,
-            label: year.toString()
-        })
-    }
-
-    return sliderMarks
-}
-
-interface TabPanelProps {
+const TabPanel = (props: {
     children?: React.ReactNode;
     index: number;
     value: number;
-}
-
-const TabPanel = (props: TabPanelProps) => {
+}) => {
     const { children, value, index, ...other } = props;
 
     return (
@@ -75,17 +60,13 @@ const a11yProps = (index: number) => {
     };
 }
 
-interface IFinancialStatementsProps {
-    companyData: ICompanyData
-}
-
 interface IChartLabel {
     statement: StatementType,
     label: number
     type: string
 }
 
-const FinancialStatements = (props: IFinancialStatementsProps): React.ReactElement => {
+const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactElement => {
     const [tabIndex, setTabIndex] = React.useState(0);
     const [yearsSelected, setYearsSelected] = React.useState<number[]>([]);
     const [selectedLabels, setSelectedLabels] = React.useState<IChartLabel[]>([
@@ -100,14 +81,52 @@ const FinancialStatements = (props: IFinancialStatementsProps): React.ReactEleme
             type: "bar"
         }
     ])
+    const [excludedLabels, setExcludedLabels] = React.useState<{[key: string]: number[]}>({
+        "balanceSheet": [],
+        "incomeStatement": [],
+        "cashFlow": []
+    })
 
-    const [random, setRandom] = React.useState(0)
+    const [_, setRandom] = React.useState(0)
 
     const years = getYearsArray(props.companyData.financialStatements)
 
     React.useEffect(() => {
         setYearsSelected([years[0], years[years.length - 1]])
+
+        let bsExcludedLabels = []
+        let isExcludedLabels = []
+
+        parentLoop:
+        for (const label of Object.keys(balanceSheetTypesNames)) {
+            for (const year of years) {
+                if (Number(props.companyData.financialStatements[year].balanceSheet[Number(label)]) && Number(props.companyData.financialStatements[year].balanceSheet[Number(label)]) > 0) {
+                    continue parentLoop
+                } 
+            }
+
+            bsExcludedLabels.push(Number(label))
+        }
+
+        parentLoop:
+        for (const label of Object.keys(incomeStatementTypesNames)) {
+            for (const year of years) {
+                if (Number(props.companyData.financialStatements[year].incomeStatement[Number(label)]) && Number(props.companyData.financialStatements[year].incomeStatement[Number(label)]) > 0) {
+                    continue parentLoop
+                } 
+            }
+
+            isExcludedLabels.push(Number(label))
+        }
+
+        setExcludedLabels({
+            "balanceSheet": bsExcludedLabels,
+            "incomeStatement": isExcludedLabels,
+        })
     }, [props.companyData])
+
+
+    console.log(excludedLabels)
 
     if (years.length > 0) {
         return (
@@ -147,49 +166,45 @@ const FinancialStatements = (props: IFinancialStatementsProps): React.ReactEleme
 
                             <Grid item xs={12} md={12} style={{ marginTop: '25px' }}>
                                 <Grid container spacing={2}>
-                                    {
-                                        selectedLabels.map((label, index) => {
-                                            return (
-                                                <Grid item xs={12} md={6} lg={4} key={index}>
-                                                    <Paper sx={{ padding: '10px', height: '60px' }}>
-                                                        <Grid container>
-                                                            <Grid item xs={6} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                                                <Typography fontSize={16}>{getLabel(label)}</Typography>
-                                                            </Grid>
+                                    {selectedLabels.map((label, index) => (
+                                        <Grid item xs={12} md={6} lg={4} key={index}>
+                                            <Paper sx={{ padding: '10px', height: '60px' }}>
+                                                <Grid container>
+                                                    <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <Typography fontSize={16}>{getLabel(label)}</Typography>
+                                                    </Grid>
 
-                                                            <Grid item xs={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                                                <FormControl size="small">
-                                                                    <Select
-                                                                        value={label.type}
-                                                                        sx={{width: '90px'}}
-                                                                        onChange={ev => {
-                                                                            let newLabels = [...selectedLabels]
-                                                                            newLabels[index].type = ev.target.value as string
-                                                                            setSelectedLabels(newLabels)
-                                                                            setRandom(Math.random())
-                                                                        }}
-                                                                    >
-                                                                        <MenuItem value={'bar'}>Bar</MenuItem>
-                                                                        <MenuItem value={'line'}>Line</MenuItem>
-                                                                    </Select>
-                                                                </FormControl>
-                                                            </Grid>
-
-                                                            <Grid item xs={2} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                                                <IconButton onClick={() => {
+                                                    <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <FormControl size="small">
+                                                            <Select
+                                                                value={label.type}
+                                                                sx={{ width: '90px' }}
+                                                                onChange={ev => {
                                                                     let newLabels = [...selectedLabels]
-                                                                    newLabels.splice(index, 1)
+                                                                    newLabels[index].type = ev.target.value as string
                                                                     setSelectedLabels(newLabels)
-                                                                }}>
-                                                                    <CloseIcon />
-                                                                </IconButton>
-                                                            </Grid>
-                                                        </Grid>
-                                                    </Paper>
+                                                                    setRandom(Math.random())
+                                                                }}
+                                                            >
+                                                                <MenuItem value={'bar'}>Bar</MenuItem>
+                                                                <MenuItem value={'line'}>Line</MenuItem>
+                                                            </Select>
+                                                        </FormControl>
+                                                    </Grid>
+
+                                                    <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <IconButton onClick={() => {
+                                                            let newLabels = [...selectedLabels]
+                                                            newLabels.splice(index, 1)
+                                                            setSelectedLabels(newLabels)
+                                                        }}>
+                                                            <CloseIcon />
+                                                        </IconButton>
+                                                    </Grid>
                                                 </Grid>
-                                            )
-                                        })
-                                    }
+                                            </Paper>
+                                        </Grid>
+                                    ))}
                                 </Grid>
                             </Grid>
                         </Card>
@@ -223,6 +238,7 @@ const FinancialStatements = (props: IFinancialStatementsProps): React.ReactEleme
                                     setSelectedLabels(labels)
                                     setRandom(Math.random())
                                 }}
+                                excludedLabels={excludedLabels["balanceSheet"]}
                             />
                         </TabPanel>
 
@@ -235,12 +251,11 @@ const FinancialStatements = (props: IFinancialStatementsProps): React.ReactEleme
                                     setSelectedLabels(labels)
                                     setRandom(Math.random())
                                 }}
+                                excludedLabels={excludedLabels["incomeStatement"]}
                             />
                         </TabPanel>
 
-                        <TabPanel value={tabIndex} index={2}>
-                            Item Three
-                        </TabPanel>
+                        <TabPanel value={tabIndex} index={2}>Item Three</TabPanel>
 
                         <TabPanel value={tabIndex} index={3}>
                             <AnnualReports data={props.companyData} />

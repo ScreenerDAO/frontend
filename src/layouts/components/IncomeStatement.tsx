@@ -19,13 +19,14 @@ interface IIncomeStatementProps {
     yearsArray: number[]
     selectedLabels: IChartLabel[],
     setSelectedLabels: (labels: IChartLabel[]) => void
+    excludedLabels: number[]
 }
 
 const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
     const StatementTable = () => {
         return (
             <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <Table sx={{ minWidth: 650, borderCollapse: 'separate' }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
                             <TableHeaders />
@@ -42,7 +43,7 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
     const TableHeaders = () => {
         return (
             <>
-                <TableCell sx={{minWidth: '250px', position: 'sticky', left: 0, backgroundColor: 'white'}}></TableCell>
+                <TableCell sx={{ minWidth: '250px', position: 'sticky', left: 0, backgroundColor: 'white' }}></TableCell>
 
                 {
                     props.yearsArray.map((dataElement, index) => {
@@ -74,7 +75,7 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
                 <Row label={15} />
                 <Row label={16} />
                 <Row label={17} bold={true} />
-                <Row label={18}  />
+                <Row label={18} />
                 <Row label={19} bold={true} />
                 <Row label={20} />
                 <Row label={21} bold={true} />
@@ -83,10 +84,14 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
     }
 
     const Row = ({ label, bold }: { label: number, bold?: boolean }): React.ReactElement => {
+        if (props.excludedLabels.includes(label)) {
+            return <></>
+        }
+
         const selected = props.selectedLabels.filter(label => label.statement === StatementType.IncomeStatement).map(label => label.label).includes(label)
-        
+
         return (
-            <TableRow 
+            <TableRow
                 hover
                 selected={selected}
                 onClick={() => {

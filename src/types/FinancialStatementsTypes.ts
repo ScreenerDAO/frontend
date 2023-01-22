@@ -64,6 +64,7 @@ const balanceSheetTypesNames: { [key: number]: string } = {
 interface IElement {
     label: number;
     operation: AutofillOperation;
+    final?: boolean
 }
 
 interface IElementsGroup {
@@ -119,7 +120,7 @@ const balanceSheetStructure: IElementsGroup[] = [
                 total: { label: 27, operation: AutofillOperation.Add }
             }
         ],
-        total: { label: 28, operation: AutofillOperation.Add }
+        total: { label: 28, operation: AutofillOperation.Add, final: true }
     },
     {
         title: 29,
@@ -147,7 +148,7 @@ const balanceSheetStructure: IElementsGroup[] = [
                 total: { label: 42, operation: AutofillOperation.Add }
             }
         ],
-        total: { label: 43, operation: AutofillOperation.Add }
+        total: { label: 43, operation: AutofillOperation.Add, final: true }
     },
     {
         title: 44,
@@ -161,7 +162,7 @@ const balanceSheetStructure: IElementsGroup[] = [
             { label: 50, operation: AutofillOperation.Add },
             { label: 54, operation: AutofillOperation.Add}
         ],
-        total: { label: 51, operation: AutofillOperation.Add }
+        total: { label: 51, operation: AutofillOperation.Add, final: true }
     }
 ]
 

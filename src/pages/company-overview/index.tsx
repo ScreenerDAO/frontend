@@ -102,7 +102,7 @@ const CompanyMoreOptions = ({ data }: {
                     Edit
                 </MenuItem>
 
-                <Divider sx={{ my: 0.5 }} />
+                {/* <Divider sx={{ my: 0.5 }} /> */}
                 <MenuItem onClick={() => {
                     let a = document.createElement('a');
                     a.href = URL.createObjectURL(
@@ -116,10 +116,10 @@ const CompanyMoreOptions = ({ data }: {
                     <ArchiveIcon />
                     Download JSON
                 </MenuItem>
-                <MenuItem onClick={handleClose} disableRipple>
+                {/* <MenuItem onClick={handleClose} disableRipple>
                     <MoreHorizIcon />
                     More
-                </MenuItem>
+                </MenuItem> */}
             </StyledMenu>
         </>
     )

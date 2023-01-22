@@ -17,7 +17,8 @@ interface IBalanceSheetProps {
     data: ICompanyData
     yearsSelected: number[]
     selectedLabels: IChartLabel[],
-    setSelectedLabels: (labels: IChartLabel[]) => void
+    setSelectedLabels: (labels: IChartLabel[]) => void,
+    excludedLabels: number[]
 }
 
 const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
@@ -60,25 +61,27 @@ const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
                             )
                         }
 
+                        if (props.excludedLabels.includes((cElement as IElement).label)) return
+
                         return (
                             <Row label={(cElement as IElement).label} key={index} />
                         )
                     })
                 }
 
-
-                <Row label={element.total.label} bold={true} />
+                {(props.excludedLabels.includes(element.total.label)) ? null : <Row label={element.total.label} bold={true} final={element.total.final} />}
             </>
         )
     }
 
-    const Row = ({ label, bold }: { label: number, bold?: boolean }): React.ReactElement => {
+    const Row = ({ label, bold, final }: { label: number, bold?: boolean, final?: boolean }): React.ReactElement => {
         const selected = props.selectedLabels.filter(label => label.statement === StatementType.BalanceSheet).map(label => (label.label)).includes(label)
 
         return (
             <TableRow
                 hover
                 selected={selected}
+                // sx={{ borderTop: final ? '2px solid grey' : '1px solid black'}}
                 onClick={() => {
                     let selectedLabels = props.selectedLabels
 
@@ -140,7 +143,7 @@ const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
 
     return (
         <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <Table sx={{ minWidth: 650, }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
                         <TableHeaders />
