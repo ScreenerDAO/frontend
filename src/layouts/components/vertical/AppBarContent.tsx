@@ -97,6 +97,7 @@ const AppBarContent = (props: Props) => {
                 
                 <NotificationDropdown />
                 {/* <UserDropdown /> */}
+                
                 <div style={{ marginLeft: '10px' }}>
                     <Box sx={{ display: { xs: 'none', md: 'initial' } }}>
                         <ConnectButton chainStatus={'icon'} accountStatus={'avatar'} showBalance={false} />

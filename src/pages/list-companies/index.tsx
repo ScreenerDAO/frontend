@@ -3,8 +3,7 @@ import { Card, Grid, Link as MUILink } from '@mui/material'
 import { DataGrid, GridColumns, GridRowsProp } from '@mui/x-data-grid'
 import React from 'react'
 import { selectCompany } from 'src/helpers/generalMethods'
-import { useAppDispatch } from 'src/hooks'
-import { ICompanyEthData } from 'src/types/CompanyDataTypes'
+import { useAppDispatch, useAppSelector } from 'src/hooks'
 import Link from 'next/link'
 
 const COMPANIES_QUERY = gql`
@@ -44,23 +43,23 @@ const RenderTicker = (params: {
 const columns: GridColumns = [
     { field: 'id', headerName: '#', width: 100, editable: false},
     { field: 'name', headerName: 'Name', width: 300, editable: false },
-    { field: 'ticker', headerName: 'Ticker', width: 100, editable: false, renderCell: RenderTicker }
+    { field: 'ticker', headerName: 'Ticker', width: 100, editable: false, renderCell: RenderTicker },
 ]
 
 const ListCompanies = () => {
-    const { loading, error, data } = useQuery<{ companies: ICompanyEthData[] }>(COMPANIES_QUERY)
+    // const { loading, error, data } = useQuery<{ companies: ICompanyEthData[] }>(COMPANIES_QUERY)
+    const companies = useAppSelector(state => state.general.companies)
+    const loading = useAppSelector(state => state.general.companyLoading)
 
     return (
         <Grid container spacing={3}>
             <Grid item xs={12} md={12}>
-                <Card style={{ height: '550px' }}>
+                <Card>
                     <DataGrid
-                        rows={data?.companies || []}
+                        rows={companies}
                         columns={columns}
-                        pageSize={8}
-                        rowsPerPageOptions={[8, 16, 32]}
                         loading={loading}
-                        error={error}
+                        sx={{minHeight: '500px'}}
                     />
                 </Card>
             </Grid>

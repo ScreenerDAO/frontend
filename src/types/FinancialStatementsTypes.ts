@@ -57,98 +57,9 @@ const balanceSheetTypesNames: { [key: number]: string } = {
     51: 'Total equity',
     52: 'Total liabilities and equity',
     53: 'Preferred stock',
-    54: 'Other equity'
+    54: 'Other equity',
+    55: 'Accrued liabilities'
 }
-
-// const balanceSheetStructure = [
-//     {
-//         title: 1,
-//         elements: [
-//             {
-//                 title: 2,
-//                 elements: [
-//                     3,
-//                     4,
-//                     {
-//                         title: 5,
-//                         elements: [
-//                             6, 
-//                             7, 
-//                             8
-//                         ],
-//                         total: 9
-//                     },
-//                     10, 
-//                     11, 
-//                     12, 
-//                     13, 
-//                     14
-//                 ],
-//                 total: 15
-//             },
-//             {
-//                 title: 16,
-//                 elements: [ 
-//                     {
-//                         title: 17,
-//                         elements: [
-//                             18, 
-//                             19
-//                         ],
-//                         total: 20
-//                     },
-//                     21, 
-//                     22, 
-//                     23, 
-//                     24, 
-//                     25, 
-//                     26
-//                 ],
-//                 total: 27
-//             }
-//         ],
-//         total: 28
-//     },
-//     {
-//         title: 29,
-//         elements: [
-//             {
-//                 title: 30,
-//                 elements: [
-//                     31, 
-//                     32, 
-//                     33, 
-//                     34, 
-//                     35
-//                 ],
-//                 total: 36
-//             },
-//             {
-//                 title: 37,
-//                 elements: [
-//                     38, 
-//                     39, 
-//                     40, 
-//                     41
-//                 ],
-//                 total: 42
-//             }
-//         ],
-//         total: 43
-//     },
-//     {
-//         title: 44,
-//         elements: [
-//             45, 
-//             46, 
-//             47, 
-//             48, 
-//             49, 
-//             50
-//         ],
-//         total: 51
-//     }
-// ]
 
 interface IElement {
     label: number;
@@ -220,6 +131,7 @@ const balanceSheetStructure: IElementsGroup[] = [
                     { label: 32, operation: AutofillOperation.Add }, 
                     { label: 33, operation: AutofillOperation.Add }, 
                     { label: 34, operation: AutofillOperation.Add }, 
+                    { label: 55, operation: AutofillOperation.Add },
                     { label: 35, operation: AutofillOperation.Add }
                 ],
                 total: { label: 36, operation: AutofillOperation.Add }
@@ -293,12 +205,20 @@ const currencies: { [key: number]: {
     1: {code: "USD", name: "United states dollar"}
 }
 
+const countries: { [key: number]: {
+    name: string
+}} = {
+    1: {name: "United States"},
+    2: {name: "Spain"}
+}
+
 export {
     balanceSheetTypesNames,
     balanceSheetStructure,
     incomeStatementTypesNames,
     AutofillOperation,
-    currencies
+    currencies,
+    countries
 }
 
 export type {

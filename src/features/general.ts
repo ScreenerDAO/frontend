@@ -1,15 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { ICompanyEthData } from 'src/types/CompanyDataTypes'
 
 interface IGeneral {
     companyLoading: boolean
     valuesAsMillions: boolean
     logarithmicScale: boolean
+    companies: ICompanyEthData[]
 }
 
 const initialState: IGeneral = {
     companyLoading: false,
     valuesAsMillions: false,
-    logarithmicScale: false
+    logarithmicScale: false,
+    companies: []
 }
 
 export const generalSlice = createSlice({
@@ -24,6 +27,9 @@ export const generalSlice = createSlice({
         },
         changeLogarithmicScale: (state) => {
             state.logarithmicScale = !state.logarithmicScale
+        },
+        setCompanies: (state, action: PayloadAction<ICompanyEthData[]>) => {
+            state.companies = action.payload
         }
     }
 })
@@ -31,7 +37,8 @@ export const generalSlice = createSlice({
 export const {
     setCompanyLoading: setCompanyLoading,
     changeValuesAsMillions: changeValuesAsMillions,
-    changeLogarithmicScale: changeLogarithmicScale
+    changeLogarithmicScale: changeLogarithmicScale,
+    setCompanies: setCompanies
 } = generalSlice.actions
 
 export type {

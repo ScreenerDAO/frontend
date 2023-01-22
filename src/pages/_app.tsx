@@ -30,7 +30,8 @@ import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client
 import { THEGRAPH_API_URL } from 'src/metadata'
 import React from 'react'
 import { selectCompany } from 'src/helpers/generalMethods'
-import { setCompanyLoading } from 'src/features/general'
+import { setCompanies, setCompanyLoading } from 'src/features/general'
+import { ICompanyEthData } from 'src/types/CompanyDataTypes'
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -84,6 +85,17 @@ const COMPANY_QUERY = gql`
     }
 `
 
+const COMPANIES_QUERY = gql`
+    query Companies {
+        companies {
+            id
+            name
+            ticker
+            dataHash
+        }
+    }
+`
+
 const App = (props: ExtendedAppProps) => {
     const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
     const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
@@ -92,6 +104,17 @@ const App = (props: ExtendedAppProps) => {
         store.dispatch(setCompanyLoading(true))
         client.query({query: COMPANY_QUERY, variables: {id: "0"}})
             .then((result) => selectCompany(result.data.company, store.dispatch))
+
+        const callback = async () => {
+            store.dispatch(setCompanyLoading(true))
+
+            let companies: ICompanyEthData[] = (await client.query({query: COMPANIES_QUERY})).data.companies
+
+            selectCompany(companies[0], store.dispatch)
+            store.dispatch(setCompanies(companies))
+        }
+
+        callback()
     }, [])
 
     return (
