@@ -94,18 +94,36 @@ const CustomChart = (props: IProps) => {
                 type: label.type as any,
                 label: getLabel(label),
                 borderColor: () => {
-                    if (index % 2 === 0) {
-                        return 'rgb(124, 181, 236)'
+                    switch (index % 5){
+                        case 0:
+                            return 'rgb(124, 181, 236)'
+                        case 1:
+                            return 'rgb(67, 67, 72)'
+                        case 2:
+                            return 'rgb(144, 237, 125)'
+                        case 3:
+                            return 'rgb(255, 188, 117)'
+                        case 4:
+                            return 'rgb(153, 158, 255)'
+
                     }
-                    return 'rgb(67, 67, 72)'
                 },
                 borderWidth: 2,
                 data: years.map(year => getValue(year, store, label)),
                 backgroundColor: () => {
-                    if (index % 2 === 0) {
-                        return 'rgb(124, 181, 236)'
+                    switch (index % 5){
+                        case 0:
+                            return 'rgb(124, 181, 236)'
+                        case 1:
+                            return 'rgb(67, 67, 72)'
+                        case 2:
+                            return 'rgb(144, 237, 125)'
+                        case 3:
+                            return 'rgb(255, 188, 117)'
+                        case 4:
+                            return 'rgb(153, 158, 255)'
+
                     }
-                    return 'rgb(67, 67, 72)'
                 },
                 pointRadius: 3,
             }
