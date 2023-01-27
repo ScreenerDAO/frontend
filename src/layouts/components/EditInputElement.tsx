@@ -89,7 +89,7 @@ const EditInputElement = ({
 }: EditInputElementProps) => {
     const store = useStore<RootState>()
     const dispatch = useAppDispatch()
-    const element = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.financialStatements[year][statementType as keyof IFinancialStatement][label])
+    const element = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.financialStatements[year]?.[statementType as keyof IFinancialStatement][label])
     const [openMultipleValuesModal, setOpenMultipleValuesModal] = React.useState(false)
 
     const setElement = (value: string) => {

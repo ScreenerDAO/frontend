@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 
 const COMPANIES_QUERY = gql`
     query Companies($text: String!) {
-        companies(where: {name_contains: $text}) {
+        companies(where: {name_contains_nocase: $text}) {
             id
             name
             ticker

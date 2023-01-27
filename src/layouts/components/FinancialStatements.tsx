@@ -100,7 +100,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
         parentLoop:
         for (const label of Object.keys(balanceSheetTypesNames)) {
             for (const year of years) {
-                if (Number(props.companyData.financialStatements[year].balanceSheet[Number(label)]) && Number(props.companyData.financialStatements[year].balanceSheet[Number(label)]) > 0) {
+                if (Number(props.companyData.financialStatements[year].balanceSheet[Number(label)])) {
                     continue parentLoop
                 } 
             }
@@ -111,7 +111,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
         parentLoop:
         for (const label of Object.keys(incomeStatementTypesNames)) {
             for (const year of years) {
-                if (Number(props.companyData.financialStatements[year].incomeStatement[Number(label)]) && Number(props.companyData.financialStatements[year].incomeStatement[Number(label)]) > 0) {
+                if (Number(props.companyData.financialStatements[year].incomeStatement[Number(label)])) {
                     continue parentLoop
                 } 
             }
@@ -125,8 +125,6 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
         })
     }, [props.companyData])
 
-
-    console.log(excludedLabels)
 
     if (years.length > 0) {
         return (

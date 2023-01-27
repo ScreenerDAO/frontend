@@ -40,14 +40,14 @@ export const newCompanyDataSlice = createSlice({
         // setCompanyCurrency: (state, action: PayloadAction<number>) => {
         //     state.currency = action.payload
         // },
-        addNewYear: (state, action: PayloadAction<number>) => {
+        addNewYear: (state, action: PayloadAction<number | string>) => {
             state.financialStatements[action.payload] = {
                 balanceSheet: {} ,
                 incomeStatement: {},
                 cashFlow: {}
             }
         },
-        setAnnualReportHash: (state, action: PayloadAction<{year: number, hash: string}>) => {
+        setAnnualReportHash: (state, action: PayloadAction<{year: number | string, hash: string}>) => {
             if (action.payload.hash == "") {
                 let annualReports = state.annualReports
 
@@ -59,11 +59,11 @@ export const newCompanyDataSlice = createSlice({
                 state.annualReports[action.payload.year] = action.payload.hash
             }            
         },
-        setStatementElement: (state, action: PayloadAction<{year: number, statement: StatementType, element: number, value: string}>) => {
+        setStatementElement: (state, action: PayloadAction<{year: number | string, statement: StatementType, element: number, value: string}>) => {
             // state.financialStatements[action.payload.year]["fds" as keyof IFinancialStatement][action.payload.element] = action.payload.value
             state.financialStatements[action.payload.year][action.payload.statement as keyof IFinancialStatement][action.payload.element] = action.payload.value
         },
-        deleteYear: (state, action: PayloadAction<number>) => {
+        deleteYear: (state, action: PayloadAction<number | string>) => {
             let financialStatements = state.financialStatements
             let annualReports = state.annualReports
 

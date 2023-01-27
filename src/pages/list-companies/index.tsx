@@ -56,7 +56,7 @@ const ListCompanies = () => {
             <Grid item xs={12} md={12}>
                 <Card>
                     <DataGrid
-                        rows={companies}
+                        rows={companies ?? []}
                         columns={columns}
                         loading={loading}
                         sx={{minHeight: '500px'}}

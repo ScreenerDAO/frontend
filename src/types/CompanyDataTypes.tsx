@@ -16,10 +16,10 @@ interface ICompanyData {
     country: string
     // currency: number | null
     financialStatements: {
-        [key: number]: IFinancialStatement
+        [key: number | string]: IFinancialStatement
     },
     annualReports: {
-        [key: number]: string 
+        [key: number | string]: string 
     }
 }
 

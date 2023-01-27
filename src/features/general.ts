@@ -5,14 +5,16 @@ interface IGeneral {
     companyLoading: boolean
     valuesAsMillions: boolean
     logarithmicScale: boolean
-    companies: ICompanyEthData[]
+    companies: ICompanyEthData[] | null
+    idToCompany: {[key: number]: ICompanyEthData} | null
 }
 
 const initialState: IGeneral = {
     companyLoading: false,
     valuesAsMillions: false,
     logarithmicScale: false,
-    companies: []
+    companies: null,
+    idToCompany: null
 }
 
 export const generalSlice = createSlice({
@@ -30,6 +32,9 @@ export const generalSlice = createSlice({
         },
         setCompanies: (state, action: PayloadAction<ICompanyEthData[]>) => {
             state.companies = action.payload
+        },
+        setIdToCompany: (state, action: PayloadAction<{[key: number]: ICompanyEthData}>) => {
+            state.idToCompany = action.payload
         }
     }
 })
@@ -38,7 +43,8 @@ export const {
     setCompanyLoading: setCompanyLoading,
     changeValuesAsMillions: changeValuesAsMillions,
     changeLogarithmicScale: changeLogarithmicScale,
-    setCompanies: setCompanies
+    setCompanies: setCompanies,
+    setIdToCompany: setIdToCompany
 } = generalSlice.actions
 
 export type {

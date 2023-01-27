@@ -3,7 +3,7 @@ const registriesContractABI = [{"anonymous":false,"inputs":[{"indexed":false,"in
 const nftStorageApiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDI0RjRhMzE4ZkRjNzFBY0I3NEY5NDNlQ2E3MmVmNjBEZmM0NjMzODQiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY2ODM3NDgyOTgzOCwibmFtZSI6InRlc3QifQ.7D7Kd7qjkqD03pwe9vD6fytRaEetOMHCf2vIYorvg1c"
 const web3StorageApiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEFhZmVEQjRlOENkYkY1NEIwNjVDRUU1NDQ5RTVDNTk0MEZGYWE0MjciLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NzMxNzYwNDM4NjUsIm5hbWUiOiJyZWFjdCJ9.jM7ZLsPG0JIcXJS8aX8OUy5v37tsR3jWNuoR1ynxyi8"
 const alchemyApiKey = "RIvwjz04WgXuvDJ47-XbO1zc5vtdbIDr"
-const THEGRAPH_API_URL = 'https://api.studio.thegraph.com/query/38337/screenerdao-test/v0.0.3'
+const THEGRAPH_API_URL = 'https://api.studio.thegraph.com/query/38337/screenerdao-test/v0.0.11'
 const chainId = 5
 
 export {
