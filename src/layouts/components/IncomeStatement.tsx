@@ -95,7 +95,7 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
                 hover
                 selected={selected}
                 onClick={() => {
-                    let selectedLabels = props.selectedLabels
+                    let selectedLabels = [...props.selectedLabels]
 
                     if (selected) {
                         props.setSelectedLabels(props.selectedLabels.filter(cLabel => cLabel.label !== label))

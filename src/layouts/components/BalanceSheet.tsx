@@ -83,7 +83,7 @@ const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
                 selected={selected}
                 // sx={{ borderTop: final ? '2px solid grey' : '1px solid black'}}
                 onClick={() => {
-                    let selectedLabels = props.selectedLabels
+                    let selectedLabels = [...props.selectedLabels]
 
                     if (selected) {
                         props.setSelectedLabels(props.selectedLabels.filter(cLabel => cLabel.label !== label))

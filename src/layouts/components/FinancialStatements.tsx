@@ -7,12 +7,10 @@ import IncomeStatement from './IncomeStatement';
 import AnnualReports from './AnnualReports';
 import Slider from '@mui/material/Slider';
 import { ICompanyData, IFinancialStatement, StatementType } from '../../types/CompanyDataTypes';
-import { Grid, Card, FormControlLabel, Switch, FormControl, InputLabel, MenuItem, Select, IconButton, Typography, Paper } from '@mui/material';
-import { assertNonNullType } from 'graphql';
+import { Grid, Card, FormControl, InputLabel, MenuItem, Select, IconButton, Typography, Paper } from '@mui/material';
 import { getYearsArray } from '../../helpers/financialStatements'
 import MillionsSwitch from './MillionsSwitch';
 import Chart, { getLabel } from './Chart';
-import Chart2 from './Chart2';
 import LogarithmicScaleSwitch from './LogarithmicScale';
 import CloseIcon from '@mui/icons-material/Close';
 import { balanceSheetTypesNames, incomeStatementTypesNames } from 'src/types/FinancialStatementsTypes';
@@ -87,7 +85,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
         "cashFlow": []
     })
 
-    const [_, setRandom] = React.useState(0)
+    // const [_, setRandom] = React.useState(0)
 
     const years = getYearsArray(props.companyData.financialStatements)
 
@@ -155,7 +153,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                         <Card style={{ paddingLeft: '20px', paddingRight: '20px', paddingTop: '10px', paddingBottom: '10px' }}>
 
                             <div style={{ height: '300px' }}>
-                                <Chart2
+                                <Chart
                                     years={years}
                                     yearsSelected={yearsSelected}
                                     selectedLabels={selectedLabels}
@@ -181,7 +179,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                                                                     let newLabels = [...selectedLabels]
                                                                     newLabels[index].type = ev.target.value as string
                                                                     setSelectedLabels(newLabels)
-                                                                    setRandom(Math.random())
+                                                                    // setRandom(Math.random())
                                                                 }}
                                                             >
                                                                 <MenuItem value={'bar'}>Bar</MenuItem>
@@ -234,7 +232,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                                 selectedLabels={selectedLabels}
                                 setSelectedLabels={labels => {
                                     setSelectedLabels(labels)
-                                    setRandom(Math.random())
+                                    // setRandom(Math.random())
                                 }}
                                 excludedLabels={excludedLabels["balanceSheet"]}
                             />
@@ -247,7 +245,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                                 selectedLabels={selectedLabels}
                                 setSelectedLabels={labels => {
                                     setSelectedLabels(labels)
-                                    setRandom(Math.random())
+                                    // setRandom(Math.random())
                                 }}
                                 excludedLabels={excludedLabels["incomeStatement"]}
                             />
