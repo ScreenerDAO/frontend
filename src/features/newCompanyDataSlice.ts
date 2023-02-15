@@ -1,8 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { IBalanceSheet } from 'src/types/BalanceSheetTypes'
-import { ICashFlow } from 'src/types/CashFlowTypes'
-import { ICompanyData, IFinancialStatement, IStatement, StatementType } from 'src/types/CompanyDataTypes'
-import { IIncomeStatement } from 'src/types/IncomeStatementTypes'
+import { ICompanyData, IFinancialStatement, IStatement, IStatementElement, StatementType } from 'src/types/CompanyDataTypes'
 
 // Define the initial state using that type
 const initialState: ICompanyData = {
@@ -59,7 +56,7 @@ export const newCompanyDataSlice = createSlice({
                 state.annualReports[action.payload.year] = action.payload.hash
             }            
         },
-        setStatementElement: (state, action: PayloadAction<{year: number | string, statement: StatementType, element: number, value: string}>) => {
+        setStatementElement: (state, action: PayloadAction<{year: number | string, statement: StatementType, element: number, value: IStatementElement}>) => {
             // state.financialStatements[action.payload.year]["fds" as keyof IFinancialStatement][action.payload.element] = action.payload.value
             state.financialStatements[action.payload.year][action.payload.statement as keyof IFinancialStatement][action.payload.element] = action.payload.value
         },

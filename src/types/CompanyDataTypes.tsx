@@ -1,7 +1,3 @@
-import { IBalanceSheet } from './BalanceSheetTypes'
-import { ICashFlow } from './CashFlowTypes'
-import { IIncomeStatement } from './IncomeStatementTypes'
-
 interface ICompanyEthData {
     id: number
     name: string
@@ -24,11 +20,15 @@ interface ICompanyData {
 }
 
 interface IStatement {
-    [key: number]: string
+    [key: number]: IStatementElement
+}
+
+interface IStatementElement {
+    value: string
+    multipleValues: string[] | number[] | null
 }
 
 interface IFinancialStatement {
-    // annualReportHash: string | null,
     balanceSheet: IStatement
     incomeStatement: IStatement
     cashFlow: IStatement
@@ -48,5 +48,6 @@ export type {
     ICompanyEthData,
     ICompanyData,
     IStatement,
-    IFinancialStatement 
+    IFinancialStatement,
+    IStatementElement
 }

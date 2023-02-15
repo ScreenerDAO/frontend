@@ -2,11 +2,12 @@ import React from "react";
 import { Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, InputAdornment, InputLabel, OutlinedInput, TextField, Tooltip } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
+import { IStatementElement } from "src/types/CompanyDataTypes";
 
 interface IProps {
     open: boolean;
     closeModal: () => void;
-    setValue: (value: string) => void;
+    setValue: (element: IStatementElement) => void;
 }
 
 const MultipleValuesModal = ({ open, closeModal, setValue }: IProps) => {
@@ -14,20 +15,6 @@ const MultipleValuesModal = ({ open, closeModal, setValue }: IProps) => {
     const [values, setValues] = React.useState<{ [key: number]: string }>({
         0: ""
     })
-
-    const calculateTotal = () => {
-        let total = 0
-
-        for (let i = 0; i < numberInputs; i++) {
-            let value = Number(values[i])
-
-            if (!isNaN(value)) {
-                total += value
-            }
-        }
-
-        return parseFloat(total.toFixed(2))
-    }
 
     return (
         <Dialog open={open} onClose={closeModal} maxWidth="xs" fullWidth>
@@ -98,9 +85,22 @@ const MultipleValuesModal = ({ open, closeModal, setValue }: IProps) => {
             <DialogActions>
                 <Button onClick={closeModal}>Cancel</Button>
                 <Button onClick={() => {
-                    let total = calculateTotal()
+                    let total = 0
+                    let multipleValues = []
 
-                    setValue(total !== 0 ? total.toString() : "")
+                    for (let i = 0; i < numberInputs; i++) {
+                        let value = Number(values[i])
+
+                        if (!isNaN(value)) {
+                            total += value
+                            multipleValues.push(value)
+                        }
+                    }
+
+                    setValue({
+                        value: total !== 0 ? total.toString() : "",
+                        multipleValues: multipleValues.length > 0 ? multipleValues : null
+                    })
                     closeModal()
                 }}>Add values</Button>
             </DialogActions>

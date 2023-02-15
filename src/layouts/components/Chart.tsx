@@ -63,13 +63,13 @@ const getValue = (
     }
 ) => {
     if (label.statement === StatementType.BalanceSheet) {
-        return store.getState().companyData.financialStatements[year].balanceSheet[label.label]
+        return store.getState().companyData.financialStatements[year].balanceSheet[label.label]?.value
     }
     if (label.statement === StatementType.IncomeStatement) {
         let incomeStatement = store.getState().companyData.financialStatements[year].incomeStatement
 
         if (incomeStatement) {
-            return store.getState().companyData.financialStatements[year].incomeStatement[label.label]
+            return store.getState().companyData.financialStatements[year].incomeStatement[label.label]?.value
         }
 
         return null

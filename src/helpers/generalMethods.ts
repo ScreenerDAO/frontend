@@ -1,5 +1,5 @@
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit"
-import { ICompanyData, ICompanyEthData } from "../types/CompanyDataTypes"
+import { ICompanyData, ICompanyEthData, IFinancialStatement } from "../types/CompanyDataTypes"
 import { IGeneral, setCompanyLoading } from "src/features/general"
 import { setCompanyData } from "src/features/companyDataSlice"
 import { setCompanyData as setNewCompanyData } from 'src/features/newCompanyDataSlice'
@@ -280,6 +280,24 @@ const selectCompany = async (
     finally {
         ///TODO
         companyData.id = item.id
+
+        console.log(companyData)
+
+        //Format old schema to new schema
+        for (let year in companyData.financialStatements) {
+            for (let statement in companyData.financialStatements[year]) {
+                for (let item in companyData.financialStatements[year][statement as keyof IFinancialStatement]) {
+                    if (typeof companyData.financialStatements[year][statement as keyof IFinancialStatement][item] === 'string') {
+                        companyData.financialStatements[year][statement as keyof IFinancialStatement][item] = {
+                            value: companyData.financialStatements[year][statement as keyof IFinancialStatement][item] as unknown as string,
+                            multipleValues: null
+                        }
+                    }
+                }
+            }
+        }
+
+        console.log(companyData)
 
         dispatch(setCompanyData(companyData as ICompanyData))
         dispatch(setNewCompanyData(companyData as ICompanyData))

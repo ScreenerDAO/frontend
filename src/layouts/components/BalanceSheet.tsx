@@ -6,7 +6,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { IBalanceSheet, BalanceSheetOrderedElements } from "../../types/BalanceSheetTypes"
 import { ICompanyData, StatementType } from '../../types/CompanyDataTypes';
 import FinancialStatementField from './FinancialStatementField';
 import { IElement, IElementsGroup, balanceSheetStructure, balanceSheetTypesNames } from 'src/types/FinancialStatementsTypes';
@@ -18,22 +17,10 @@ interface IBalanceSheetProps {
     yearsSelected: number[]
     selectedLabels: IChartLabel[],
     setSelectedLabels: (labels: IChartLabel[]) => void,
-    excludedLabels: number[]
+    // excludedLabels: number[]
 }
 
 const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
-    // const labelsWithData = []
-
-    // for (const label of Object.keys(balanceSheetStructure)) {
-    //     for (const year of props.yearsSelected) {
-    //         if (props.data.financialStatements[year].balanceSheet[label] && props.data.balanceSheet[year][label] !== 0) {
-    //             labelsWithData.push(label)
-
-    //             break
-    //         }
-    //     }
-    // }
-
     const TableHeaders = () => {
         return (
             <>
@@ -50,7 +37,19 @@ const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
         )
     }
 
-    const ElementGroupRows = ({ element }: { element: IElementsGroup }): React.ReactElement => {
+    const TableRows = (): React.ReactElement => (
+        <>
+            {
+                balanceSheetStructure.map((row, rowIndex) => {
+                    return (
+                        <ElementGroupRows element={row} key={rowIndex} />
+                    )
+                })
+            }
+        </>
+    )
+
+    const ElementGroupRows = ({ element }: { element: IElementsGroup }): React.ReactElement => {        
         return (
             <>
                 {
@@ -61,7 +60,7 @@ const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
                             )
                         }
 
-                        if (props.excludedLabels.includes((cElement as IElement).label)) return
+                        // if (props.excludedLabels.includes((cElement as IElement).label)) return
 
                         return (
                             <Row label={(cElement as IElement).label} key={index} />
@@ -69,7 +68,8 @@ const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
                     })
                 }
 
-                {(props.excludedLabels.includes(element.total.label)) ? null : <Row label={element.total.label} bold={true} final={element.total.final} />}
+                {/* {(props.excludedLabels.includes(element.total.label)) ? null : <Row label={element.total.label} bold={true} final={element.total.final} />} */}
+                <Row label={element.total.label} bold={true} final={element.total.final} />
             </>
         )
     }
@@ -108,7 +108,7 @@ const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
                     props.yearsSelected.map((year, index) => {
                         return (
                             <TableCell align="right" key={index} sx={{ fontWeight: bold ? 900 : 'initial' }}>
-                                <CellValue value={props.data.financialStatements[year].balanceSheet[label]} />
+                                <CellValue value={props.data.financialStatements[year].balanceSheet[label]?.value} />
                             </TableCell>
                         )
                     })
@@ -131,15 +131,6 @@ const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
 
         return <>{number.toLocaleString()}</>
     }
-
-    const TableRows = (): React.ReactElement => (<>{
-        balanceSheetStructure.map((row, rowIndex) => {
-            return (
-                <ElementGroupRows element={row} key={rowIndex} />
-            )
-        })
-    }</>)
-
 
     return (
         <TableContainer component={Paper}>

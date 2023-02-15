@@ -79,48 +79,46 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
             type: "bar"
         }
     ])
-    const [excludedLabels, setExcludedLabels] = React.useState<{[key: string]: number[]}>({
-        "balanceSheet": [],
-        "incomeStatement": [],
-        "cashFlow": []
-    })
-
-    // const [_, setRandom] = React.useState(0)
+    // const [excludedLabels, setExcludedLabels] = React.useState<{[key: string]: number[]}>({
+    //     "balanceSheet": [],
+    //     "incomeStatement": [],
+    //     "cashFlow": []
+    // })
 
     const years = getYearsArray(props.companyData.financialStatements)
 
     React.useEffect(() => {
         setYearsSelected([years[0], years[years.length - 1]])
 
-        let bsExcludedLabels = []
-        let isExcludedLabels = []
+        // let bsExcludedLabels = []
+        // let isExcludedLabels = []
 
-        parentLoop:
-        for (const label of Object.keys(balanceSheetTypesNames)) {
-            for (const year of years) {
-                if (Number(props.companyData.financialStatements[year].balanceSheet[Number(label)])) {
-                    continue parentLoop
-                } 
-            }
+        // parentLoop:
+        // for (const label of Object.keys(balanceSheetTypesNames)) {
+        //     for (const year of years) {
+        //         if (Number(props.companyData.financialStatements[year].balanceSheet[Number(label)].value)) {
+        //             continue parentLoop
+        //         } 
+        //     }
 
-            bsExcludedLabels.push(Number(label))
-        }
+        //     bsExcludedLabels.push(Number(label))
+        // }
 
-        parentLoop:
-        for (const label of Object.keys(incomeStatementTypesNames)) {
-            for (const year of years) {
-                if (Number(props.companyData.financialStatements[year].incomeStatement[Number(label)])) {
-                    continue parentLoop
-                } 
-            }
+        // parentLoop:
+        // for (const label of Object.keys(incomeStatementTypesNames)) {
+        //     for (const year of years) {
+        //         if (Number(props.companyData.financialStatements[year].incomeStatement[Number(label)].value)) {
+        //             continue parentLoop
+        //         } 
+        //     }
 
-            isExcludedLabels.push(Number(label))
-        }
+        //     isExcludedLabels.push(Number(label))
+        // }
 
-        setExcludedLabels({
-            "balanceSheet": bsExcludedLabels,
-            "incomeStatement": isExcludedLabels,
-        })
+        // setExcludedLabels({
+        //     "balanceSheet": bsExcludedLabels,
+        //     "incomeStatement": isExcludedLabels,
+        // })
     }, [props.companyData])
 
 
@@ -179,7 +177,6 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                                                                     let newLabels = [...selectedLabels]
                                                                     newLabels[index].type = ev.target.value as string
                                                                     setSelectedLabels(newLabels)
-                                                                    // setRandom(Math.random())
                                                                 }}
                                                             >
                                                                 <MenuItem value={'bar'}>Bar</MenuItem>
@@ -234,7 +231,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                                     setSelectedLabels(labels)
                                     // setRandom(Math.random())
                                 }}
-                                excludedLabels={excludedLabels["balanceSheet"]}
+                                // excludedLabels={excludedLabels["balanceSheet"]}
                             />
                         </TabPanel>
 
@@ -247,7 +244,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                                     setSelectedLabels(labels)
                                     // setRandom(Math.random())
                                 }}
-                                excludedLabels={excludedLabels["incomeStatement"]}
+                                // excludedLabels={excludedLabels["incomeStatement"]}
                             />
                         </TabPanel>
 

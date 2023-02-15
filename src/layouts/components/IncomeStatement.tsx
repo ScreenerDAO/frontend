@@ -6,10 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { IIncomeStatement, IncomeStatementOrderedElements } from "../../types/IncomeStatementTypes"
 import { ICompanyData, StatementType } from '../../types/CompanyDataTypes';
-import { TextField } from '@mui/material';
-import FinancialStatementField from './FinancialStatementField';
 import { incomeStatementTypesNames } from 'src/types/FinancialStatementsTypes';
 import { useAppSelector } from 'src/hooks';
 import { IChartLabel } from './FinancialStatements';
@@ -19,7 +16,7 @@ interface IIncomeStatementProps {
     yearsArray: number[]
     selectedLabels: IChartLabel[],
     setSelectedLabels: (labels: IChartLabel[]) => void
-    excludedLabels: number[]
+    // excludedLabels: number[]
 }
 
 const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
@@ -84,9 +81,9 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
     }
 
     const Row = ({ label, bold }: { label: number, bold?: boolean }): React.ReactElement => {
-        if (props.excludedLabels.includes(label)) {
-            return <></>
-        }
+        // if (props.excludedLabels.includes(label)) {
+        //     return <></>
+        // }
 
         const selected = props.selectedLabels.filter(label => label.statement === StatementType.IncomeStatement).map(label => label.label).includes(label)
 
@@ -120,7 +117,7 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
                     props.yearsArray.map((year, index) => {
                         return (
                             <TableCell align="right" key={index} sx={{ fontWeight: bold ? 900 : 'initial' }}>
-                                <CellValue value={props.data.financialStatements[year].incomeStatement[label]} />
+                                <CellValue value={props.data.financialStatements[year].incomeStatement[label]?.value} />
                             </TableCell>
                         )
                     })

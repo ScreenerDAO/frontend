@@ -1,10 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { IBalanceSheet } from 'src/types/BalanceSheetTypes'
-import { ICashFlow } from 'src/types/CashFlowTypes'
 import { ICompanyData, IFinancialStatement } from 'src/types/CompanyDataTypes'
-import { IIncomeStatement } from 'src/types/IncomeStatementTypes'
 
-// Define the initial state using that type
 const initialState: ICompanyData = {
     id: null,
     companyName: "",
@@ -28,32 +24,11 @@ export const companyDataSlice = createSlice({
             state.financialStatements = action.payload.financialStatements
             state.annualReports = action.payload.annualReports 
         },
-        // setCompanyName: (state, action: PayloadAction<string>) => {
-        //     state.companyName = action.payload
-        // },
-        // setCompanyTicker: (state, action: PayloadAction<string>) => {
-        //     state.ticker = action.payload
-        // },
-        // setCompanyCountry: (state, action: PayloadAction<string>) => {
-        //     state.country = action.payload
-        // },
-        // // setCompanyCurrency: (state, action: PayloadAction<number>) => {
-        // //     state.currency = action.payload
-        // // },
-        // setFinancialStatemets: (state, action: PayloadAction<{
-        //     [key: number]: IFinancialStatement;
-        // }>) => {
-        //     state.financialStatements = action.payload
-        // }
     },
 })
 
 export const { 
     setCompanyData, 
-    // setCompanyName, 
-    // setCompanyCountry, 
-    // setCompanyTicker,
-    // setFinancialStatemets
 } = companyDataSlice.actions
 
 export {
