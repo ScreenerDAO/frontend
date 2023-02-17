@@ -69,7 +69,12 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
   const IconTag: ReactNode = item.icon
 
   const isNavLinkActive = () => {
-    if (router.pathname === item.path || handleURLQueries(router, item.path)) {
+    console.log(router.pathname)
+    console.log(item.path)
+
+    const itemPath = item.path?.split("?")[0]
+
+    if (router.pathname === itemPath || handleURLQueries(router, item.path)) {
       return true
     } else {
       return false

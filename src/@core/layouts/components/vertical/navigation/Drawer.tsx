@@ -50,7 +50,7 @@ const Drawer = (props: Props) => {
 
     // Drawer Props for Desktop screens
     const DesktopDrawerProps = {
-        open: navVisible,
+        open: true,
         onOpen: () => null,
         onClose: () => null
     }
@@ -58,11 +58,13 @@ const Drawer = (props: Props) => {
     return (
         <SwipeableDrawer
             className='layout-vertical-nav'
-            variant={hidden ? 'temporary' : 'persistent'}
-            {...(hidden ? { ...MobileDrawerProps } : { ...DesktopDrawerProps })}
+            // variant={hidden ? 'temporary' : 'permanent'}
+            variant='temporary'
+            {...MobileDrawerProps}
+            // {...(hidden ? { ...MobileDrawerProps } : { ...DesktopDrawerProps })}
             PaperProps={{ sx: { width: navWidth } }}
             sx={{
-                width: navVisible ? navWidth : 0,
+                width: navWidth,
                 '& .MuiDrawer-paper': {
                     borderRight: 0,
                     backgroundColor: theme.palette.background.default
