@@ -98,7 +98,7 @@ const MultipleValuesModal = ({ open, closeModal, setValue }: IProps) => {
                     }
 
                     setValue({
-                        value: total !== 0 ? total.toString() : "",
+                        value: total !== 0 ? parseFloat(total.toFixed(2)).toString() : "",
                         multipleValues: multipleValues.length > 0 ? multipleValues : null
                     })
                     closeModal()

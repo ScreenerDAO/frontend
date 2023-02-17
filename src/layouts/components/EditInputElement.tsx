@@ -40,7 +40,7 @@ const getAutofillValue = (elements: IElement[], statementValues: IStatement) => 
     let total = 0
 
     for (let element of (elements ?? [])) {
-        let number = Number(statementValues[element.label])
+        let number = Number(statementValues[element.label]?.value)
 
         if (!isNaN(number)) {
             if (element.operation === AutofillOperation.Add) {
@@ -108,7 +108,7 @@ const EditInputElement = ({
                     label={getLabelName(label, statementType)}
                     endAdornment={
                         <InputAdornment position="end">
-                            {(element.value ?? "") !== "" ?
+                            {(element?.value ?? "") !== "" ?
                                 <InputAdornment position="end">
                                     <Tooltip title="Clear">
                                         <ClearIcon
@@ -148,7 +148,7 @@ const EditInputElement = ({
                             }
                         </InputAdornment>
                     }
-                    value={getValue(element.value, valuesAsThousands)}
+                    value={getValue(element?.value, valuesAsThousands)}
                     onChange={(e) => setElement({
                         value: setValueFormatter(e.target.value, valuesAsThousands),
                         multipleValues: null
