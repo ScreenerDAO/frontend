@@ -19,6 +19,7 @@ import { useAppDispatch } from 'src/hooks'
 import { setCompanyData, initialState } from 'src/features/companyDataSlice'
 import { setCompanyData as setNewCompanyData, initialState as newCompanyInitialState } from 'src/features/newCompanyDataSlice'
 import Tooltip from '@mui/material/Tooltip';
+import SearchBar2 from '../SearchBar2'
 
 interface Props {
     hidden: boolean
@@ -54,11 +55,15 @@ const AppBarContent = (props: Props) => {
                 <Menu />
             </IconButton>
 
-            {!hidden ? (
+            {/* {!hidden ? (
                 <div style={{ width: 400, zIndex: 1000 }}>
                     <SearchBar />
                 </div>
-            ) : null}
+            ) : null} */}
+
+            <div style={{paddingTop: '10px', paddingBottom: '10px', flex: 1, display: 'flex', justifyContent: 'center'}}>
+                <SearchBar2 />
+            </div>
 
             <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
                 {/* {hiddenSm ? null : (
