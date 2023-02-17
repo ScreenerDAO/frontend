@@ -146,7 +146,7 @@ const Dashboard = () => {
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} md={8}>
+                <Grid item xs={12} md={6}>
                     <Card>
                         <Box sx={{ width: '90%', marginLeft: '5%', paddingTop: '5px', paddingBottom: '5px', textAlign: 'center' }}>
                             Recent activity
@@ -154,7 +154,7 @@ const Dashboard = () => {
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={6}>
                     <Card>
                         <Box sx={{ width: '90%', marginLeft: '5%', paddingTop: '5px', paddingBottom: '5px', textAlign: 'center' }}>
                             Top companies
@@ -162,7 +162,7 @@ const Dashboard = () => {
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} md={8}>
+                <Grid item xs={12} md={6}>
                     <Card>
                         <RecentActivityTable data={data} loading={loading} />
                     </Card>
