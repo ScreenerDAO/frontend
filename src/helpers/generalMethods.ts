@@ -281,8 +281,6 @@ const selectCompany = async (
         ///TODO
         companyData.id = item.id
 
-        console.log(companyData)
-
         //Format old schema to new schema
         for (let year in companyData.financialStatements) {
             for (let statement in companyData.financialStatements[year]) {
@@ -296,8 +294,6 @@ const selectCompany = async (
                 }
             }
         }
-
-        console.log(companyData)
 
         dispatch(setCompanyData(companyData as ICompanyData))
         dispatch(setNewCompanyData(companyData as ICompanyData))

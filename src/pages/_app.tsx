@@ -106,7 +106,9 @@ const App = (props: ExtendedAppProps) => {
 
             let companies: ICompanyEthData[] = (await client.query({query: COMPANIES_QUERY})).data.companies
 
-            selectCompany(companies[0], store.dispatch)
+            let companyId = (new URLSearchParams(window.location.search)).get('id') ?? 0
+
+            selectCompany(companies[Number(companyId)], store.dispatch)
             store.dispatch(setCompanies(companies))
 
             let idToCompany: {[key: number]: ICompanyEthData} = {}
