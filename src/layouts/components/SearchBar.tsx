@@ -42,7 +42,7 @@ const SearchBar = () => {
     }
 
     const handleOnSelect = async (item: ICompanyEthData) => {
-        router.push('/company-overview')
+        router.push(`/company-overview?id=${item.id}`)
 
         selectCompany(item, dispatch)
     }

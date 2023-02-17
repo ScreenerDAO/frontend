@@ -95,7 +95,7 @@ const CompanyMoreOptions = ({ data }: {
                 onClose={handleClose}
             >
                 <MenuItem onClick={() => {
-                    router.push('/edit-records')
+                    router.push(`/edit-records?id=${data.id}`)
                     handleClose()
                 }} disableRipple>
                     <EditIcon />

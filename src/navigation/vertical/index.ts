@@ -5,6 +5,7 @@ import { ICompanyData } from 'src/types/CompanyDataTypes'
 
 const navigation = (): VerticalNavItemsType => {
     const companyTicker = useAppSelector((state: { companyData: ICompanyData }) => state.companyData.ticker)
+    const companyId = useAppSelector((state: { companyData: ICompanyData }) => state.companyData.id)
 
     return [
         {
@@ -18,12 +19,12 @@ const navigation = (): VerticalNavItemsType => {
         {
             title: 'Company overview',
             icon: Domain,
-            path: '/company-overview'
+            path: `/company-overview?id=${companyId}`
         },
         {
             title: 'Edit records',
             icon: ArchiveEditOutline,
-            path: '/edit-records'
+            path: `/edit-records?id=${companyId}`
         }
     ]
 }
