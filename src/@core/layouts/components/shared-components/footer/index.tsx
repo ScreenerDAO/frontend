@@ -45,7 +45,7 @@ const Footer = (props: Props) => {
           borderTopLeftRadius: 14,
           borderTopRightRadius: 14,
           padding: theme.spacing(4, 6),
-          ...(contentWidth === 'boxed' && { '@media (min-width:1440px)': { maxWidth: 1440 } })
+        //   ...(contentWidth === 'boxed' && { '@media (min-width:1440px)': { maxWidth: 1440 } })
         }}
       >
         {userFooterContent ? userFooterContent(props) : <FooterContent />}
