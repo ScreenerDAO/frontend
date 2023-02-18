@@ -88,7 +88,7 @@ const EditInputElement = ({
     const store = useStore<RootState>()
     const dispatch = useAppDispatch()
     const element = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.financialStatements[year]?.[statementType as keyof IFinancialStatement][label])
-    const [openMultipleValuesModal, setOpenMultipleValuesModal] = React.useState(false)
+    const [multipleValuesModalOpen, setMultipleValuesModalOpen] = React.useState(false)
 
     const setElement = (statementElement: IStatementElement) => {
         dispatch(setStatementElement({
@@ -97,6 +97,17 @@ const EditInputElement = ({
             element: label,
             value: statementElement
         }))
+    }
+
+    const openMultipleValuesModal = () => {
+        if (!element.multipleValues) {
+            let newElement = {...element}
+            newElement.multipleValues = [element.value]
+
+            setElement(newElement)
+        }
+
+        setMultipleValuesModalOpen(true)
     }
 
     return (
@@ -124,9 +135,7 @@ const EditInputElement = ({
                             <InputAdornment position="end">
                                 <Tooltip title="Add multiple values">
                                     <FunctionsIcon
-                                        onClick={() => {
-                                            setOpenMultipleValuesModal(true)
-                                        }}
+                                        onClick={openMultipleValuesModal}
                                         sx={{ cursor: 'pointer' }}
                                     />
                                 </Tooltip>
@@ -160,8 +169,11 @@ const EditInputElement = ({
             </FormControl>
 
             <MultipleValuesModal
-                open={openMultipleValuesModal}
-                closeModal={() => setOpenMultipleValuesModal(false)}
+                open={multipleValuesModalOpen}
+                closeModal={() => setMultipleValuesModalOpen(false)}
+                year={year}
+                statementType={statementType}
+                label={label}
                 setValue={(element: IStatementElement) => {
                     setElement({
                         value: setValueFormatter(element.value, valuesAsThousands),

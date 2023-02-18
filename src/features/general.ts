@@ -11,7 +11,7 @@ interface IGeneral {
 
 const initialState: IGeneral = {
     companyLoading: false,
-    valuesAsMillions: false,
+    valuesAsMillions: true,
     logarithmicScale: false,
     companies: null,
     idToCompany: null
