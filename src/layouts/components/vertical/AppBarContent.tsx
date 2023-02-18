@@ -1,25 +1,19 @@
 import Box from '@mui/material/Box'
 import { Theme } from '@mui/material/styles'
-import TextField from '@mui/material/TextField'
 import IconButton from '@mui/material/IconButton'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import InputAdornment from '@mui/material/InputAdornment'
 import Menu from 'mdi-material-ui/Menu'
-import Magnify from 'mdi-material-ui/Magnify'
 import { Settings } from 'src/@core/context/settingsContext'
 import ModeToggler from 'src/@core/layouts/components/shared-components/ModeToggler'
-import UserDropdown from 'src/@core/layouts/components/shared-components/UserDropdown'
 import NotificationDropdown from 'src/@core/layouts/components/shared-components/NotificationDropdown'
-import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import SearchBar from '../SearchBar'
 import { BriefcasePlusOutline } from 'mdi-material-ui'
 import { useRouter } from 'next/router'
 import { useAppDispatch } from 'src/hooks'
 import { setCompanyData, initialState } from 'src/features/companyDataSlice'
 import { setCompanyData as setNewCompanyData, initialState as newCompanyInitialState } from 'src/features/newCompanyDataSlice'
 import Tooltip from '@mui/material/Tooltip';
-import SearchBar2 from '../SearchBar2'
+import SearchBar from '../SearchBar'
 
 interface Props {
     hidden: boolean
@@ -61,9 +55,15 @@ const AppBarContent = (props: Props) => {
                 </div>
             ) : null} */}
 
-            <div style={{paddingTop: '10px', paddingBottom: '10px', flex: 1, display: 'flex', justifyContent: 'center'}}>
-                <SearchBar2 />
-            </div>
+            {!hidden ?
+                <div style={{ paddingTop: '10px', paddingBottom: '10px', flex: 1, display: 'flex', justifyContent: 'center' }}>
+                    <div style={{maxWidth: '700px', width: '100%'}}>
+                        <SearchBar />
+                    </div>
+                </div>
+                :
+                null
+            }
 
             <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
                 {/* {hiddenSm ? null : (
