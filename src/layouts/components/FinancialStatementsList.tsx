@@ -120,7 +120,7 @@ const FinancialStatementsList = () => {
         }
 
         const columns: GridColumns = [
-            { field: 'year', headerName: 'Year', editable: true },
+            { field: 'year', headerName: 'Year', editable: true, flex: 1, minWidth: 220 },
             { field: 'balanceSheet', headerName: 'BalanceSheet', type: 'boolean', width: 220, editable: false, valueGetter: RenderStatement },
             { field: 'incomeStatement', headerName: 'IncomeStatement', type: 'boolean', width: 220, editable: false, valueGetter: RenderStatement },
             { field: 'cashFlowStatement', headerName: 'Cash flow statement', type: 'boolean', width: 220, editable: false, valueGetter: RenderStatement },

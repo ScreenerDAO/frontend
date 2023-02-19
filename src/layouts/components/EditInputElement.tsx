@@ -100,7 +100,7 @@ const EditInputElement = ({
     }
 
     const openMultipleValuesModal = () => {
-        if (!element.multipleValues) {
+        if (element && !element?.multipleValues) {
             let newElement = {...element}
             newElement.multipleValues = [element.value]
 

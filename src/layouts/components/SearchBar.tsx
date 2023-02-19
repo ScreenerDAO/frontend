@@ -6,6 +6,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { useRouter } from 'next/router'
 import { selectCompany } from 'src/helpers/generalMethods';
+import AcUnitIcon from '@mui/icons-material/AcUnit';
 
 const SearchBar = () => {
     // const [value, setValue] = React.useState<FilmOptionType | null>(null);
@@ -95,6 +96,9 @@ const SearchBar = () => {
                                     <SearchIcon />
                                 </InputAdornment>
                             ),
+                            endAdornment: [
+                                <>{params.InputProps.endAdornment}</>,
+                            ]
                         }}
                     // InputLabelProps={{
                     //     style: { lineHeight: '40px'}

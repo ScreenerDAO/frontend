@@ -67,7 +67,7 @@ const MultipleValuesModal = ({
                                 }
                                 value={multipleValuesElement ?? ''}
                                 onChange={ev => {
-                                    let newElementMultipleValues = [...element.multipleValues ?? ['']]
+                                    let newElementMultipleValues = [...element?.multipleValues ?? ['']]
                                     newElementMultipleValues[index] = ev.target.value
 
                                     let newElement = {...element}

@@ -157,7 +157,7 @@ const Dashboard = () => {
                 <Grid item xs={12} md={8}>
                     <Card>
                         <Box sx={{ width: '90%', marginLeft: '5%', paddingTop: '5px', paddingBottom: '5px', textAlign: 'center' }}>
-                            Top companies
+                            Leaderboard
                         </Box>
                     </Card>
                 </Grid>

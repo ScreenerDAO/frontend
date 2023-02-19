@@ -1,3 +1,5 @@
+import { ICompanyData } from "./CompanyDataTypes";
+
 enum AutofillOperation {
     Add,
     Subtract
@@ -191,6 +193,24 @@ const incomeStatementTypesNames: { [key: number]: string } = {
     22: "Depreciation and amortization"
 }
 
+interface IRatio {
+    name: string
+    function: (year: number, companyData: ICompanyData) => number | null
+}
+
+const ratios: IRatio[] = [
+    {name: 'Net margin', function: (year: number, companyData: ICompanyData) => {
+        let netIncome = Number(companyData.financialStatements[year].incomeStatement[19]?.value)
+        let revenue = Number(companyData.financialStatements[year].incomeStatement[1]?.value)
+
+        if (!netIncome || !revenue) {
+            return null
+        }
+
+        return parseFloat((netIncome / revenue).toFixed(4))
+    }}
+]
+
 const cashFlowStatementTypes: { [key: number]: string } = {
     1: "Operating cash flow",
     2: "Net income",
@@ -219,10 +239,12 @@ export {
     incomeStatementTypesNames,
     AutofillOperation,
     currencies,
-    countries
+    countries,
+    ratios
 }
 
 export type {
     IElement,
-    IElementsGroup
+    IElementsGroup,
+    IRatio
 }

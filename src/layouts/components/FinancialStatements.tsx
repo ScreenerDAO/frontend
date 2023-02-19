@@ -14,6 +14,7 @@ import Chart, { getLabel } from './Chart';
 import LogarithmicScaleSwitch from './LogarithmicScale';
 import CloseIcon from '@mui/icons-material/Close';
 import { balanceSheetTypesNames, incomeStatementTypesNames } from 'src/types/FinancialStatementsTypes';
+import Ratios from './Ratios';
 
 const getSelectedYearsArray = (yearsArray: number[], minAndMax: number[]) => {
     let newArray = []
@@ -146,7 +147,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                     </Card>
                 </Grid>
 
-                {(tabIndex === 0 || tabIndex === 1 || tabIndex === 2) && selectedLabels.length > 0 ?
+                {tabIndex >= 0 && tabIndex <= 3 && selectedLabels.length > 0 ?
                     <Grid item xs={12} md={12}>
                         <Card style={{ paddingLeft: '20px', paddingRight: '20px', paddingTop: '10px', paddingBottom: '10px' }}>
 
@@ -218,7 +219,8 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                                 <Tab label="Balance sheet" {...a11yProps(0)} />
                                 <Tab label="Income statement" {...a11yProps(1)} />
                                 <Tab label="Cash flow" {...a11yProps(2)} />
-                                <Tab label="Annual reports" {...a11yProps(3)} />
+                                <Tab label="Ratios" {...a11yProps(3)} />
+                                <Tab label="Annual reports" {...a11yProps(4)} />
                             </Tabs>
                         </Box >
 
@@ -229,7 +231,6 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                                 selectedLabels={selectedLabels}
                                 setSelectedLabels={labels => {
                                     setSelectedLabels(labels)
-                                    // setRandom(Math.random())
                                 }}
                                 // excludedLabels={excludedLabels["balanceSheet"]}
                             />
@@ -242,15 +243,18 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                                 selectedLabels={selectedLabels}
                                 setSelectedLabels={labels => {
                                     setSelectedLabels(labels)
-                                    // setRandom(Math.random())
                                 }}
                                 // excludedLabels={excludedLabels["incomeStatement"]}
                             />
                         </TabPanel>
 
-                        <TabPanel value={tabIndex} index={2}>Item Three</TabPanel>
+                        <TabPanel value={tabIndex} index={2}></TabPanel>
 
                         <TabPanel value={tabIndex} index={3}>
+                            <Ratios yearsSelected={getSelectedYearsArray(years, yearsSelected)} />
+                        </TabPanel>
+
+                        <TabPanel value={tabIndex} index={4}>
                             <AnnualReports data={props.companyData} />
                         </TabPanel>
                     </Card>
