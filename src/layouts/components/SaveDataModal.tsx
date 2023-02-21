@@ -9,10 +9,8 @@ import Box from '@mui/material/Box';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { ICompanyData } from 'src/types/CompanyDataTypes';
 import { Alert, Step, StepContent, StepLabel, Stepper } from '@mui/material';
-import { NFTStorage } from 'nft.storage';
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction, useAccount, useNetwork, useSwitchNetwork, useConnect } from 'wagmi'
-import { nftStorageApiKey, registriesContractAddress, registriesContractABI, chainId } from 'src/metadata'
-import { IGeneral } from 'src/features/general';
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction, useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
+import { registriesContractAddress, registriesContractABI, chainId } from 'src/metadata'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { saveCompanyData } from 'src/helpers/generalMethods';
 import { setCompanyData } from 'src/features/companyDataSlice';
@@ -28,20 +26,16 @@ const SaveDataModal = (props: ISaveDataModalProps) => {
     React.useEffect(() => {
         const callback = async () => {
             let localErrors: React.ReactElement[] = []
-            let hasErrors = false
 
             if (newCompanyData.companyName == null || newCompanyData.companyName == "") {
-                hasErrors = true
                 localErrors.push(<Alert key="1" severity='error' style={{ marginBottom: '10px' }}>Company name must be set</Alert>)
             }
 
             if (newCompanyData.ticker == null || newCompanyData.ticker == "") {
-                hasErrors = true
                 localErrors.push(<Alert key="2" severity='error' style={{ marginBottom: '10px' }}>Company ticker must be set</Alert>)
             }
 
             if (newCompanyData.country == null || newCompanyData.country == "") {
-                hasErrors = true
                 localErrors.push(<Alert key="3" severity='error' style={{ marginBottom: '10px' }}>Company country must be set</Alert>)
             }
 
@@ -142,7 +136,7 @@ const SaveDataToEthereumStep = (props: {
     const companyId = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.id)
     const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.companyName)
     const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.ticker)
-    const companyData = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData)
+    const newCompanyData = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData)
 
     const dispatch = useAppDispatch()
     const { isConnected } = useAccount()
@@ -181,7 +175,7 @@ const SaveDataToEthereumStep = (props: {
                 activeStep: 2
             }))
 
-            // dispatch(setCompanyData(companyData))
+            dispatch(setCompanyData(newCompanyData))
         }
     }, [isSuccess])
 

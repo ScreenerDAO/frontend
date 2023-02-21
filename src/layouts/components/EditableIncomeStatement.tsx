@@ -1,14 +1,12 @@
 import * as React from 'react'
-import { Box, Button, Divider, TextField } from '@mui/material'
-import { IIncomeStatement, IncomeStatementOrderedElements } from '../../types/IncomeStatementTypes'
-import { useAppDispatch, useAppSelector } from '../../hooks'
-import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-import { ICompanyData } from 'src/types/CompanyDataTypes'
+import { Box, Button, Divider } from '@mui/material'
+import { useAppSelector } from '../../hooks'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { IStatement } from 'src/types/CompanyDataTypes'
 import EditInputElement, { StatementType } from './EditInputElement'
 import AccordionWrapper from './AccordionWrapper'
 import { AutofillOperation } from 'src/types/FinancialStatementsTypes'
 import MillionsSwitch from './MillionsSwitch'
-import { changeValuesAsMillions } from 'src/features/general'
 
 interface IEditableIncomeStatementProps {
     year: number
@@ -21,11 +19,11 @@ interface IEditableIncomeStatementProps {
 const EditableIncomeStatement = (props: IEditableIncomeStatementProps): React.ReactElement => {
     const valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
 
-    const { control, handleSubmit } = useForm<IIncomeStatement>({
+    const { control, handleSubmit } = useForm<IStatement>({
         mode: 'onChange'
     });
 
-    const onSubmit: SubmitHandler<IIncomeStatement> = data => {
+    const onSubmit: SubmitHandler<IStatement> = data => {
         props.handleNext()
     }
 
@@ -81,6 +79,13 @@ const EditableIncomeStatement = (props: IEditableIncomeStatementProps): React.Re
                     />
                 </div>
 
+                <EditInputElement
+                    label={23}
+                    statementType={StatementType.IncomeStatement}
+                    year={props.year}
+                    valuesAsThousands={valuesAsMillions}
+                />
+
                 <Divider sx={{ marginTop: "20px" }} />
 
                 <EditInputElement
@@ -90,7 +95,8 @@ const EditableIncomeStatement = (props: IEditableIncomeStatementProps): React.Re
                     valuesAsThousands={valuesAsMillions}
                     autofillElements={[
                         { label: 3, operation: AutofillOperation.Add },
-                        { label: 8, operation: AutofillOperation.Subtract }
+                        { label: 8, operation: AutofillOperation.Subtract },
+                        { label: 23, operation: AutofillOperation.Add }
                     ]}
                 />
 

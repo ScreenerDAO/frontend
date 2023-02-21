@@ -51,11 +51,9 @@ const Ratios = (props: IRatiosProps): React.ReactElement => {
 
                 {
                     props.yearsSelected.map((year, index) => {
-                        let result = ratio.function(year, companyData)
-
                         return (
                             <TableCell align="right" key={index}>
-                                {result ? `${(result * 100).toFixed(2)}%` : "-"}
+                                {ratio.function(year, companyData)}
                             </TableCell>
                         )
                     })

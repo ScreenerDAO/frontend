@@ -14,7 +14,8 @@ import SaveIcon from '@mui/icons-material/Save';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import SearchBar from 'src/layouts/components/SearchBar'
 import { TransitionProps } from '@mui/material/transitions'
-import { currencies } from 'src/types/FinancialStatementsTypes'
+import { useStore } from 'react-redux';
+import { RootState } from 'src/store';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -91,11 +92,13 @@ const EditRecords = () => {
     const [resetDataModalOpen, setResetDataModalOpen] = useState(false)
     const [tabIndex, setTabIndex] = React.useState(0)
 
+    const store = useStore<RootState>()
     const dispatch = useAppDispatch()
-    const companyData = useAppSelector((state: { companyData: ICompanyData }) => state.companyData)
     const companyLoading = useAppSelector((state: { general: IGeneral }) => state.general.companyLoading)
 
     const resetData = () => {
+        let companyData = store.getState().companyData
+
         if (companyData.id == null) {
             dispatch(setCompanyData(initialState))
 
@@ -109,7 +112,7 @@ const EditRecords = () => {
         <>
             <Grid item xs={12} md={12}>
                 <Card style={{ display: 'flex' }}>
-                    <Title />
+                    <CompanyNameAndTicker />
 
                     <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto', marginRight: '15px' }}>
                         <Button
@@ -184,7 +187,7 @@ const EditRecords = () => {
         </>
     )
 
-    const Title = () => {
+    const CompanyNameAndTicker = () => {
         const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["companyName"] as string)
         const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["ticker"] as string)
         const companyId = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.id)
