@@ -77,9 +77,16 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
         }
     }
 
+    /*TODO: add error handling saving file */
     const handleFileUpload = async (params: UploadChangeParam<UploadFile<any>>) => {
         if (params.file.originFileObj) {
-            let hash = await saveFile(params.file.originFileObj)
+            let formData = new FormData()
+            formData.append('file', params.file.originFileObj)
+
+            let hash = await (await fetch('/api/SaveFile', {
+                method: 'POST',
+                body: formData
+            })).text()
             
             dispatch(setAnnualReportHash({ year: props.year, hash: hash }))
         }

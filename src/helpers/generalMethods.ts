@@ -3,8 +3,7 @@ import { ICompanyData, ICompanyEthData, IFinancialStatement } from "../types/Com
 import { IGeneral, setCompanyLoading } from "src/features/general"
 import { setCompanyData } from "src/features/companyDataSlice"
 import { setCompanyData as setNewCompanyData } from 'src/features/newCompanyDataSlice'
-import { nftStorageApiKey, web3StorageApiKey } from "src/metadata"
-import { NFTStorage } from "nft.storage"
+import { NFTStorage, Blob } from "nft.storage"
 import { WebBundlr } from '@bundlr-network/client';
 import { Web3Storage } from "web3.storage"
 
@@ -40,9 +39,9 @@ const saveCompanyData = async (data: ICompanyData) => {
 
 const saveCompanyDataNftStorage = async (data: ICompanyData): Promise<string> => {
     try {
-        const client = new NFTStorage({ token: nftStorageApiKey })
+        const client = new NFTStorage({ token: process.env.NFT_STORAGE_API_KEY as string })
 
-        let blob = new Blob([JSON.stringify(data)])
+        const blob = new Blob([JSON.stringify(data)])
 
         const { car } = await NFTStorage.encodeBlob(blob)
 
@@ -55,17 +54,11 @@ const saveCompanyDataNftStorage = async (data: ICompanyData): Promise<string> =>
 
 const saveCompanyDataWeb3Storage = async (data: ICompanyData): Promise<string> => {
     try {
-        let client = new Web3Storage({ token: web3StorageApiKey })
+        const client = new Web3Storage({ token: process.env.WEB3_STORAGE_API_KEY as string })
 
         const blob = new Blob([JSON.stringify(data)])
 
         const { car } = await NFTStorage.encodeBlob(blob)
-
-        // const { car } = await NFTStorage.encodeNFT({
-        //     description: "",
-        //     name: "",
-        //     image: file
-        // })
 
         return await client.putCar(car)
     }
@@ -106,21 +99,9 @@ const saveFile = async (file: File) => {
 
 const saveFileToNftStorage = async (file: File): Promise<string> => {
     try {
-        // let client = new NFTStorage({ token: nftStorageApiKey })
+        const client = new NFTStorage({ token: process.env.NFT_STORAGE_API_KEY as string })
 
-        // const { car } = await NFTStorage.encodeNFT({
-        //     description: file.name,
-        //     name: file.name,
-        //     image: file
-        // })
-
-        // console.log(car)
-
-        // return await client.storeCar(car)
-
-        const client = new NFTStorage({ token: nftStorageApiKey })
-
-        let blob = new Blob([file], {type: 'application/pdf'})
+        const blob = new Blob([file], {type: 'application/pdf'})
 
         const { car } = await NFTStorage.encodeBlob(blob)
 
@@ -133,17 +114,7 @@ const saveFileToNftStorage = async (file: File): Promise<string> => {
 
 const saveFileToWeb3Storage = async (file: File): Promise<string> => {
     try {
-        // let client = new Web3Storage({ token: web3StorageApiKey })
-
-        // const { car } = await NFTStorage.encodeNFT({
-        //     description: file.name,
-        //     name: file.name,
-        //     image: file
-        // })
-
-        // return await client.putCar(car)
-
-        let client = new Web3Storage({ token: web3StorageApiKey })
+        const client = new Web3Storage({ token: process.env.WEB3_STORAGE_API_KEY as string })
 
         const blob = new Blob([file], {type: 'application/pdf'})
 
@@ -186,15 +157,6 @@ const getCompanyData = async (dataHash: string): Promise<ICompanyData | null> =>
         }
 
         throw new Error('Error fetching company data')
-
-        // let response = await fetch(`https://nftstorage.link/ipfs/${dataHash}`)
-
-        // if (response.ok) {
-        //     return await response.json() as ICompanyData
-        // }
-        // else {
-        //     throw new Error('Error fetching company data')
-        // }
     }
     catch (error) {
         throw error
@@ -203,7 +165,7 @@ const getCompanyData = async (dataHash: string): Promise<ICompanyData | null> =>
 
 const getCompanyDataWeb3Storage = async (dataHash: string): Promise<ICompanyData | null> => {
     try {
-        let client = new Web3Storage({ token: web3StorageApiKey })
+        let client = new Web3Storage({ token: process.env.WEB3_STORAGE_API_KEY as string })
 
         let response = await client.get(dataHash)
         let files = (await response?.files())
@@ -212,24 +174,6 @@ const getCompanyDataWeb3Storage = async (dataHash: string): Promise<ICompanyData
             let blob = new Blob([files[0]], { type: files[0].type })
 
             return JSON.parse(await blob.text()) as ICompanyData
-        }
-
-        return null
-    }
-    catch (error) {
-        throw error
-    }
-}
-
-const getFileWeb3Storage = async (dataHash: string): Promise<File | null> => {
-    try {
-        let client = new Web3Storage({token: web3StorageApiKey})
-
-        let response = await client.get(dataHash)
-        let files = (await response?.files())
-
-        if (files && files.length > 0) {
-            return files[0]
         }
 
         return null

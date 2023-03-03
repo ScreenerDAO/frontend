@@ -40,7 +40,7 @@ const AnnualReports = (props: IAnnualReportsProps) => {
     const [rows, setRows] = React.useState<GridRowsProp>([]);
     const columns: GridColumns = [
         { field: 'year', headerName: 'Year', width: 100, editable: false },
-        { field: 'ipfsLink', headerName: 'PDF link',width: 300 ,headerAlign: 'center', editable: false, renderCell: RenderIpfs },
+        { field: 'ipfsLink', headerName: 'PDF link',width: 300, flex: 1, align: 'right', editable: false, renderCell: RenderIpfs },
     ]
 
     React.useEffect(() => {

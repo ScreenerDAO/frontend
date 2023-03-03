@@ -75,29 +75,16 @@ const SaveDataModal = (props: ISaveDataModalProps) => {
     );
 }
 
-const SaveDataStepper = (props: { newCompanyData: ICompanyData }) => {
-    const [state, setState] = React.useState<{ activeStep: number, cid: string }>({
+interface ISaveDataStepperState {
+    activeStep: number
+    cid: string
+}
+
+const SaveDataStepper = ({newCompanyData}: { newCompanyData: ICompanyData }) => {
+    const [state, setState] = React.useState<ISaveDataStepperState>({
         activeStep: 0,
         cid: ""
     })
-
-    React.useEffect(() => {
-        const callback = async () => {
-            if (state.activeStep == 0) {
-                let hash = await saveCompanyData(props.newCompanyData)
-
-                if (hash) {
-                    setState(prevState => ({
-                        ...prevState,
-                        activeStep: 1,
-                        cid: hash as string
-                    }))
-                }
-            }
-        }
-
-        callback()
-    }, [state.activeStep])
 
     return (
         <>
@@ -106,7 +93,11 @@ const SaveDataStepper = (props: { newCompanyData: ICompanyData }) => {
                     <StepLabel>Saving data on Filecoin network</StepLabel>
 
                     <StepContent>
-                        <StepSpinner />
+                        <SaveDataToFilecoinStep
+                            newCompanyData={newCompanyData}
+                            state={state}
+                            setState={(newState: ISaveDataStepperState) => setState(newState)}
+                        />
                     </StepContent>
                 </Step>
 
@@ -122,6 +113,57 @@ const SaveDataStepper = (props: { newCompanyData: ICompanyData }) => {
             {state.activeStep == 2 &&
                 <Alert severity="success" sx={{ marginTop: '20px' }}>Company successfully saved!</Alert>
             }
+        </>
+    )
+}
+
+const SaveDataToFilecoinStep = ({newCompanyData, state, setState}: {
+    newCompanyData: ICompanyData
+    state: ISaveDataStepperState
+    setState: (newState: ISaveDataStepperState) => void
+}) => {
+    const [error, setError] = React.useState(false)
+
+    React.useEffect(() => {
+        const callback = async() => {
+            let response = await fetch('/api/SaveCompanyData', {
+                method: 'POST',
+                body: newCompanyData as any
+            })
+
+            if (response.ok) {
+                setState({
+                    activeStep: 1,
+                    cid: await response.text()
+                })
+            }
+            else {
+                setError(true)
+            }
+        }
+
+        if (state.activeStep === 0) {
+            callback()
+        }
+    }, [state.activeStep])
+
+    if (error) {
+        return <ErrorSavingFilecoin retry={() => {
+            setState({...state, })
+            setError(false)
+        }} />
+    }
+
+    return <StepSpinner />
+}
+
+const ErrorSavingFilecoin = ({retry}: {retry: () => void}) => {
+    return (
+        <>
+            <Alert severity='error' style={{ marginBottom: '10px' }}>Error saving company data!</Alert>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Button variant='contained' onClick={retry}>Try again</Button>
+            </div>
         </>
     )
 }
