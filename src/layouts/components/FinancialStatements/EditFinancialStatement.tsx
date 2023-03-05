@@ -4,18 +4,14 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import EditableBalanceSheet from './EditableBalanceSheet';
 import EditableIncomeStatement from './EditableIncomeStatement';
 import EditableCashFlow from './EditableCashFlowStatement';
 import { UploadOutlined } from '@ant-design/icons';
 import { Button as AntButton, Upload } from 'antd';
 import { UploadChangeParam, UploadFile, UploadProps } from 'antd/es/upload/interface';
-import { NFTStorage } from 'nft.storage';
-import { nftStorageApiKey } from 'src/metadata';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { setAnnualReportHash } from 'src/features/newCompanyDataSlice';
-import { saveFile } from 'src/helpers/generalMethods';
 
 const steps = ['Balance sheet', 'Income statement', 'Cash flow statement'];
 
@@ -80,10 +76,10 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
     /*TODO: add error handling saving file */
     const handleFileUpload = async (params: UploadChangeParam<UploadFile<any>>) => {
         if (params.file.originFileObj) {
-            let formData = new FormData()
+            const formData = new FormData()
             formData.append('file', params.file.originFileObj)
 
-            let hash = await (await fetch('/api/SaveFile', {
+            const hash = await (await fetch('/api/SaveFile', {
                 method: 'POST',
                 body: formData
             })).text()

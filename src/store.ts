@@ -3,8 +3,7 @@
 import { configureStore } from "@reduxjs/toolkit"
 import companyDataReducer from "src/features/companyDataSlice"
 import newCompanyDataReducer from "src/features/newCompanyDataSlice"
-import generalReducer, { IGeneral } from "src/features/general"
-import { ICompanyData } from "./types/CompanyDataTypes";
+import generalReducer from "src/features/general"
 
 const store = configureStore({
     reducer: {

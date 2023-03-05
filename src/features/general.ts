@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ICompanyEthData } from 'src/types/CompanyDataTypes'
+import ICompanyEthData from 'src/types/ICompanyEthData'
 
 interface IGeneral {
     companyLoading: boolean

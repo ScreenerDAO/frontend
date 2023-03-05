@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ICompanyData, IFinancialStatement } from 'src/types/CompanyDataTypes'
+import ICompanyData from 'src/types/ICompanyData'
 
 const initialState: ICompanyData = {
     id: null,
     companyName: "",
     ticker: "",
     country: "",
+    
     // currency: null,
     financialStatements: {},
     annualReports: {}
@@ -20,6 +21,7 @@ export const companyDataSlice = createSlice({
             state.companyName = action.payload.companyName
             state.ticker = action.payload.ticker
             state.country = action.payload.country
+
             // state.currency = action.payload.currency
             state.financialStatements = action.payload.financialStatements
             state.annualReports = action.payload.annualReports 

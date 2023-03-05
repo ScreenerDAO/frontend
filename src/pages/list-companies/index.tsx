@@ -1,70 +1,62 @@
-import { gql, useQuery } from '@apollo/client'
-import { Card, Grid, Link as MUILink } from '@mui/material'
-import { DataGrid, GridColumns, GridRowsProp } from '@mui/x-data-grid'
+import { Card, Grid } from '@mui/material'
+import { DataGrid, GridColumns } from '@mui/x-data-grid'
 import React from 'react'
-import { selectCompany } from 'src/helpers/generalMethods'
+import { selectCompany } from 'src/lib/generalMethods'
 import { useAppDispatch, useAppSelector } from 'src/hooks'
 import Link from 'next/link'
-
-const COMPANIES_QUERY = gql`
-    query Companies {
-        companies {
-            id
-            name
-            ticker
-            dataHash
-        }
-    }
-`
+import { useTheme } from '@mui/material/styles';
+import PageWrapper from 'src/layouts/components/PageWrapper'
+import { IGetStaticPropsResult } from 'src/lib/getStaticProps'
 
 const RenderTicker = (params: {
     row: {
-        id: number, 
-        name: string, 
-        ticker: string, 
+        id: number,
+        name: string,
+        ticker: string,
         dataHash: string
     }
 }) => {
     const dispatch = useAppDispatch()
+    const theme = useTheme();
 
     return (
-        <Link href="/company-overview">
-            <MUILink
-                sx={{ textDecoration: 'underline', cursor: 'pointer'}}
-                underline="always" 
-                onClick={() => selectCompany(params.row, dispatch)}
-            >
-                {params.row.ticker}
-            </MUILink>
+        <Link
+            href="/company-overview"
+            onClick={() => selectCompany(params.row, dispatch)}
+            style={{ color: theme.palette.primary.main }}
+        >
+            {params.row.ticker}
         </Link>
     )
 }
 
 const columns: GridColumns = [
-    { field: 'id', headerName: '#', width: 100, editable: false},
+    { field: 'id', headerName: '#', width: 100, editable: false },
     { field: 'name', headerName: 'Name', width: 300, editable: false },
     { field: 'ticker', headerName: 'Ticker', width: 100, editable: false, renderCell: RenderTicker },
 ]
 
-const ListCompanies = () => {
-    // const { loading, error, data } = useQuery<{ companies: ICompanyEthData[] }>(COMPANIES_QUERY)
-    const companies = useAppSelector(state => state.general.companies)
-    const loading = useAppSelector(state => state.general.companyLoading)
+const ListCompanies = ({ companies }: IGetStaticPropsResult) => {
+    
+    // const companies = useAppSelector(state => state.general.companies)
 
     return (
-        <Grid container spacing={3}>
-            <Grid item xs={12} md={12}>
-                <Card>
-                    <DataGrid
-                        rows={companies ?? []}
-                        columns={columns}
-                        loading={loading}
-                        sx={{minHeight: '500px'}}
-                    />
-                </Card>
+        <PageWrapper companies={companies}>
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={12}>
+                    <Card>
+                        <DataGrid
+                            rows={companies ?? []}
+                            columns={columns}
+                            sx={{ minHeight: '500px' }}
+                        />
+                    </Card>
+                </Grid>
             </Grid>
-        </Grid>
+        </PageWrapper>
     )
 }
+
+export { getStaticProps } from '../../lib/getStaticProps'
 
 export default ListCompanies

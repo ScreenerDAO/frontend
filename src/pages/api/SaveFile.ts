@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next/types";
-import { saveFile } from 'src/helpers/generalMethods'
+import { saveFile } from 'src/lib/generalMethods'
 
 export const config = {
     api: {

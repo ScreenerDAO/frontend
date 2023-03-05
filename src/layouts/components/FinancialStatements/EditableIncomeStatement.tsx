@@ -1,12 +1,13 @@
 import * as React from 'react'
 import { Box, Button, Divider } from '@mui/material'
-import { useAppSelector } from '../../hooks'
+import { useAppSelector } from '../../../hooks'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { IStatement } from 'src/types/CompanyDataTypes'
-import EditInputElement, { StatementType } from './EditInputElement'
-import AccordionWrapper from './AccordionWrapper'
+import IStatement from 'src/types/IStatement'
+import EditInputElement from '../EditInputElement'
+import { StatementType } from 'src/types/IStatement'
+import AccordionWrapper from '../AccordionWrapper'
 import { AutofillOperation } from 'src/types/FinancialStatementsTypes'
-import MillionsSwitch from './MillionsSwitch'
+import MillionsSwitch from '../MillionsSwitch'
 
 interface IEditableIncomeStatementProps {
     year: number
@@ -19,13 +20,11 @@ interface IEditableIncomeStatementProps {
 const EditableIncomeStatement = (props: IEditableIncomeStatementProps): React.ReactElement => {
     const valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
 
-    const { control, handleSubmit } = useForm<IStatement>({
+    const { handleSubmit } = useForm<IStatement>({
         mode: 'onChange'
     });
 
-    const onSubmit: SubmitHandler<IStatement> = data => {
-        props.handleNext()
-    }
+    const onSubmit: SubmitHandler<IStatement> = () => props.handleNext()
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>

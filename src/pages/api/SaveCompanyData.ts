@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next/types";
-import { saveCompanyData } from 'src/helpers/generalMethods'
+import { saveCompanyData } from 'src/lib/generalMethods'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {

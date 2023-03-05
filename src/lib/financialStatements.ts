@@ -1,4 +1,4 @@
-import { IFinancialStatement } from "src/types/CompanyDataTypes"
+import IFinancialStatement from "src/types/IFinancialStatement"
 
 const getYearsArray = (financials: { [key: number]: IFinancialStatement }) => {
     if (financials) {

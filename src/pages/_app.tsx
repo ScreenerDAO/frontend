@@ -10,30 +10,18 @@ import UserLayout from 'src/layouts/UserLayout'
 import ThemeComponent from 'src/@core/theme/ThemeComponent'
 import { SettingsConsumer, SettingsProvider } from 'src/@core/context/settingsContext'
 import { createEmotionCache } from 'src/@core/utils/create-emotion-cache'
-import 'react-perfect-scrollbar/dist/css/styles.css'
-import '../../styles/globals.css'
-import '@rainbow-me/rainbowkit/styles.css';
-import {
-    getDefaultWallets,
-    RainbowKitProvider,
-} from '@rainbow-me/rainbowkit';
-import {
-    chain,
-    configureChains,
-    createClient,
-    WagmiConfig,
-} from 'wagmi';
+import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { configureChains, createClient, WagmiConfig, mainnet, goerli } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { Provider } from 'react-redux'
 import store from '../store'
-import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client'
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
 import { THEGRAPH_API_URL } from 'src/metadata'
 import React from 'react'
-import { selectCompany } from 'src/helpers/generalMethods'
-import { setCompanies, setCompanyLoading, setIdToCompany } from 'src/features/general'
-import { ICompanyEthData } from 'src/types/CompanyDataTypes'
+import 'react-perfect-scrollbar/dist/css/styles.css'
+import '../../styles/globals.css'
+import '@rainbow-me/rainbowkit/styles.css';
 
-// ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
     Component: NextPage
     emotionCache: EmotionCache
@@ -42,7 +30,7 @@ type ExtendedAppProps = AppProps & {
 const clientSideEmotionCache = createEmotionCache()
 
 const { chains, provider } = configureChains(
-    [chain.mainnet, chain.polygon, chain.optimism, chain.arbitrum, chain.goerli],
+    [mainnet, goerli],
     [publicProvider()]
 )
 
@@ -74,54 +62,43 @@ if (themeConfig.routingLoader) {
     })
 }
 
-const COMPANY_QUERY = gql`
-    query Company($id: ID!) {
-        company(id: $id) {
-            id
-            name
-            ticker
-            dataHash
-        }
-    }
-`
-
-const COMPANIES_QUERY = gql`
-    query Companies {
-        companies(orderBy: iId) {
-            id
-            name
-            ticker
-            dataHash
-        }
-    }
-`
+// const COMPANIES_QUERY = gql`
+//     query Companies {
+//         companies(orderBy: iId) {
+//             id
+//             name
+//             ticker
+//             dataHash
+//         }
+//     }
+// `
 
 const App = (props: ExtendedAppProps) => {
     const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
     const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
 
-    React.useEffect(() => {
-        const callback = async () => {
-            store.dispatch(setCompanyLoading(true))
+    // React.useEffect(() => {
+    //     const callback = async () => {
+    //         store.dispatch(setCompanyLoading(true))
 
-            let companies: ICompanyEthData[] = (await client.query({query: COMPANIES_QUERY})).data.companies
+    //         const companies: ICompanyEthData[] = (await client.query({ query: COMPANIES_QUERY })).data.companies
 
-            let companyId = (new URLSearchParams(window.location.search)).get('id') ?? 0
+    //         const companyId = (new URLSearchParams(window.location.search)).get('id') ?? 0
 
-            selectCompany(companies[Number(companyId)], store.dispatch)
-            store.dispatch(setCompanies(companies))
+    //         selectCompany(companies[Number(companyId)], store.dispatch)
+    //         store.dispatch(setCompanies(companies))
 
-            let idToCompany: {[key: number]: ICompanyEthData} = {}
+    //         const idToCompany: { [key: number]: ICompanyEthData } = {}
 
-            for (let company of companies) {
-                idToCompany[company.id] = company
-            }
+    //         for (const company of companies) {
+    //             idToCompany[company.id] = company
+    //         }
 
-            store.dispatch(setIdToCompany(idToCompany))
-        }
+    //         store.dispatch(setIdToCompany(idToCompany))
+    //     }
 
-        callback()
-    }, [])
+    //     callback()
+    // }, [])
 
     return (
         <CacheProvider value={emotionCache}>

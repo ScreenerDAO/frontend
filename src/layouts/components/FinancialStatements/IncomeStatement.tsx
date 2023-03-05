@@ -6,7 +6,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { ICompanyData, StatementType } from '../../types/CompanyDataTypes';
+import ICompanyData from 'src/types/ICompanyData';
+import { StatementType } from 'src/types/IStatement';
 import { incomeStatementTypesNames } from 'src/types/FinancialStatementsTypes';
 import { useAppSelector } from 'src/hooks';
 import { IChartLabel } from './FinancialStatements';
@@ -16,6 +17,7 @@ interface IIncomeStatementProps {
     yearsArray: number[]
     selectedLabels: IChartLabel[],
     setSelectedLabels: (labels: IChartLabel[]) => void
+
     // excludedLabels: number[]
 }
 
@@ -81,6 +83,7 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
     }
 
     const Row = ({ label, bold }: { label: number, bold?: boolean }): React.ReactElement => {
+        
         // if (props.excludedLabels.includes(label)) {
         //     return <></>
         // }
@@ -92,7 +95,7 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
                 hover
                 selected={selected}
                 onClick={() => {
-                    let selectedLabels = [...props.selectedLabels]
+                    const selectedLabels = [...props.selectedLabels]
 
                     if (selected) {
                         props.setSelectedLabels(props.selectedLabels.filter(cLabel => cLabel.label !== label))
@@ -127,8 +130,8 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
     }
 
     const CellValue = ({ value }: { value: string }) => {
-        let valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
-        let number = Number(value)
+        const valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
+        const number = Number(value)
 
         if (isNaN(number) || number === 0) {
             return <>-</>

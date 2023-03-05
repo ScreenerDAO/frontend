@@ -7,12 +7,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { ICompanyData } from 'src/types/CompanyDataTypes';
+import ICompanyData from 'src/types/ICompanyData';
 import { Alert, Step, StepContent, StepLabel, Stepper } from '@mui/material';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction, useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
 import { registriesContractAddress, registriesContractABI, chainId } from 'src/metadata'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { saveCompanyData } from 'src/helpers/generalMethods';
 import { setCompanyData } from 'src/features/companyDataSlice';
 
 interface ISaveDataModalProps {
@@ -25,7 +24,7 @@ const SaveDataModal = (props: ISaveDataModalProps) => {
 
     React.useEffect(() => {
         const callback = async () => {
-            let localErrors: React.ReactElement[] = []
+            const localErrors: React.ReactElement[] = []
 
             if (newCompanyData.companyName == null || newCompanyData.companyName == "") {
                 localErrors.push(<Alert key="1" severity='error' style={{ marginBottom: '10px' }}>Company name must be set</Alert>)
@@ -126,7 +125,7 @@ const SaveDataToFilecoinStep = ({newCompanyData, state, setState}: {
 
     React.useEffect(() => {
         const callback = async() => {
-            let response = await fetch('/api/SaveCompanyData', {
+            const response = await fetch('/api/SaveCompanyData', {
                 method: 'POST',
                 body: newCompanyData as any
             })

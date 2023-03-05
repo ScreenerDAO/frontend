@@ -33,7 +33,7 @@ const SwipeableDrawer = styled(MuiSwipeableDrawer)<SwipeableDrawerProps>({
 
 const Drawer = (props: Props) => {
     // ** Props
-    const { hidden, children, navWidth, navVisible, setNavVisible } = props
+    const { children, navWidth, navVisible, setNavVisible } = props
 
     // ** Hook
     const theme = useTheme()
@@ -49,18 +49,20 @@ const Drawer = (props: Props) => {
     }
 
     // Drawer Props for Desktop screens
-    const DesktopDrawerProps = {
-        open: true,
-        onOpen: () => null,
-        onClose: () => null
-    }
+    // const DesktopDrawerProps = {
+    //     open: true,
+    //     onOpen: () => null,
+    //     onClose: () => null
+    // }
 
     return (
         <SwipeableDrawer
             className='layout-vertical-nav'
+            
             // variant={hidden ? 'temporary' : 'permanent'}
             variant='temporary'
             {...MobileDrawerProps}
+            
             // {...(hidden ? { ...MobileDrawerProps } : { ...DesktopDrawerProps })}
             PaperProps={{ sx: { width: navWidth } }}
             sx={{

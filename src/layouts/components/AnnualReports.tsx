@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { DataGrid, GridActionsCellItem, GridColumns, GridEventListener, GridRenderCellParams, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowParams, GridRowsProp, GridToolbarContainer, MuiEvent } from '@mui/x-data-grid';
-import { ICompanyData } from 'src/types/CompanyDataTypes';
-import { getYearsArray } from 'src/helpers/financialStatements';
-import Image from 'next/image'
+import { DataGrid, GridColumns, GridRenderCellParams, GridRowsProp } from '@mui/x-data-grid';
+import ICompanyData from 'src/types/ICompanyData';
+import { getYearsArray } from 'src/lib/financialStatements';
 import { Button } from '@mui/material';
 
 const Link1 = (pdfLink: string) => {
@@ -47,7 +46,7 @@ const AnnualReports = (props: IAnnualReportsProps) => {
         const yearsArray = getYearsArray(props.data.financialStatements)
 
         if (yearsArray?.length > 0) {
-            let initialRows = []
+            const initialRows = []
 
             for (const year of yearsArray) {
                 initialRows.push({

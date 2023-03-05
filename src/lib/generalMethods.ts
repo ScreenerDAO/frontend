@@ -1,10 +1,11 @@
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit"
-import { ICompanyData, ICompanyEthData, IFinancialStatement } from "../types/CompanyDataTypes"
+import ICompanyData from "src/types/ICompanyData"
+import ICompanyEthData from "src/types/ICompanyEthData"
+import IFinancialStatement from "src/types/IFinancialStatement"
 import { IGeneral, setCompanyLoading } from "src/features/general"
 import { setCompanyData } from "src/features/companyDataSlice"
 import { setCompanyData as setNewCompanyData } from 'src/features/newCompanyDataSlice'
 import { NFTStorage, Blob } from "nft.storage"
-import { WebBundlr } from '@bundlr-network/client';
 import { Web3Storage } from "web3.storage"
 
 const saveCompanyData = async (data: ICompanyData) => {
@@ -12,8 +13,8 @@ const saveCompanyData = async (data: ICompanyData) => {
     let hashWeb3Storage = null
 
     try {
-        let nftStoragePromise = saveCompanyDataNftStorage(data)
-        let web3StoragePromise = saveCompanyDataWeb3Storage(data)
+        const nftStoragePromise = saveCompanyDataNftStorage(data)
+        const web3StoragePromise = saveCompanyDataWeb3Storage(data)
 
         hashNftStorage = await nftStoragePromise
         hashWeb3Storage = await web3StoragePromise
@@ -72,8 +73,8 @@ const saveFile = async (file: File) => {
     let hashWeb3Storage = null
 
     try {
-        let nftStoragePromise = saveFileToNftStorage(file)
-        let web3StoragePromise = saveFileToWeb3Storage(file)
+        const nftStoragePromise = saveFileToNftStorage(file)
+        const web3StoragePromise = saveFileToWeb3Storage(file)
 
         hashNftStorage = await nftStoragePromise
         hashWeb3Storage = await web3StoragePromise
@@ -128,29 +129,15 @@ const saveFileToWeb3Storage = async (file: File): Promise<string> => {
     }
 }
 
-const saveCompanyDataBundlr = async (data: ICompanyData): Promise<void> => {
-    try {
-        //the following private key was optained from the internet, it is not a real private key
-        const bundlr = new WebBundlr("http://node1.bundlr.network", "matic", "f21dd900f4eb983b60c1709f361fe53d9872c4e54690e97d8369a22b3187de47")
-
-        let response = await bundlr.upload(JSON.stringify(data))
-
-        console.log(response)
-    }
-    catch (error) {
-        throw error
-    }
-}
-
 const getCompanyData = async (dataHash: string): Promise<ICompanyData | null> => {
     try {
-        let companyDataNFTStorage = await getCompanyDataNFTStorage(dataHash)
+        const companyDataNFTStorage = await getCompanyDataNFTStorage(dataHash)
 
         if (companyDataNFTStorage) {
             return companyDataNFTStorage
         }
 
-        let companyDataWeb3Storage = await getCompanyDataWeb3Storage(dataHash)
+        const companyDataWeb3Storage = await getCompanyDataWeb3Storage(dataHash)
 
         if (companyDataWeb3Storage) {
             return companyDataWeb3Storage
@@ -165,15 +152,10 @@ const getCompanyData = async (dataHash: string): Promise<ICompanyData | null> =>
 
 const getCompanyDataWeb3Storage = async (dataHash: string): Promise<ICompanyData | null> => {
     try {
-        let client = new Web3Storage({ token: process.env.WEB3_STORAGE_API_KEY as string })
+        const response = await fetch(`https://${dataHash}.ipfs.w3s.link`)
 
-        let response = await client.get(dataHash)
-        let files = (await response?.files())
-
-        if (files && files.length > 0) {
-            let blob = new Blob([files[0]], { type: files[0].type })
-
-            return JSON.parse(await blob.text()) as ICompanyData
+        if (response.ok) {
+            return (await response.json()) as ICompanyData
         }
 
         return null
@@ -185,7 +167,7 @@ const getCompanyDataWeb3Storage = async (dataHash: string): Promise<ICompanyData
 
 const getCompanyDataNFTStorage = async (dataHash: string): Promise<ICompanyData | null> => {
     try {
-        let response = await fetch(`https://nftstorage.link/ipfs/${dataHash}`)
+        const response = await fetch(`https://nftstorage.link/ipfs/${dataHash}`)
 
         if (response.ok) {
             return (await response.json()) as ICompanyData
@@ -207,6 +189,7 @@ const selectCompany = async (
     }, undefined, AnyAction>
 ) => {
     let companyData = {} as ICompanyData
+    
     // companyData.id = item.id
 
     try {
@@ -226,9 +209,9 @@ const selectCompany = async (
         companyData.id = item.id
 
         //Format old schema to new schema
-        for (let year in companyData.financialStatements) {
-            for (let statement in companyData.financialStatements[year]) {
-                for (let item in companyData.financialStatements[year][statement as keyof IFinancialStatement]) {
+        for (const year in companyData.financialStatements) {
+            for (const statement in companyData.financialStatements[year]) {
+                for (const item in companyData.financialStatements[year][statement as keyof IFinancialStatement]) {
                     if (typeof companyData.financialStatements[year][statement as keyof IFinancialStatement][item] === 'string') {
                         companyData.financialStatements[year][statement as keyof IFinancialStatement][item] = {
                             value: companyData.financialStatements[year][statement as keyof IFinancialStatement][item] as unknown as string,

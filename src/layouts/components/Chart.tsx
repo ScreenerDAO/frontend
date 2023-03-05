@@ -16,9 +16,9 @@ import { Chart } from 'react-chartjs-2';
 import { balanceSheetTypesNames, incomeStatementTypesNames } from 'src/types/FinancialStatementsTypes';
 import { useStore } from 'react-redux';
 import { RootState } from 'src/store';
-import { StatementType } from 'src/types/CompanyDataTypes';
+import { StatementType } from 'src/types/IStatement';
 import { useAppSelector } from 'src/hooks';
-import { IChartLabel } from './FinancialStatements';
+import { IChartLabel } from './FinancialStatements/FinancialStatements';
 
 ChartJS.register(
     LinearScale,
@@ -34,7 +34,7 @@ ChartJS.register(
 );
 
 const getSelectedYearsArray = (yearsArray: number[], minAndMax: number[]) => {
-    let newArray = []
+    const newArray = []
 
     for (const year of yearsArray) {
         if (year >= minAndMax[0] && year <= minAndMax[1]) {
@@ -66,7 +66,7 @@ const getValue = (
         return store.getState().companyData.financialStatements[year].balanceSheet[label.label]?.value
     }
     if (label.statement === StatementType.IncomeStatement) {
-        let incomeStatement = store.getState().companyData.financialStatements[year].incomeStatement
+        const incomeStatement = store.getState().companyData.financialStatements[year].incomeStatement
 
         if (incomeStatement) {
             return store.getState().companyData.financialStatements[year].incomeStatement[label.label]?.value
@@ -146,14 +146,18 @@ const CustomChart = (props: IProps) => {
                 ticks: {
                     callback: (value: any) => {
                         if (value >= 1000000000) {
+                            
                             return `${value / 1000000000}B`
                         }
                         if (value >= 1000000) {
+
                             return `${value / 1000000}M`
                         }
                         if (value >= 1000) {
+
                             return `${value / 1000}K`
                         }
+
                         return value
                     }
                 },

@@ -2,12 +2,12 @@ import * as React from 'react'
 import { Box, Button } from '@mui/material'
 import { useForm, SubmitHandler } from "react-hook-form"
 import { AutofillOperation, balanceSheetStructure } from 'src/types/FinancialStatementsTypes'
-import EditInputElement, { StatementType } from './EditInputElement'
-import AccordionWrapper from './AccordionWrapper'
-import { IStatement } from 'src/types/CompanyDataTypes'
-import MillionsSwitch from './MillionsSwitch'
-import { useAppDispatch, useAppSelector } from 'src/hooks'
-import { changeValuesAsMillions } from 'src/features/general'
+import EditInputElement from '../EditInputElement'
+import { StatementType } from 'src/types/IStatement'
+import AccordionWrapper from '../AccordionWrapper'
+import IStatement from 'src/types/IStatement'
+import MillionsSwitch from '../MillionsSwitch'
+import { useAppSelector } from 'src/hooks'
 
 interface IEditableBalanceSheetProps {
     year: number
@@ -20,13 +20,11 @@ interface IEditableBalanceSheetProps {
 const EditableBalanceSheet = (props: IEditableBalanceSheetProps): React.ReactElement => {
     const valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
 
-    const { control, handleSubmit } = useForm<IStatement>({
+    const { handleSubmit } = useForm<IStatement>({
         mode: 'onChange'
     });
 
-    const onSubmit: SubmitHandler<IStatement> = data => {
-        props.handleNext()
-    }
+    const onSubmit: SubmitHandler<IStatement> = () => props.handleNext()
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -70,6 +68,7 @@ const EditableBalanceSheet = (props: IEditableBalanceSheetProps): React.ReactEle
                     Back
                 </Button>
                 <Box sx={{ flex: '1 1 auto' }} />
+
                 {/* <Button onClick={props.handleNext} type='submit'>
                     {props.activeStep === props.steps.length - 1 ? 'Finish' : 'Next'}
                 </Button> */}

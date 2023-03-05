@@ -4,10 +4,10 @@ import Card from '@mui/material/Card'
 import React from 'react'
 import { useAppDispatch, useAppSelector } from 'src/hooks'
 import { IGeneral } from 'src/features/general'
-import { ICompanyData } from 'src/types/CompanyDataTypes'
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, Slide, Tab, Tabs, TextField } from '@mui/material'
+import ICompanyData from 'src/types/ICompanyData'
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Slide, Tab, Tabs, TextField } from '@mui/material'
 import { setCompanyCountry, setCompanyData, setCompanyName, setCompanyTicker } from 'src/features/newCompanyDataSlice'
-import FinancialStatementsList from 'src/layouts/components/FinancialStatementsList'
+import FinancialStatementsList from 'src/layouts/components/FinancialStatements/FinancialStatementsList'
 import SaveDataModal from 'src/layouts/components/SaveDataModal'
 import { initialState } from 'src/features/newCompanyDataSlice'
 import SaveIcon from '@mui/icons-material/Save';
@@ -16,78 +16,13 @@ import SearchBar from 'src/layouts/components/SearchBar'
 import { TransitionProps } from '@mui/material/transitions'
 import { useStore } from 'react-redux';
 import { RootState } from 'src/store';
+import ICompanyEthData from 'src/types/ICompanyEthData'
+import PageWrapper from 'src/layouts/components/PageWrapper'
+import type { IGetStaticPropsResult } from '../../lib/getStaticProps'
 
-interface TabPanelProps {
-    children?: React.ReactNode;
-    index: number;
-    value: number;
-}
-
-const TabPanel = ({ children, value, index, ...other }: TabPanelProps) => (
-    <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
-    >
-        {value === index && (
-            <Box sx={{ p: 3 }}>{children}</Box>
-        )}
-    </div>
-);
-
-const a11yProps = (index: number) => ({
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-})
-
-const Transition = React.forwardRef(function Transition(
-    props: TransitionProps & {
-        children: React.ReactElement<any, any>;
-    },
-    ref: React.Ref<unknown>,
-) {
-    return <Slide direction="up" ref={ref} {...props} />;
-});
-
-const ResetDataModal = ({
-    open,
-    handleClose,
-    resetData
-}: {
-    open: boolean,
-    handleClose: () => void
-    resetData: () => void
+const EditRecords = ({ companies }: {
+    companies: ICompanyEthData[]
 }) => {
-    return (
-
-        <Dialog
-            open={open}
-            TransitionComponent={Transition}
-            keepMounted
-            onClose={handleClose}
-            aria-describedby="alert-dialog-slide-description"
-        >
-            <DialogTitle>{"Do you want to reset the data?"}</DialogTitle>
-            <DialogContent>
-                <DialogContentText id="alert-dialog-slide-description">
-                    All the data added deleted or updated in this session
-                    will be lost
-                </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleClose}>Disagree</Button>
-                <Button onClick={() => {
-                    resetData()
-                    handleClose()
-                }}>Agree</Button>
-            </DialogActions>
-        </Dialog>
-    );
-}
-
-const EditRecords = () => {
     const [saveDataModalOpen, setSaveDataModalOpen] = useState(false)
     const [resetDataModalOpen, setResetDataModalOpen] = useState(false)
     const [tabIndex, setTabIndex] = React.useState(0)
@@ -97,7 +32,7 @@ const EditRecords = () => {
     const companyLoading = useAppSelector((state: { general: IGeneral }) => state.general.companyLoading)
 
     const resetData = () => {
-        let companyData = store.getState().companyData
+        const companyData = store.getState().companyData
 
         if (companyData.id == null) {
             dispatch(setCompanyData(initialState))
@@ -187,6 +122,29 @@ const EditRecords = () => {
         </>
     )
 
+    const a11yProps = (index: number) => ({
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
+    })
+    
+    const TabPanel = ({ children, value, index, ...other }: {
+        children?: React.ReactNode;
+        index: number;
+        value: number;
+    }) => (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box sx={{ p: 3 }}>{children}</Box>
+            )}
+        </div>
+    );
+
     const CompanyNameAndTicker = () => {
         const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["companyName"] as string)
         const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["ticker"] as string)
@@ -259,6 +217,51 @@ const EditRecords = () => {
         )
     }
 
+    const ResetDataModal = ({
+        open,
+        handleClose,
+        resetData
+    }: {
+        open: boolean,
+        handleClose: () => void
+        resetData: () => void
+    }) => {
+        return (
+    
+            <Dialog
+                open={open}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={handleClose}
+                aria-describedby="alert-dialog-slide-description"
+            >
+                <DialogTitle>{"Do you want to reset the data?"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-slide-description">
+                        All the data added deleted or updated in this session
+                        will be lost
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Disagree</Button>
+                    <Button onClick={() => {
+                        resetData()
+                        handleClose()
+                    }}>Agree</Button>
+                </DialogActions>
+            </Dialog>
+        );
+    }
+
+    const Transition = React.forwardRef(function Transition(
+        props: TransitionProps & {
+            children: React.ReactElement<any, any>;
+        },
+        ref: React.Ref<unknown>,
+    ) {
+        return <Slide direction="up" ref={ref} {...props} />;
+    });
+
     // const CompanyCurrency = () => {
     //     const companyCurrency = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.currency)
 
@@ -287,25 +290,29 @@ const EditRecords = () => {
     // }
 
     return (
-        <Grid container spacing={3}>
-            <Grid item xs={12} md={12} sx={{ display: { xs: 'block', md: 'none' }, marginBottom: '10px' }}>
-                <SearchBar />
-            </Grid>
+        <PageWrapper companies={companies}>
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={12} sx={{ display: { xs: 'block', md: 'none' }, marginBottom: '10px' }}>
+                    <SearchBar />
+                </Grid>
 
-            {companyLoading ?
-                <div style={{
-                    height: '300px',
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}><CircularProgress /></div>
-                :
-                <CompanyDashboard />
-            }
-        </Grid>
+                {companyLoading ?
+                    <div style={{
+                        height: '300px',
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}><CircularProgress /></div>
+                    :
+                    <CompanyDashboard />
+                }
+            </Grid>
+        </PageWrapper>
     )
 }
+
+export { getStaticProps } from '../../lib/getStaticProps'
 
 export default EditRecords

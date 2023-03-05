@@ -6,8 +6,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { ICompanyData, StatementType } from '../../types/CompanyDataTypes';
-import FinancialStatementField from './FinancialStatementField';
+import ICompanyData from 'src/types/ICompanyData';
+import { StatementType } from 'src/types/IStatement';
 import { IElement, IElementsGroup, balanceSheetStructure, balanceSheetTypesNames } from 'src/types/FinancialStatementsTypes';
 import { useAppSelector } from 'src/hooks';
 import { IChartLabel } from './FinancialStatements';
@@ -17,6 +17,7 @@ interface IBalanceSheetProps {
     yearsSelected: number[]
     selectedLabels: IChartLabel[],
     setSelectedLabels: (labels: IChartLabel[]) => void,
+
     // excludedLabels: number[]
 }
 
@@ -74,16 +75,17 @@ const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
         )
     }
 
-    const Row = ({ label, bold, final }: { label: number, bold?: boolean, final?: boolean }): React.ReactElement => {
+    const Row = ({ label, bold }: { label: number, bold?: boolean, final?: boolean }): React.ReactElement => {
         const selected = props.selectedLabels.filter(label => label.statement === StatementType.BalanceSheet).map(label => (label.label)).includes(label)
 
         return (
             <TableRow
                 hover
                 selected={selected}
+
                 // sx={{ borderTop: final ? '2px solid grey' : '1px solid black'}}
                 onClick={() => {
-                    let selectedLabels = [...props.selectedLabels]
+                    const selectedLabels = [...props.selectedLabels]
 
                     if (selected) {
                         props.setSelectedLabels(props.selectedLabels.filter(cLabel => cLabel.label !== label))
@@ -118,8 +120,8 @@ const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
     }
 
     const CellValue = ({ value }: { value: string }) => {
-        let valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
-        let number = Number(value)
+        const valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
+        const number = Number(value)
 
         if (isNaN(number) || number === 0) {
             return <>-</>

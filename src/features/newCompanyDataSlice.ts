@@ -1,5 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ICompanyData, IFinancialStatement, IStatement, IStatementElement, StatementType } from 'src/types/CompanyDataTypes'
+import ICompanyData from 'src/types/ICompanyData'
+import IFinancialStatement from 'src/types/IFinancialStatement'
+import IStatementElement from 'src/types/IStatementElement'
+import { StatementType } from 'src/types/IStatement'
 
 // Define the initial state using that type
 const initialState: ICompanyData = {
@@ -7,6 +10,7 @@ const initialState: ICompanyData = {
     companyName: "",
     ticker: "",
     country: "",
+    
     // currency: null,
     financialStatements: {},
     annualReports: {}
@@ -21,6 +25,7 @@ export const newCompanyDataSlice = createSlice({
             state.companyName = action.payload.companyName
             state.ticker = action.payload.ticker
             state.country = action.payload.country
+            
             // state.currency = action.payload.currency
             state.financialStatements = action.payload.financialStatements ?? {}
             state.annualReports = action.payload.annualReports ?? {}
@@ -34,6 +39,7 @@ export const newCompanyDataSlice = createSlice({
         setCompanyCountry: (state, action: PayloadAction<string>) => {
             state.country = action.payload
         },
+        
         // setCompanyCurrency: (state, action: PayloadAction<number>) => {
         //     state.currency = action.payload
         // },
@@ -46,7 +52,7 @@ export const newCompanyDataSlice = createSlice({
         },
         setAnnualReportHash: (state, action: PayloadAction<{year: number | string, hash: string}>) => {
             if (action.payload.hash == "") {
-                let annualReports = state.annualReports
+                const annualReports = state.annualReports
 
                 delete annualReports[action.payload.year]
 
@@ -57,12 +63,13 @@ export const newCompanyDataSlice = createSlice({
             }            
         },
         setStatementElement: (state, action: PayloadAction<{year: number | string, statement: StatementType, element: number, value: IStatementElement}>) => {
+            
             // state.financialStatements[action.payload.year]["fds" as keyof IFinancialStatement][action.payload.element] = action.payload.value
             state.financialStatements[action.payload.year][action.payload.statement as keyof IFinancialStatement][action.payload.element] = action.payload.value
         },
         deleteYear: (state, action: PayloadAction<number | string>) => {
-            let financialStatements = state.financialStatements
-            let annualReports = state.annualReports
+            const financialStatements = state.financialStatements
+            const annualReports = state.annualReports
 
             delete financialStatements[action.payload]
             delete annualReports[action.payload]

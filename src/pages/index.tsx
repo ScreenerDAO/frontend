@@ -2,14 +2,15 @@ import Grid from '@mui/material/Grid'
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
 import { useAppDispatch, useAppSelector } from 'src/hooks'
 import React from 'react'
-import { ICompanyEthData } from 'src/types/CompanyDataTypes'
+import ICompanyEthData from 'src/types/ICompanyEthData'
 import { Box, Card, Paper, Skeleton, TableBody, TableCell, TableContainer, TableHead, Table, TableRow, Link as MUILink } from '@mui/material'
 import { IGeneral } from 'src/features/general'
 import { Statistic } from 'antd';
 import CountUp from 'react-countup';
-import { gql, useQuery } from '@apollo/client'
-import { selectCompany } from 'src/helpers/generalMethods'
+import { selectCompany } from 'src/lib/generalMethods'
 import Link from 'next/link'
+import { IGetStaticPropsResult } from '../lib/getStaticProps'
+import type IEvent from 'src/types/IEvent'
 
 const getEventCell = (eventType: string) => {
     if (eventType === "AddComapny") {
@@ -25,108 +26,33 @@ function timePassed(timestamp: number): string {
     const timeDiff = currentTime - timestamp;
 
     if (timeDiff < 86400) {
+
         return "Today";
     }
     if (timeDiff < 604800) {
         const days = Math.floor(timeDiff / 86400);
+
         return days === 1 ? "Yesterday" : `${days} days ago`;
     }
     if (timeDiff < 2592000) {
         const weeks = Math.floor(timeDiff / 604800);
+
         return weeks === 1 ? "1 week ago" : `${weeks} weeks ago`;
     }
     if (timeDiff < 31536000) {
         const months = Math.floor(timeDiff / 2592000);
+
         return months === 1 ? "1 month ago" : `${months} months ago`;
     }
 
     const years = Math.floor(timeDiff / 31536000);
+
     return years === 1 ? "1 year ago" : `${years} years ago`;
 }
 
-
-const EVENTS_QUERY = gql`
-    query Events {
-        events(orderBy: blockTimestamp, orderDirection: desc, first: 10) {
-            id
-            companyId
-            blockTimestamp
-            eventType
-        }
-    }
-`
-
 const formatter = (value: number) => <CountUp end={value} separator="," />;
 
-const RecentActivityTable = ({ data, loading }: {
-    data: { events: { id: string, companyId: number, blockTimestamp: number, eventType: string }[] } | undefined,
-    loading: boolean
-}) => {
-    const idToCompany = useAppSelector((state: { general: IGeneral }) => state.general.idToCompany)
-    const dispatch = useAppDispatch()
-
-    return (
-        <TableContainer component={Paper}>
-            <Table sx={{ width: '100%' }}>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Company</TableCell>
-                        <TableCell align="center">Transaction type</TableCell>
-                        <TableCell align="right">Date</TableCell>
-                    </TableRow>
-                </TableHead>
-
-                <TableBody>
-                    {loading ?
-                        Array(10).fill(0).map((_, index) => (
-                            <RecentActivityTableLoadingRow key={index} />
-                        ))
-                        :
-                        data?.events.map((row) => (
-                            <TableRow
-                                key={row.id}
-                            >
-                                <TableCell component="th" scope="row">
-                                    <Link href="/company-overview">
-                                        <MUILink
-                                            sx={{ textDecoration: 'underline', cursor: 'pointer' }}
-                                            underline="always"
-                                            onClick={() => selectCompany(idToCompany?.[row.companyId] as ICompanyEthData, dispatch)}
-                                        >
-                                            {idToCompany?.[row.companyId].ticker}
-                                        </MUILink>
-                                    </Link>
-                                </TableCell>
-                                <TableCell align="center">{getEventCell(row.eventType)}</TableCell>
-                                <TableCell align="right">{timePassed(row.blockTimestamp)}</TableCell>
-                            </TableRow>
-                        ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    )
-}
-
-const RecentActivityTableLoadingRow = () => {
-    return (
-        <TableRow>
-            <TableCell>
-                <Skeleton variant="text" />
-            </TableCell>
-            <TableCell>
-                <Skeleton variant="text" />
-            </TableCell>
-            <TableCell>
-                <Skeleton variant="text" />
-            </TableCell>
-        </TableRow>
-    )
-}
-
-const Dashboard = () => {
-    const companies = useAppSelector((state: { general: IGeneral }) => state.general.companies)
-    const { loading, error, data } = useQuery<{ events: { id: string, companyId: number, blockTimestamp: number, eventType: string }[] }>(EVENTS_QUERY)
-
+const Dashboard = ({ companies, events }: IGetStaticPropsResult) => {
     return (
         <ApexChartWrapper>
             <Grid container spacing={3}>
@@ -164,12 +90,100 @@ const Dashboard = () => {
 
                 <Grid item xs={12} md={4}>
                     <Card>
-                        <RecentActivityTable data={data} loading={loading} />
+                        <RecentActivityTable events={events} />
                     </Card>
                 </Grid>
             </Grid>
         </ApexChartWrapper>
     )
 }
+
+const RecentActivityTable = ({ events }: {
+    events: IEvent[]
+}) => {
+    const idToCompany = useAppSelector((state: { general: IGeneral }) => state.general.idToCompany)
+    const dispatch = useAppDispatch()
+
+    return (
+        <TableContainer component={Paper}>
+            <Table sx={{ width: '100%' }}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Company</TableCell>
+                        <TableCell align="center">Transaction type</TableCell>
+                        <TableCell align="right">Date</TableCell>
+                    </TableRow>
+                </TableHead>
+
+                <TableBody>
+                    {events.map((row) => (
+                        <TableRow
+                            key={row.id}
+                        >
+                            <TableCell component="th" scope="row">
+                                <Link href="/company-overview">
+                                    <MUILink
+                                        sx={{ textDecoration: 'underline', cursor: 'pointer' }}
+                                        underline="always"
+                                        onClick={() => selectCompany(idToCompany?.[row.companyId] as ICompanyEthData, dispatch)}
+                                    >
+                                        {idToCompany?.[row.companyId].ticker}
+                                    </MUILink>
+                                </Link>
+                            </TableCell>
+                            <TableCell align="center">{getEventCell(row.eventType)}</TableCell>
+                            <TableCell align="right">{timePassed(row.blockTimestamp)}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    )
+}
+
+{/* <TableBody>
+    {loading ?
+        Array(10).fill(0).map((_, index) => (
+            <RecentActivityTableLoadingRow key={index} />
+        ))
+        :
+        data?.events.map((row) => (
+            <TableRow
+                key={row.id}
+            >
+                <TableCell component="th" scope="row">
+                    <Link href="/company-overview">
+                        <MUILink
+                            sx={{ textDecoration: 'underline', cursor: 'pointer' }}
+                            underline="always"
+                            onClick={() => selectCompany(idToCompany?.[row.companyId] as ICompanyEthData, dispatch)}
+                        >
+                            {idToCompany?.[row.companyId].ticker}
+                        </MUILink>
+                    </Link>
+                </TableCell>
+                <TableCell align="center">{getEventCell(row.eventType)}</TableCell>
+                <TableCell align="right">{timePassed(row.blockTimestamp)}</TableCell>
+            </TableRow>
+        ))}
+</TableBody> */}
+
+// const RecentActivityTableLoadingRow = () => {
+//     return (
+//         <TableRow>
+//             <TableCell>
+//                 <Skeleton variant="text" />
+//             </TableCell>
+//             <TableCell>
+//                 <Skeleton variant="text" />
+//             </TableCell>
+//             <TableCell>
+//                 <Skeleton variant="text" />
+//             </TableCell>
+//         </TableRow>
+//     )
+// }
+
+export { getStaticProps } from '../lib/getStaticProps'
 
 export default Dashboard

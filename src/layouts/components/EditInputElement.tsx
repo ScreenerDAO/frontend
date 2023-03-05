@@ -2,7 +2,11 @@ import { FormControl, InputLabel, OutlinedInput, InputAdornment, Tooltip } from 
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { AutofillOperation, IElement, balanceSheetTypesNames, incomeStatementTypesNames } from "src/types/FinancialStatementsTypes";
 import { useAppDispatch, useAppSelector } from "src/hooks";
-import { ICompanyData, IFinancialStatement, IStatement, IStatementElement, StatementType } from "src/types/CompanyDataTypes";
+import ICompanyData from "src/types/ICompanyData";
+import IFinancialStatement from "src/types/IFinancialStatement";
+import IStatement from "src/types/IStatement";
+import IStatementElement from "src/types/IStatementElement";
+import { StatementType } from "src/types/IStatement";
 import { setStatementElement } from 'src/features/newCompanyDataSlice'
 import ClearIcon from '@mui/icons-material/Clear';
 import { useStore } from "react-redux";
@@ -23,7 +27,7 @@ const getLabelName = (label: number, financialType: StatementType) => {
 }
 
 const getValue = (value: string, valuesAsThousands: boolean) => {
-    let number = Number(value)
+    const number = Number(value)
 
     if (isNaN(number) || number === 0) {
         return ""
@@ -39,8 +43,8 @@ const getValue = (value: string, valuesAsThousands: boolean) => {
 const getAutofillValue = (elements: IElement[], statementValues: IStatement) => {
     let total = 0
 
-    for (let element of (elements ?? [])) {
-        let number = Number(statementValues[element.label]?.value)
+    for (const element of (elements ?? [])) {
+        const number = Number(statementValues[element.label]?.value)
 
         if (!isNaN(number)) {
             if (element.operation === AutofillOperation.Add) {
@@ -58,7 +62,7 @@ const getAutofillValue = (elements: IElement[], statementValues: IStatement) => 
 
 const setValueFormatter = (value: string, valuesAsThousands: boolean) => {
     if (valuesAsThousands) {
-        let number = Number(value)
+        const number = Number(value)
 
         if (isNaN(number) || number === 0) {
             return ""
@@ -101,7 +105,7 @@ const EditInputElement = ({
 
     const openMultipleValuesModal = () => {
         if (element && !element?.multipleValues) {
-            let newElement = {...element}
+            const newElement = {...element}
             newElement.multipleValues = [element.value]
 
             setElement(newElement)
@@ -162,6 +166,7 @@ const EditInputElement = ({
                         value: setValueFormatter(e.target.value, valuesAsThousands),
                         multipleValues: null
                     })}
+                    
                     // startAdornment={
                     //   <InputAdornment position="start">$</InputAdornment>
                     // }
@@ -186,7 +191,6 @@ const EditInputElement = ({
 }
 
 export {
-    StatementType,
     getLabelName,
 }
 

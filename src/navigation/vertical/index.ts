@@ -1,7 +1,7 @@
 import { Domain, ClipboardTextOutline, ArchiveEditOutline } from 'mdi-material-ui'
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
 import { useAppSelector } from 'src/hooks'
-import { ICompanyData } from 'src/types/CompanyDataTypes'
+import ICompanyData from 'src/types/ICompanyData'
 
 // const navigation = (): VerticalNavItemsType => {
 //     const companyTicker = useAppSelector((state: { companyData: ICompanyData }) => state.companyData.ticker)
@@ -29,14 +29,14 @@ import { ICompanyData } from 'src/types/CompanyDataTypes'
 //     ]
 // }
 
-const navigation = (): VerticalNavItemsType => {
+const Navigation = (): VerticalNavItemsType => {
     const companyTicker = useAppSelector((state: { companyData: ICompanyData }) => state.companyData.ticker)
     const companyId = useAppSelector((state: { companyData: ICompanyData }) => state.companyData.id)
 
     return [
         {
             title: 'List of companies',
-            icon: ClipboardTextOutline,
+            icon: ClipboardTextOutline as any,
             path: '/list-companies'
         },
         {
@@ -55,4 +55,4 @@ const navigation = (): VerticalNavItemsType => {
     ]
 }
 
-export default navigation
+export default Navigation

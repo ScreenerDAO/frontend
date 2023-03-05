@@ -29,9 +29,9 @@ const Ratios = (props: IRatiosProps): React.ReactElement => {
     const TableRows = () => (
         <>
             {
-                ratios.map(ratio => {
+                ratios.map((ratio, index) => {
                     return (
-                        <Row ratio={ratio} />
+                        <Row ratio={ratio} key={index} />
                     )
                 })
             }

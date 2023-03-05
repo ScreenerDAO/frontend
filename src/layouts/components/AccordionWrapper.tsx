@@ -1,7 +1,8 @@
 import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { Typography } from "antd";
-import { AutofillOperation, IElement, IElementsGroup, balanceSheetTypesNames } from "src/types/FinancialStatementsTypes";
-import EditInputElement, { StatementType, getLabelName } from "./EditInputElement";
+import { IElement, IElementsGroup } from "src/types/FinancialStatementsTypes";
+import { StatementType } from "src/types/IStatement";
+import EditInputElement, { getLabelName } from "./EditInputElement";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 interface IProps {
@@ -12,7 +13,7 @@ interface IProps {
 }
 
 const getAutofillElements = (elements: Array<IElement | IElementsGroup>) => {
-    let values: IElement[] = []
+    const values: IElement[] = []
 
     elements.forEach((element) => {
         if (element && (element as IElementsGroup).total) {
@@ -38,9 +39,8 @@ const AccordionWrapper = ({ elements: row, statementType, year, valuesAsThousand
                     {row.elements.map((element, index) => {
                         if (element && (element as IElementsGroup).total) {
                             return (
-                                <div style={{ marginTop: '10px' }}>
+                                <div style={{ marginTop: '10px' }} key={index}>
                                     <AccordionWrapper
-                                        key={index}
                                         elements={element as IElementsGroup}
                                         statementType={statementType}
                                         year={year}

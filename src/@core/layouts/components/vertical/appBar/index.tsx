@@ -2,7 +2,7 @@
 import { ReactNode } from 'react'
 
 // ** MUI Imports
-import { styled, useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import MuiAppBar, { AppBarProps } from '@mui/material/AppBar'
 import MuiToolbar, { ToolbarProps } from '@mui/material/Toolbar'
 
@@ -43,18 +43,19 @@ const Toolbar = styled(MuiToolbar)<ToolbarProps>(({ theme }) => ({
 
 const LayoutAppBar = (props: Props) => {
   // ** Props
-  const { settings, verticalAppBarContent: userVerticalAppBarContent } = props
+  const { verticalAppBarContent: userVerticalAppBarContent } = props
 
   // ** Hooks
-  const theme = useTheme()
+//   const theme = useTheme()
 
   // ** Vars
-  const { contentWidth } = settings
+//   const { contentWidth } = settings
 
   return (
     <AppBar elevation={0} color='default' className='layout-navbar' position='static'>
       <Toolbar
         className='navbar-content-container'
+        
         // sx={{
         //   ...(contentWidth === 'boxed' && {
         //     '@media (min-width:1440px)': { maxWidth: `calc(1440px - ${theme.spacing(6)} * 2)` }

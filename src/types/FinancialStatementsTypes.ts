@@ -1,4 +1,4 @@
-import { ICompanyData } from "./CompanyDataTypes";
+import ICompanyData from "./ICompanyData";
 
 enum AutofillOperation {
     Add,
@@ -201,104 +201,104 @@ interface IRatio {
 
 const ratios: IRatio[] = [
     {name: 'Net margin', function: (year: number, companyData: ICompanyData) => {
-        let netIncome = Number(companyData.financialStatements[year].incomeStatement[19]?.value)
-        let revenue = Number(companyData.financialStatements[year].incomeStatement[1]?.value)
+        const netIncome = Number(companyData.financialStatements[year].incomeStatement[19]?.value)
+        const revenue = Number(companyData.financialStatements[year].incomeStatement[1]?.value)
 
         if (!netIncome || !revenue) {
             return "-"
         }
 
-        let result = parseFloat((netIncome / revenue).toFixed(4))
+        const result = parseFloat((netIncome / revenue).toFixed(4))
         
         return result ? `${(result * 100).toFixed(2)}%` : "-"
     }}, 
     {name: 'Gross margin', function: (year: number, companyData: ICompanyData) => {
-        let grossProfit = Number(companyData.financialStatements[year].incomeStatement[3]?.value)
-        let revenue = Number(companyData.financialStatements[year].incomeStatement[1]?.value)
+        const grossProfit = Number(companyData.financialStatements[year].incomeStatement[3]?.value)
+        const revenue = Number(companyData.financialStatements[year].incomeStatement[1]?.value)
 
         if (!grossProfit || !revenue) {
             return "-"
         }
 
-        let result = parseFloat((grossProfit / revenue).toFixed(4))
+        const result = parseFloat((grossProfit / revenue).toFixed(4))
 
         return result ? `${(result * 100).toFixed(2)}%` : "-"
     }},
     {name: 'ROE', function: (year: number, companyData: ICompanyData) => {
-        let netIncome = Number(companyData.financialStatements[year].incomeStatement[19]?.value)
-        let previousEquity = Number(companyData.financialStatements[year - 1]?.balanceSheet[51]?.value)
+        const netIncome = Number(companyData.financialStatements[year].incomeStatement[19]?.value)
+        const previousEquity = Number(companyData.financialStatements[year - 1]?.balanceSheet[51]?.value)
 
         if (!netIncome || !previousEquity) {
             return "-"
         }
 
-        let result = parseFloat((netIncome / previousEquity).toFixed(4))
+        const result = parseFloat((netIncome / previousEquity).toFixed(4))
 
         return result ? `${(result * 100).toFixed(2)}%` : "-"
     }},
     {name: 'ROA', function: (year: number, companyData: ICompanyData) => {
-        let netIncome = Number(companyData.financialStatements[year].incomeStatement[19]?.value)
-        let previousAssets = Number(companyData.financialStatements[year - 1]?.balanceSheet[28]?.value)
+        const netIncome = Number(companyData.financialStatements[year].incomeStatement[19]?.value)
+        const previousAssets = Number(companyData.financialStatements[year - 1]?.balanceSheet[28]?.value)
 
         if (!netIncome || !previousAssets) {
             return "-"
         }
 
-        let result = parseFloat((netIncome / previousAssets).toFixed(4))
+        const result = parseFloat((netIncome / previousAssets).toFixed(4))
 
         return result ? `${(result * 100).toFixed(2)}%` : "-"
     }},
     {name: 'Current ratio', function: (year: number, companyData: ICompanyData) => {
-        let currentAssets = Number(companyData.financialStatements[year].balanceSheet[15]?.value)
-        let currentLiabilities = Number(companyData.financialStatements[year].balanceSheet[36]?.value)
+        const currentAssets = Number(companyData.financialStatements[year].balanceSheet[15]?.value)
+        const currentLiabilities = Number(companyData.financialStatements[year].balanceSheet[36]?.value)
 
         if (!currentAssets || !currentLiabilities) {
             return "-"
         }
 
-        let result = parseFloat((currentAssets / currentLiabilities).toFixed(4))
+        const result = parseFloat((currentAssets / currentLiabilities).toFixed(4))
 
         return result ? `${result.toFixed(2)}x` : "-"
     }},
     {name: 'Liabilities / Assets', function: (year: number, companyData: ICompanyData) => {
-        let totalLiabilities = Number(companyData.financialStatements[year].balanceSheet[43]?.value)
-        let totalAssets = Number(companyData.financialStatements[year].balanceSheet[28]?.value)
+        const totalLiabilities = Number(companyData.financialStatements[year].balanceSheet[43]?.value)
+        const totalAssets = Number(companyData.financialStatements[year].balanceSheet[28]?.value)
 
         if (!totalLiabilities || !totalAssets) {
             return "-"
         }
 
-        let result = parseFloat((totalLiabilities / totalAssets).toFixed(4))
+        const result = parseFloat((totalLiabilities / totalAssets).toFixed(4))
 
         return result ? `${result.toFixed(2)}%` : "-"
     }},
     {name: 'EBIT / Interest expense', function: (year: number, companyData: ICompanyData) => {
-        let operatingIncome = Number(companyData.financialStatements[year].incomeStatement[9]?.value)
-        let interestExpense = Number(companyData.financialStatements[year].incomeStatement[12]?.value)
+        const operatingIncome = Number(companyData.financialStatements[year].incomeStatement[9]?.value)
+        const interestExpense = Number(companyData.financialStatements[year].incomeStatement[12]?.value)
 
         if (!operatingIncome || !interestExpense) {
             return "-"
         }
 
-        let result = parseFloat((operatingIncome / interestExpense).toFixed(4))
+        const result = parseFloat((operatingIncome / interestExpense).toFixed(4))
 
         return result ? `${result.toFixed(2)}x` : "-"
     }}, 
     {name: 'Total debt / EBIT', function: (year: number, companyData: ICompanyData) => {
-        let totalLiabilities = Number(companyData.financialStatements[year].balanceSheet[43]?.value)
-        let operatingIncome = Number(companyData.financialStatements[year].incomeStatement[9]?.value)
+        const totalLiabilities = Number(companyData.financialStatements[year].balanceSheet[43]?.value)
+        const operatingIncome = Number(companyData.financialStatements[year].incomeStatement[9]?.value)
 
         if (!operatingIncome || !totalLiabilities) {
             return "-"
         }
 
-        let result = parseFloat((totalLiabilities / operatingIncome).toFixed(4))
+        const result = parseFloat((totalLiabilities / operatingIncome).toFixed(4))
 
         return result ? `${result.toFixed(2)}x` : "-"
     }}
 ]
 
-const cashFlowStatementTypes: { [key: number]: string } = {
+const cashFlowStatementTypesNames: { [key: number]: string } = {
     1: "Operating cash flow",
     2: "Net income",
     3: "Depreciation and amortization",
@@ -324,14 +324,15 @@ export {
     balanceSheetTypesNames,
     balanceSheetStructure,
     incomeStatementTypesNames,
-    AutofillOperation,
+    cashFlowStatementTypesNames,
     currencies,
     countries,
-    ratios
+    ratios,
+    AutofillOperation
 }
 
 export type {
     IElement,
     IElementsGroup,
-    IRatio
+    IRatio,
 }

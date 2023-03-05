@@ -1,9 +1,7 @@
 import * as React from 'react'
-import { ICompanyData } from 'src/types/CompanyDataTypes'
-import { CashFlowOrderedElements, ICashFlow } from 'src/types/CashFlowTypes'
-import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-import { useAppDispatch, useAppSelector } from '../../hooks'
-import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { Box, Button } from '@mui/material'
+import IStatement from 'src/types/IStatement'
 
 interface IEditableCashFlowProps {
     year: number
@@ -14,14 +12,15 @@ interface IEditableCashFlowProps {
 }
 
 const EditableCashFlow = (props: IEditableCashFlowProps): React.ReactElement => {
-    const dispatch = useAppDispatch()
-    const valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
-    
-    const { control, handleSubmit } = useForm<ICashFlow>()
 
-    const onSubmit: SubmitHandler<ICashFlow> = data => {
-        props.handleNext()
-    }
+    // const dispatch = useAppDispatch()
+    // const valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
+    
+    const { handleSubmit } = useForm<IStatement>({
+        mode: 'onChange'
+    });
+
+    const onSubmit: SubmitHandler<IStatement> = () => props.handleNext()
 
 
     return (

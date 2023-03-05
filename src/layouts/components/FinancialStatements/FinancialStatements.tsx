@@ -4,20 +4,20 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import IncomeStatement from './IncomeStatement';
-import AnnualReports from './AnnualReports';
+import AnnualReports from '../AnnualReports';
 import Slider from '@mui/material/Slider';
-import { ICompanyData, IFinancialStatement, StatementType } from '../../types/CompanyDataTypes';
-import { Grid, Card, FormControl, InputLabel, MenuItem, Select, IconButton, Typography, Paper } from '@mui/material';
-import { getYearsArray } from '../../helpers/financialStatements'
-import MillionsSwitch from './MillionsSwitch';
-import Chart, { getLabel } from './Chart';
-import LogarithmicScaleSwitch from './LogarithmicScale';
+import ICompanyData from 'src/types/ICompanyData';
+import { StatementType } from 'src/types/IStatement';
+import { Grid, Card, FormControl, MenuItem, Select, IconButton, Typography, Paper } from '@mui/material';
+import { getYearsArray } from '../../../lib/financialStatements'
+import MillionsSwitch from '../MillionsSwitch';
+import Chart, { getLabel } from '../Chart';
+import LogarithmicScaleSwitch from '../LogarithmicScaleSwitch';
 import CloseIcon from '@mui/icons-material/Close';
-import { balanceSheetTypesNames, incomeStatementTypesNames } from 'src/types/FinancialStatementsTypes';
-import Ratios from './Ratios';
+import Ratios from '../Ratios';
 
 const getSelectedYearsArray = (yearsArray: number[], minAndMax: number[]) => {
-    let newArray = []
+    const newArray = []
 
     for (const year of yearsArray) {
         if (year >= minAndMax[0] && year <= minAndMax[1]) {
@@ -80,6 +80,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
             type: "bar"
         }
     ])
+
     // const [excludedLabels, setExcludedLabels] = React.useState<{[key: string]: number[]}>({
     //     "balanceSheet": [],
     //     "incomeStatement": [],
@@ -175,7 +176,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                                                                 value={label.type}
                                                                 sx={{ width: '90px' }}
                                                                 onChange={ev => {
-                                                                    let newLabels = [...selectedLabels]
+                                                                    const newLabels = [...selectedLabels]
                                                                     newLabels[index].type = ev.target.value as string
                                                                     setSelectedLabels(newLabels)
                                                                 }}
@@ -188,7 +189,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
 
                                                     <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                                         <IconButton onClick={() => {
-                                                            let newLabels = [...selectedLabels]
+                                                            const newLabels = [...selectedLabels]
                                                             newLabels.splice(index, 1)
                                                             setSelectedLabels(newLabels)
                                                         }}>
@@ -232,6 +233,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                                 setSelectedLabels={labels => {
                                     setSelectedLabels(labels)
                                 }}
+
                                 // excludedLabels={excludedLabels["balanceSheet"]}
                             />
                         </TabPanel>
@@ -244,6 +246,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                                 setSelectedLabels={labels => {
                                     setSelectedLabels(labels)
                                 }}
+
                                 // excludedLabels={excludedLabels["incomeStatement"]}
                             />
                         </TabPanel>
