@@ -11,6 +11,7 @@ import { selectCompany } from 'src/lib/generalMethods'
 import Link from 'next/link'
 import { IGetStaticPropsResult } from '../lib/getStaticProps'
 import type IEvent from 'src/types/IEvent'
+import PageWrapper from 'src/layouts/components/PageWrapper'
 
 const getEventCell = (eventType: string) => {
     if (eventType === "AddComapny") {
@@ -52,49 +53,53 @@ function timePassed(timestamp: number): string {
 
 const formatter = (value: number) => <CountUp end={value} separator="," />;
 
-const Dashboard = ({ companies, events }: IGetStaticPropsResult) => {
+const Dashboard = (props: IGetStaticPropsResult) => {
+    const {companies, events} = props
+
     return (
-        <ApexChartWrapper>
-            <Grid container spacing={3}>
-                <Grid item xs={12}>
-                    <Card sx={{ paddingTop: "10px", paddingBottom: "10px", display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
-                        {companies ?
-                            <Statistic title="Companies registered" value={companies.length} formatter={formatter as any} />
-                            :
-                            <Skeleton variant="rounded" width={120} height={50} />
-                        }
+        <PageWrapper {...props}>
+            <ApexChartWrapper>
+                <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                        <Card sx={{ paddingTop: "10px", paddingBottom: "10px", display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
+                            {companies ?
+                                <Statistic title="Companies registered" value={companies.length} formatter={formatter as any} />
+                                :
+                                <Skeleton variant="rounded" width={120} height={50} />
+                            }
 
-                        {companies ?
-                            <Statistic title="Financials added" value={100} formatter={formatter as any} />
-                            :
-                            <Skeleton variant="rounded" width={120} height={50} />
-                        }
-                    </Card>
-                </Grid>
+                            {companies ?
+                                <Statistic title="Financials added" value={100} formatter={formatter as any} />
+                                :
+                                <Skeleton variant="rounded" width={120} height={50} />
+                            }
+                        </Card>
+                    </Grid>
 
-                <Grid item xs={12} md={4}>
-                    <Card>
-                        <Box sx={{ width: '90%', marginLeft: '5%', paddingTop: '5px', paddingBottom: '5px', textAlign: 'center' }}>
-                            Recent activity
-                        </Box>
-                    </Card>
-                </Grid>
+                    <Grid item xs={12} md={4}>
+                        <Card>
+                            <Box sx={{ width: '90%', marginLeft: '5%', paddingTop: '5px', paddingBottom: '5px', textAlign: 'center' }}>
+                                Recent activity
+                            </Box>
+                        </Card>
+                    </Grid>
 
-                <Grid item xs={12} md={8}>
-                    <Card>
-                        <Box sx={{ width: '90%', marginLeft: '5%', paddingTop: '5px', paddingBottom: '5px', textAlign: 'center' }}>
-                            Leaderboard
-                        </Box>
-                    </Card>
-                </Grid>
+                    <Grid item xs={12} md={8}>
+                        <Card>
+                            <Box sx={{ width: '90%', marginLeft: '5%', paddingTop: '5px', paddingBottom: '5px', textAlign: 'center' }}>
+                                Leaderboard
+                            </Box>
+                        </Card>
+                    </Grid>
 
-                <Grid item xs={12} md={4}>
-                    <Card>
-                        <RecentActivityTable events={events} />
-                    </Card>
+                    <Grid item xs={12} md={4}>
+                        <Card>
+                            <RecentActivityTable events={events} />
+                        </Card>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </ApexChartWrapper>
+            </ApexChartWrapper>
+        </PageWrapper>
     )
 }
 
@@ -122,7 +127,7 @@ const RecentActivityTable = ({ events }: {
                             key={row.id}
                         >
                             <TableCell component="th" scope="row">
-                                <Link 
+                                <Link
                                     href="/company-overview"
                                     onClick={() => selectCompany(idToCompany?.[row.companyId] as ICompanyEthData, dispatch)}
                                     style={{ color: theme.palette.primary.main }}

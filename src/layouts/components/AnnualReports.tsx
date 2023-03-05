@@ -4,46 +4,17 @@ import ICompanyData from 'src/types/ICompanyData';
 import { getYearsArray } from 'src/lib/financialStatements';
 import { Button } from '@mui/material';
 
-const Link1 = (pdfLink: string) => {
-    window.open(`https://${pdfLink}.ipfs.w3s.link/`, '_blank')
-}
-
-const Link2 = (hash: string) => {
-    window.open(`https://nftstorage.link/ipfs/${hash}`, '_blank')
-}
-
-const Link3 = (ipfsLink: string) => {
-    window.open(`https://ipfs.io/ipfs/${ipfsLink}`, '_blank')
-}
-
-interface IAnnualReportsProps {
+const AnnualReports = ({data}: {
     data: ICompanyData
-}
-
-const RenderIpfs = (props: GridRenderCellParams) => {
-    if (props.row.ipfsLink && props.row.ipfsLink !== '-') {
-        return (
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                {/* <Image width={40} height={40} src="/images/pdf.png" alt="PDF icon" /> */}
-                <Button variant="text" onClick={() => Link1(props.row.ipfsLink)}>Link 1</Button>
-                <Button variant="text" onClick={() => Link2(props.row.ipfsLink)}>Link 2</Button>
-                <Button variant="text" onClick={() => Link3(props.row.ipfsLink)}>Link 3</Button>
-            </div>
-        )
-    } else {
-        return <div style={{ textAlign: 'center' }}>-</div>
-    }
-}
-
-const AnnualReports = (props: IAnnualReportsProps) => {
+}) => {
     const [rows, setRows] = React.useState<GridRowsProp>([]);
     const columns: GridColumns = [
         { field: 'year', headerName: 'Year', width: 100, editable: false },
-        { field: 'ipfsLink', headerName: 'PDF link',width: 300, flex: 1, align: 'right', editable: false, renderCell: RenderIpfs },
+        { field: 'ipfsLink', headerName: 'PDF link', flex: 1, headerAlign: 'center', align: 'center', editable: false, renderCell: RenderIpfs },
     ]
 
     React.useEffect(() => {
-        const yearsArray = getYearsArray(props.data.financialStatements)
+        const yearsArray = getYearsArray(data.financialStatements)
 
         if (yearsArray?.length > 0) {
             const initialRows = []
@@ -52,14 +23,14 @@ const AnnualReports = (props: IAnnualReportsProps) => {
                 initialRows.push({
                     id: year,
                     year: year,
-                    ipfsLink: props.data.annualReports[year] ?? '-',
-                    pdfLink: props.data.annualReports[year]
+                    ipfsLink: data.annualReports[year] ?? '-',
+                    pdfLink: data.annualReports[year]
                 })
             }
 
             setRows(initialRows)
         }
-    }, [props.data])
+    }, [data])
 
     return (
         <div style={{ height: '500px' }}>
@@ -70,6 +41,24 @@ const AnnualReports = (props: IAnnualReportsProps) => {
         </div>
     )
 }
+
+const RenderIpfs = (props: GridRenderCellParams) => {
+    const link = props.row.ipfsLink
+
+    if (link && link !== '-') {
+        return (
+            <>
+                <Button variant="text" onClick={() => openPDF(`https://${link}.ipfs.w3s.link/`)}>Link 1</Button>
+                <Button variant="text" onClick={() => openPDF(`https://ipfs.io/ipfs/${link}`)}>Link 2</Button>
+                <Button variant="text" onClick={() => openPDF(`https://ipfs.io/ipfs/${link}`)}>Link 3</Button>
+            </>
+        )
+    } else {
+        return <>-</>
+    }
+}
+
+const openPDF = (url: string) => window.open(url, '_blank')
 
 export default AnnualReports
 
