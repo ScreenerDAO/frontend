@@ -85,7 +85,7 @@ const SearchBar = () => {
                             // style: { height: '40px'},
                             startAdornment: (
                                 <InputAdornment position='start'>
-                                    <SearchIcon />
+                                    <SearchIcon style={{width: '24px', height: '24px'}} />
                                 </InputAdornment>
                             ),
                             endAdornment: [

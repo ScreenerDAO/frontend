@@ -15,7 +15,6 @@ import { configureChains, createClient, WagmiConfig, mainnet, goerli } from 'wag
 import { publicProvider } from 'wagmi/providers/public';
 import { Provider } from 'react-redux'
 import store from '../store'
-import React from 'react'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 import '../../styles/globals.css'
 import '@rainbow-me/rainbowkit/styles.css';
@@ -55,43 +54,9 @@ if (themeConfig.routingLoader) {
     })
 }
 
-// const COMPANIES_QUERY = gql`
-//     query Companies {
-//         companies(orderBy: iId) {
-//             id
-//             name
-//             ticker
-//             dataHash
-//         }
-//     }
-// `
-
 const App = (props: ExtendedAppProps) => {
     const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
     const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
-
-    // React.useEffect(() => {
-    //     const callback = async () => {
-    //         store.dispatch(setCompanyLoading(true))
-
-    //         const companies: ICompanyEthData[] = (await client.query({ query: COMPANIES_QUERY })).data.companies
-
-    //         const companyId = (new URLSearchParams(window.location.search)).get('id') ?? 0
-
-    //         selectCompany(companies[Number(companyId)], store.dispatch)
-    //         store.dispatch(setCompanies(companies))
-
-    //         const idToCompany: { [key: number]: ICompanyEthData } = {}
-
-    //         for (const company of companies) {
-    //             idToCompany[company.id] = company
-    //         }
-
-    //         store.dispatch(setIdToCompany(idToCompany))
-    //     }
-
-    //     callback()
-    // }, [])
 
     return (
         <CacheProvider value={emotionCache}>
