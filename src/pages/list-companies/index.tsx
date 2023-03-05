@@ -2,11 +2,32 @@ import { Card, Grid } from '@mui/material'
 import { DataGrid, GridColumns } from '@mui/x-data-grid'
 import React from 'react'
 import { selectCompany } from 'src/lib/generalMethods'
-import { useAppDispatch, useAppSelector } from 'src/hooks'
+import { useAppDispatch } from 'src/hooks'
 import Link from 'next/link'
 import { useTheme } from '@mui/material/styles';
 import PageWrapper from 'src/layouts/components/PageWrapper'
 import { IGetStaticPropsResult } from 'src/lib/getStaticProps'
+
+const ListCompanies = ({ companies }: IGetStaticPropsResult) => {
+    
+    // const companies = useAppSelector(state => state.general.companies)
+
+    return (
+        <PageWrapper companies={companies}>
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={12}>
+                    <Card>
+                        <DataGrid
+                            rows={companies ?? []}
+                            columns={columns}
+                            sx={{ minHeight: '500px' }}
+                        />
+                    </Card>
+                </Grid>
+            </Grid>
+        </PageWrapper>
+    )
+}
 
 const RenderTicker = (params: {
     row: {
@@ -35,27 +56,6 @@ const columns: GridColumns = [
     { field: 'name', headerName: 'Name', width: 300, editable: false },
     { field: 'ticker', headerName: 'Ticker', width: 100, editable: false, renderCell: RenderTicker },
 ]
-
-const ListCompanies = ({ companies }: IGetStaticPropsResult) => {
-    
-    // const companies = useAppSelector(state => state.general.companies)
-
-    return (
-        <PageWrapper companies={companies}>
-            <Grid container spacing={3}>
-                <Grid item xs={12} md={12}>
-                    <Card>
-                        <DataGrid
-                            rows={companies ?? []}
-                            columns={columns}
-                            sx={{ minHeight: '500px' }}
-                        />
-                    </Card>
-                </Grid>
-            </Grid>
-        </PageWrapper>
-    )
-}
 
 export { getStaticProps } from '../../lib/getStaticProps'
 

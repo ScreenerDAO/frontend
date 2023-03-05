@@ -15,8 +15,6 @@ import { configureChains, createClient, WagmiConfig, mainnet, goerli } from 'wag
 import { publicProvider } from 'wagmi/providers/public';
 import { Provider } from 'react-redux'
 import store from '../store'
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
-import { THEGRAPH_API_URL } from 'src/metadata'
 import React from 'react'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 import '../../styles/globals.css'
@@ -43,11 +41,6 @@ const wagmiClient = createClient({
     autoConnect: true,
     connectors,
     provider
-})
-
-const client = new ApolloClient({
-    uri: THEGRAPH_API_URL,
-    cache: new InMemoryCache()
 })
 
 if (themeConfig.routingLoader) {
@@ -112,21 +105,19 @@ const App = (props: ExtendedAppProps) => {
                 <meta name='viewport' content='initial-scale=1, width=device-width' />
             </Head>
 
-            <ApolloProvider client={client}>
-                <WagmiConfig client={wagmiClient}>
-                    <RainbowKitProvider coolMode chains={chains}>
-                        <Provider store={store}>
-                            <SettingsProvider>
-                                <SettingsConsumer>
-                                    {({ settings }) => {
-                                        return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
-                                    }}
-                                </SettingsConsumer>
-                            </SettingsProvider>
-                        </Provider>
-                    </RainbowKitProvider>
-                </WagmiConfig>
-            </ ApolloProvider>
+            <WagmiConfig client={wagmiClient}>
+                <RainbowKitProvider coolMode chains={chains}>
+                    <Provider store={store}>
+                        <SettingsProvider>
+                            <SettingsConsumer>
+                                {({ settings }) => {
+                                    return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
+                                }}
+                            </SettingsConsumer>
+                        </SettingsProvider>
+                    </Provider>
+                </RainbowKitProvider>
+            </WagmiConfig>
         </CacheProvider>
     )
 }

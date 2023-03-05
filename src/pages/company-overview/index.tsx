@@ -12,7 +12,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import { styled, alpha } from '@mui/material/styles';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import { useRouter } from 'next/router'
-import ICompanyEthData from 'src/types/ICompanyEthData';
 import PageWrapper from 'src/layouts/components/PageWrapper';
 import { IGetStaticPropsResult } from '../../lib/getStaticProps';
 
