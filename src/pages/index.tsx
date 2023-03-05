@@ -3,7 +3,7 @@ import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
 import { useAppDispatch, useAppSelector } from 'src/hooks'
 import React from 'react'
 import ICompanyEthData from 'src/types/ICompanyEthData'
-import { Box, Card, Paper, Skeleton, TableBody, TableCell, TableContainer, TableHead, Table, TableRow, Link as MUILink } from '@mui/material'
+import { Box, Card, Paper, Skeleton, TableBody, TableCell, TableContainer, TableHead, Table, TableRow, useTheme } from '@mui/material'
 import { IGeneral } from 'src/features/general'
 import { Statistic } from 'antd';
 import CountUp from 'react-countup';
@@ -103,6 +103,7 @@ const RecentActivityTable = ({ events }: {
 }) => {
     const idToCompany = useAppSelector((state: { general: IGeneral }) => state.general.idToCompany)
     const dispatch = useAppDispatch()
+    const theme = useTheme()
 
     return (
         <TableContainer component={Paper}>
@@ -121,14 +122,12 @@ const RecentActivityTable = ({ events }: {
                             key={row.id}
                         >
                             <TableCell component="th" scope="row">
-                                <Link href="/company-overview">
-                                    <MUILink
-                                        sx={{ textDecoration: 'underline', cursor: 'pointer' }}
-                                        underline="always"
-                                        onClick={() => selectCompany(idToCompany?.[row.companyId] as ICompanyEthData, dispatch)}
-                                    >
-                                        {idToCompany?.[row.companyId].ticker}
-                                    </MUILink>
+                                <Link 
+                                    href="/company-overview"
+                                    onClick={() => selectCompany(idToCompany?.[row.companyId] as ICompanyEthData, dispatch)}
+                                    style={{ color: theme.palette.primary.main }}
+                                >
+                                    {idToCompany?.[row.companyId].ticker}
                                 </Link>
                             </TableCell>
                             <TableCell align="center">{getEventCell(row.eventType)}</TableCell>
