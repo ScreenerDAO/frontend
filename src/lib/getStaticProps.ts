@@ -1,21 +1,15 @@
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
-import { THEGRAPH_API_URL } from 'src/metadata'
 import ICompanyEthData from 'src/types/ICompanyEthData'
 import type IEvent from 'src/types/IEvent'
 
-const COMPANIES_QUERY = gql`
-    query Companies {
+const query = gql`
+    query Data {
         companies(orderBy: iId) {
             id
             name
             ticker
             dataHash
-        }
-    }
-`
-
-const EVENTS_QUERY = gql`
-    query Events {
+        },
         events(orderBy: blockTimestamp, orderDirection: desc, first: 10) {
             id
             companyId
@@ -26,7 +20,7 @@ const EVENTS_QUERY = gql`
 `
 
 const client = new ApolloClient({
-    uri: THEGRAPH_API_URL,
+    uri: process.env.THEGRAPH_API_URL,
     cache: new InMemoryCache()
 })
 
@@ -39,14 +33,10 @@ export async function getStaticProps(): Promise<{
     props: IGetStaticPropsResult,
     revalidate: number
 }> {
-    const companies: ICompanyEthData[] = (await client.query({ query: COMPANIES_QUERY })).data.companies
-    const events: IEvent[] = (await client.query({ query: EVENTS_QUERY })).data.events
+    const companies: IGetStaticPropsResult = (await client.query({ query: query })).data
 
     return {
-        props: {
-            companies,
-            events
-        },
+        props: companies,
         revalidate: 30
     }
 }

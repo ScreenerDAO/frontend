@@ -54,7 +54,7 @@ function timePassed(timestamp: number): string {
 const formatter = (value: number) => <CountUp end={value} separator="," />;
 
 const Dashboard = (props: IGetStaticPropsResult) => {
-    const {companies, events} = props
+    const { companies, events } = props
 
     return (
         <PageWrapper {...props}>
@@ -62,13 +62,13 @@ const Dashboard = (props: IGetStaticPropsResult) => {
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <Card sx={{ paddingTop: "10px", paddingBottom: "10px", display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
-                            {companies ?
+                            {companies?.length ?
                                 <Statistic title="Companies registered" value={companies.length} formatter={formatter as any} />
                                 :
                                 <Skeleton variant="rounded" width={120} height={50} />
                             }
 
-                            {companies ?
+                            {companies?.length ?
                                 <Statistic title="Financials added" value={100} formatter={formatter as any} />
                                 :
                                 <Skeleton variant="rounded" width={120} height={50} />

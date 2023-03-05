@@ -9,16 +9,13 @@ import PageWrapper from 'src/layouts/components/PageWrapper'
 import { IGetStaticPropsResult } from 'src/lib/getStaticProps'
 
 const ListCompanies = ({ companies }: IGetStaticPropsResult) => {
-    
-    // const companies = useAppSelector(state => state.general.companies)
-
     return (
         <PageWrapper companies={companies}>
             <Grid container spacing={3}>
                 <Grid item xs={12} md={12}>
                     <Card>
                         <DataGrid
-                            rows={companies ?? []}
+                            rows={companies}
                             columns={columns}
                             sx={{ minHeight: '500px' }}
                         />

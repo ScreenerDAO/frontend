@@ -10,9 +10,12 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import ICompanyData from 'src/types/ICompanyData';
 import { Alert, Step, StepContent, StepLabel, Stepper } from '@mui/material';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction, useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
-import { registriesContractAddress, registriesContractABI, chainId } from 'src/metadata'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { setCompanyData } from 'src/features/companyDataSlice';
+
+const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
+const registriesContractAddress = process.env.NEXT_PUBLIC_REGISTRIES_CONTRACT_ADDRESS
+const registriesContractABI = process.env.NEXT_PUBLIC_REGISTRIES_CONTRACT_ABI
 
 interface ISaveDataModalProps {
     handleClose: () => void
@@ -187,8 +190,8 @@ const SaveDataToEthereumStep = (props: {
         error: prepareError,
         isError: isPrepareError
     } = usePrepareContractWrite({
-        address: registriesContractAddress,
-        abi: registriesContractABI,
+        address: registriesContractAddress as any,
+        abi: JSON.parse(registriesContractABI ?? ""),
         functionName: companyId ? 'editCompany' : 'addNewCompany',
         args: companyId ? [companyId, companyName, companyTicker, props.cid] : [companyName, companyTicker, props.cid]
     })
@@ -255,7 +258,7 @@ const WalletNotConnected = () => {
 
 const WrongChain = () => {
     const { switchNetwork } = useSwitchNetwork({
-        chainId: chainId
+        chainId: Number(chainId)
     })
 
     return (
