@@ -128,7 +128,7 @@ const RecentActivityTable = ({ events }: {
                         >
                             <TableCell component="th" scope="row">
                                 <Link
-                                    href="/company-overview"
+                                    href={`/company-overview?id=${row.companyId}`}
                                     onClick={() => selectCompany(idToCompany?.[row.companyId] as ICompanyEthData, dispatch)}
                                     style={{ color: theme.palette.primary.main }}
                                 >
