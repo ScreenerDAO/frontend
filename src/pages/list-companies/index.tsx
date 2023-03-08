@@ -39,7 +39,7 @@ const RenderTicker = (params: {
 
     return (
         <Link
-            href="/company-overview"
+            href={`/company-overview?id=${params.row.id}`}
             onClick={() => selectCompany(params.row, dispatch)}
             style={{ color: theme.palette.primary.main }}
         >

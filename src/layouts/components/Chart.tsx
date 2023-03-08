@@ -13,7 +13,7 @@ import {
     LogarithmicScale,
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
-import { balanceSheetTypesNames, incomeStatementTypesNames } from 'src/types/FinancialStatementsTypes';
+import { balanceSheetTypesNames, cashFlowStatementTypesNames, incomeStatementTypesNames } from 'src/types/FinancialStatementsTypes';
 import { useStore } from 'react-redux';
 import { RootState } from 'src/store';
 import { StatementType } from 'src/types/IStatement';
@@ -51,6 +51,9 @@ const getLabel = (label: IChartLabel ) => {
     }
     if (label.statement === StatementType.IncomeStatement) {
         return incomeStatementTypesNames[label.label]
+    }
+    if (label.statement === StatementType.CashFlowStatement) {
+        return cashFlowStatementTypesNames[label.label]
     }
 }
 

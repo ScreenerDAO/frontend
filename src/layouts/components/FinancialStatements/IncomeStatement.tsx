@@ -11,17 +11,10 @@ import { StatementType } from 'src/types/IStatement';
 import { incomeStatementTypesNames } from 'src/types/FinancialStatementsTypes';
 import { useAppSelector } from 'src/hooks';
 import { IChartLabel } from './FinancialStatements';
+import IStatementDisplayProps from 'src/types/IStatementDisplayProps';
+import CellValue from './CellValue';
 
-interface IIncomeStatementProps {
-    data: ICompanyData
-    yearsArray: number[]
-    selectedLabels: IChartLabel[],
-    setSelectedLabels: (labels: IChartLabel[]) => void
-
-    // excludedLabels: number[]
-}
-
-const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
+const IncomeStatement = (props: IStatementDisplayProps): React.ReactElement => {
     const StatementTable = () => {
         return (
             <TableContainer component={Paper}>
@@ -42,10 +35,10 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
     const TableHeaders = () => {
         return (
             <>
-                <TableCell sx={{ minWidth: '250px', position: 'sticky', left: 0, backgroundColor: 'white' }}></TableCell>
+                <TableCell sx={{ minWidth: '250px', position: 'sticky', left: 0, backgroundColor: 'white' }} />
 
                 {
-                    props.yearsArray.map((dataElement, index) => {
+                    props.yearsSelected.map((dataElement, index) => {
                         return (
                             <TableCell key={index} align="right">{dataElement}</TableCell>
                         )
@@ -65,6 +58,7 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
                 <Row label={6} />
                 <Row label={22} />
                 <Row label={7} />
+                <Row label={23} />
                 <Row label={8} bold={true} />
                 <Row label={9} />
                 <Row label={11} />
@@ -78,6 +72,10 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
                 <Row label={19} bold={true} />
                 <Row label={20} />
                 <Row label={21} bold={true} />
+                <Row label={24} />
+                <Row label={25} />
+                <Row label={26} />
+                <Row label={27} />
             </>
         )
     }
@@ -117,7 +115,7 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
                 </TableCell>
 
                 {
-                    props.yearsArray.map((year, index) => {
+                    props.yearsSelected.map((year, index) => {
                         return (
                             <TableCell align="right" key={index} sx={{ fontWeight: bold ? 900 : 'initial' }}>
                                 <CellValue value={props.data.financialStatements[year].incomeStatement[label]?.value} />
@@ -127,21 +125,6 @@ const IncomeStatement = (props: IIncomeStatementProps): React.ReactElement => {
                 }
             </ TableRow>
         )
-    }
-
-    const CellValue = ({ value }: { value: string }) => {
-        const valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
-        const number = Number(value)
-
-        if (isNaN(number) || number === 0) {
-            return <>-</>
-        }
-
-        if (valuesAsMillions) {
-            return <>{parseFloat((number / 1000000).toFixed(2)).toLocaleString()}</>
-        }
-
-        return <>{number.toLocaleString()}</>
     }
 
     return <StatementTable />

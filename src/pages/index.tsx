@@ -76,7 +76,7 @@ const Dashboard = (props: IGetStaticPropsResult) => {
                         </Card>
                     </Grid>
 
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} lg={4}>
                         <Card>
                             <Box sx={{ width: '90%', marginLeft: '5%', paddingTop: '5px', paddingBottom: '5px', textAlign: 'center' }}>
                                 Recent activity
@@ -84,7 +84,7 @@ const Dashboard = (props: IGetStaticPropsResult) => {
                         </Card>
                     </Grid>
 
-                    <Grid item xs={12} md={8}>
+                    <Grid item xs={12} lg={8} sx={{display: {xs: 'none', lg: 'initial'}}}>
                         <Card>
                             <Box sx={{ width: '90%', marginLeft: '5%', paddingTop: '5px', paddingBottom: '5px', textAlign: 'center' }}>
                                 Leaderboard
@@ -92,9 +92,23 @@ const Dashboard = (props: IGetStaticPropsResult) => {
                         </Card>
                     </Grid>
 
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} lg={4}>
                         <Card>
                             <RecentActivityTable events={events} />
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} lg={8} sx={{display: {lg: 'none'}}}>
+                        <Card>
+                            <Box sx={{ width: '90%', marginLeft: '5%', paddingTop: '5px', paddingBottom: '5px', textAlign: 'center' }}>
+                                Leaderboard
+                            </Box>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} lg={8}>
+                        <Card>
+                            <LeaderboardTable />
                         </Card>
                     </Grid>
                 </Grid>
@@ -128,7 +142,7 @@ const RecentActivityTable = ({ events }: {
                         >
                             <TableCell component="th" scope="row">
                                 <Link
-                                    href="/company-overview"
+                                    href={`/company-overview?id=${row.companyId}`}
                                     onClick={() => selectCompany(idToCompany?.[row.companyId] as ICompanyEthData, dispatch)}
                                     style={{ color: theme.palette.primary.main }}
                                 >
@@ -139,6 +153,47 @@ const RecentActivityTable = ({ events }: {
                             <TableCell align="right">{timePassed(row.blockTimestamp)}</TableCell>
                         </TableRow>
                     ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    )
+}
+
+
+const LeaderboardTable = () => {
+    const Row = () => {
+        return (
+            <TableRow>
+                <TableCell>
+                    <Skeleton variant="text" />
+                </TableCell>
+
+                <TableCell>
+                    <Skeleton variant="text" />
+                </TableCell>
+
+                <TableCell>
+                    <Skeleton variant="text" />
+                </TableCell>
+            </TableRow>
+        )
+    }
+
+    return (
+        <TableContainer component={Paper}>
+            <Table sx={{ width: '100%' }}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Company</TableCell>
+                        <TableCell align="center">Number of years</TableCell>
+                        <TableCell align="right">Oldest year</TableCell>
+                    </TableRow>
+                </TableHead>
+
+                <TableBody>
+                    {Array(10).fill(0).map((row, index) => {
+                        return <Row key={index} />
+                    })}
                 </TableBody>
             </Table>
         </TableContainer>
