@@ -170,6 +170,8 @@ const EditableIncomeStatement = (props: IEditableIncomeStatementProps): React.Re
                         { label: 20, operation: AutofillOperation.Subtract }
                     ]}
                 />
+
+                {/* TODO: add eps and number of shares */}
             </div>
 
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 6 }}>

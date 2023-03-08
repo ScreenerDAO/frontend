@@ -58,6 +58,7 @@ const IncomeStatement = (props: IStatementDisplayProps): React.ReactElement => {
                 <Row label={6} />
                 <Row label={22} />
                 <Row label={7} />
+                <Row label={23} />
                 <Row label={8} bold={true} />
                 <Row label={9} />
                 <Row label={11} />
@@ -71,6 +72,10 @@ const IncomeStatement = (props: IStatementDisplayProps): React.ReactElement => {
                 <Row label={19} bold={true} />
                 <Row label={20} />
                 <Row label={21} bold={true} />
+                <Row label={24} />
+                <Row label={25} />
+                <Row label={26} />
+                <Row label={27} />
             </>
         )
     }
