@@ -15,6 +15,7 @@ import Chart, { getLabel } from '../Chart';
 import LogarithmicScaleSwitch from '../LogarithmicScaleSwitch';
 import CloseIcon from '@mui/icons-material/Close';
 import Ratios from '../Ratios';
+import CashFlowStatement from './CashFlowStatement';
 
 const getSelectedYearsArray = (yearsArray: number[], minAndMax: number[]) => {
     const newArray = []
@@ -241,7 +242,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                         <TabPanel value={tabIndex} index={1}>
                             <IncomeStatement
                                 data={props.companyData}
-                                yearsArray={getSelectedYearsArray(years, yearsSelected)}
+                                yearsSelected={getSelectedYearsArray(years, yearsSelected)}
                                 selectedLabels={selectedLabels}
                                 setSelectedLabels={labels => {
                                     setSelectedLabels(labels)
@@ -251,7 +252,18 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                             />
                         </TabPanel>
 
-                        <TabPanel value={tabIndex} index={2}></TabPanel>
+                        <TabPanel value={tabIndex} index={2}>
+                            <CashFlowStatement
+                                data={props.companyData}
+                                yearsSelected={getSelectedYearsArray(years, yearsSelected)}
+                                selectedLabels={selectedLabels}
+                                setSelectedLabels={labels => {
+                                    setSelectedLabels(labels)
+                                }}
+
+                                // excludedLabels={excludedLabels["cashFlow"]}
+                            />
+                        </TabPanel>
 
                         <TabPanel value={tabIndex} index={3}>
                             <Ratios yearsSelected={getSelectedYearsArray(years, yearsSelected)} />

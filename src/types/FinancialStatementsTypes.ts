@@ -191,7 +191,11 @@ const incomeStatementTypesNames: { [key: number]: string } = {
     20: "Minority interest",
     21: "Net income to common shareholders",
     22: "Depreciation and amortization",
-    23: "Other operating income"
+    23: "Other operating income",
+    24: "Number shares outstanding",
+    25: "Number shares diluted",
+    26: "EPS outstanding",
+    27: "EPS diluted"
 }
 
 interface IRatio {
@@ -295,6 +299,18 @@ const ratios: IRatio[] = [
         const result = parseFloat((totalLiabilities / operatingIncome).toFixed(4))
 
         return result ? `${result.toFixed(2)}x` : "-"
+    }},
+    {name: 'Tax rate', function: (year: number, companyData: ICompanyData) => {
+        const incomeTax = Number(companyData.financialStatements[year].incomeStatement[18]?.value)
+        const earningsBeforeTaxes = Number(companyData.financialStatements[year].incomeStatement[17]?.value)
+
+        if (!incomeTax ||!earningsBeforeTaxes) {
+            return "-"
+        }
+
+        const result = parseFloat((incomeTax / earningsBeforeTaxes).toFixed(4))
+
+        return result ? `${result.toFixed(2)}%` : "-"
     }}
 ]
 
@@ -304,6 +320,31 @@ const cashFlowStatementTypesNames: { [key: number]: string } = {
     3: "Depreciation and amortization",
     4: "Deferred income tax",
     5: "Stock based compensation",
+    6: "Change in working capital",
+    7: "Accounts receivable",
+    8: "Inventory",
+    9: "Accounts payable",
+    10: "Other working capital",
+    11: "Other non cash items",
+    12: "Cash from operating activities",
+    13: "Investing cash flow",
+    14: "Investments in property plant and equipment",
+    15: "Acquisitions net",
+    16: "Purchases of investments",
+    17: "Sales maturities of investments",
+    18: "Other investing activities",
+    19: "Cash from investing activities",
+    20: "Financing cash flow",
+    21: "Debt repayment",
+    22: "Common stock issued",
+    23: "Common stock repurchased",
+    24: "Dividends paid",
+    25: "Other financing activities",
+    26: "Cash from financing activities",
+    27: "Effect of forex changes on cash",
+    28: "Net change in cash",
+    29: "Cash, beggining of the period",
+    30: "Cash, end of the period",
 }
 
 const currencies: { [key: number]: {

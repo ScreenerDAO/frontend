@@ -11,17 +11,10 @@ import { StatementType } from 'src/types/IStatement';
 import { IElement, IElementsGroup, balanceSheetStructure, balanceSheetTypesNames } from 'src/types/FinancialStatementsTypes';
 import { useAppSelector } from 'src/hooks';
 import { IChartLabel } from './FinancialStatements';
+import IStatementDisplayProps from 'src/types/IStatementDisplayProps';
+import CellValue from './CellValue';
 
-interface IBalanceSheetProps {
-    data: ICompanyData
-    yearsSelected: number[]
-    selectedLabels: IChartLabel[],
-    setSelectedLabels: (labels: IChartLabel[]) => void,
-
-    // excludedLabels: number[]
-}
-
-const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
+const BalanceSheet = (props: IStatementDisplayProps): React.ReactElement => {
     const TableHeaders = () => {
         return (
             <>
@@ -117,21 +110,6 @@ const BalanceSheet = (props: IBalanceSheetProps): React.ReactElement => {
                 }
             </ TableRow>
         )
-    }
-
-    const CellValue = ({ value }: { value: string }) => {
-        const valuesAsMillions = useAppSelector(state => state.general.valuesAsMillions)
-        const number = Number(value)
-
-        if (isNaN(number) || number === 0) {
-            return <>-</>
-        }
-
-        if (valuesAsMillions) {
-            return <>{parseFloat((number / 1000000).toFixed(2)).toLocaleString()}</>
-        }
-
-        return <>{number.toLocaleString()}</>
     }
 
     return (
