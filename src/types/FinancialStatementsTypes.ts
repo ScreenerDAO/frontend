@@ -308,7 +308,7 @@ const ratios: IRatio[] = [
             return "-"
         }
 
-        const result = parseFloat((incomeTax / earningsBeforeTaxes).toFixed(4))
+        const result = parseFloat((100 * incomeTax / earningsBeforeTaxes).toFixed(4))
 
         return result ? `${result.toFixed(2)}%` : "-"
     }}
