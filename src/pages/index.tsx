@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { IGetStaticPropsResult } from '../lib/getStaticProps'
 import type IEvent from 'src/types/IEvent'
 import PageWrapper from 'src/layouts/components/PageWrapper'
+import { getStaticProps } from '../lib/getStaticProps'
 
 const getEventCell = (eventType: string) => {
     if (eventType === "AddComapny") {
@@ -243,6 +244,6 @@ const LeaderboardTable = () => {
 //     )
 // }
 
-export { getStaticProps } from '../lib/getStaticProps'
+export { getStaticProps }
 
 export default Dashboard

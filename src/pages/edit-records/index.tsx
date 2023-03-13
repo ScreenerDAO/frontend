@@ -19,6 +19,7 @@ import { RootState } from 'src/store';
 import ICompanyEthData from 'src/types/ICompanyEthData'
 import PageWrapper from 'src/layouts/components/PageWrapper'
 import type { IGetStaticPropsResult } from '../../lib/getStaticProps'
+import { getStaticProps } from '../../lib/getStaticProps'
 
 const EditRecords = ({ companies }: {
     companies: ICompanyEthData[]
@@ -313,6 +314,6 @@ const EditRecords = ({ companies }: {
     )
 }
 
-export { getStaticProps } from '../../lib/getStaticProps'
+export { getStaticProps }
 
 export default EditRecords

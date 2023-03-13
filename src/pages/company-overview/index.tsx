@@ -14,6 +14,7 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import { useRouter } from 'next/router'
 import PageWrapper from 'src/layouts/components/PageWrapper';
 import { IGetStaticPropsResult } from '../../lib/getStaticProps';
+import { getStaticProps } from '../../lib/getStaticProps';
 
 const Dashboard = ({companies}: IGetStaticPropsResult) => {
     const data = useAppSelector((state: { companyData: ICompanyData }) => state.companyData)
@@ -22,17 +23,18 @@ const Dashboard = ({companies}: IGetStaticPropsResult) => {
     return (
         <PageWrapper companies={companies}>
             <ApexChartWrapper>
-                {companyLoading ?
+                {companyLoading || data.id === null ?
                     <div style={{
                         height: '400px',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
                         alignItems: 'center'
-                    }}><CircularProgress /></div>
+                    }}>
+                        <CircularProgress />
+                    </div>
                     :
                     <CompanyDashboard data={data} />
-
                 }
             </ApexChartWrapper>
         </PageWrapper>
@@ -162,6 +164,6 @@ const StyledMenu = styled((props: MenuProps) => (
     },
 }));
 
-export { getStaticProps } from '../../lib/getStaticProps'
+export { getStaticProps }
 
 export default Dashboard
