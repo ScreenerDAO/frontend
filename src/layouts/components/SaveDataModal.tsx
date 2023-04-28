@@ -130,7 +130,7 @@ const SaveDataToFilecoinStep = ({newCompanyData, state, setState}: {
         const callback = async() => {
             const response = await fetch('/api/SaveCompanyData', {
                 method: 'POST',
-                body: newCompanyData as any
+                body: JSON.stringify(newCompanyData) 
             })
 
             if (response.ok) {
@@ -192,8 +192,11 @@ const SaveDataToEthereumStep = (props: {
     } = usePrepareContractWrite({
         address: registriesContractAddress as any,
         abi: JSON.parse(registriesContractABI ?? ""),
-        functionName: companyId ? 'editCompany' : 'addNewCompany',
-        args: companyId ? [companyId, companyName, companyTicker, props.cid] : [companyName, companyTicker, props.cid]
+        functionName: companyId ? 'editCompanyData' : 'addNewCompany',
+        args: companyId ? [companyId, props.cid] : [companyName, companyTicker, props.cid],
+        overrides: {
+            gasLimit: 100000
+        }
     })
     const { data, error, isError, write } = useContractWrite(config)
     const { isLoading, isSuccess } = useWaitForTransaction({ hash: data?.hash })

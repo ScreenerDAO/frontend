@@ -1,23 +1,29 @@
 import type { NextApiRequest, NextApiResponse } from "next/types";
 import { saveFile } from 'src/lib/generalMethods'
+import { Buffer } from 'buffer';
+import { File } from 'nft.storage';
 
 export const config = {
     api: {
         bodyParser: {
-            sizeLimit: '20mb',
+            sizeLimit: '50mb'
         },
     },
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
-        const hash = await saveFile(req.body.file)
+        const base64 = JSON.parse(req.body).fileBase64
+        
+        const buffer = Buffer.from(base64, 'base64');
+        const file = new File([buffer], '')
+        const cid = await saveFile(file)
 
-        res.status(200).send(hash)
+        res.send(cid)
     }
     catch (error) {
         res.status(500).send("There was an error storing the file")
     }
 }
 
-
+export default handler

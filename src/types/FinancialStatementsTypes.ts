@@ -60,7 +60,8 @@ const balanceSheetTypesNames: { [key: number]: string } = {
     52: 'Total liabilities and equity',
     53: 'Preferred stock',
     54: 'Other equity',
-    55: 'Accrued liabilities'
+    55: 'Accrued liabilities',
+    56: 'Deferred revenue'
 }
 
 interface IElement {
@@ -135,7 +136,8 @@ const balanceSheetStructure: IElementsGroup[] = [
                     { label: 33, operation: AutofillOperation.Add }, 
                     { label: 34, operation: AutofillOperation.Add }, 
                     { label: 55, operation: AutofillOperation.Add },
-                    { label: 35, operation: AutofillOperation.Add }
+                    { label: 35, operation: AutofillOperation.Add },
+                    { label: 56, operation: AutofillOperation.Add },
                 ],
                 total: { label: 36, operation: AutofillOperation.Add }
             },
@@ -145,7 +147,7 @@ const balanceSheetStructure: IElementsGroup[] = [
                     { label: 38, operation: AutofillOperation.Add }, 
                     { label: 39, operation: AutofillOperation.Add }, 
                     { label: 40, operation: AutofillOperation.Add }, 
-                    { label: 41, operation: AutofillOperation.Add }
+                    { label: 41, operation: AutofillOperation.Add },
                 ],
                 total: { label: 42, operation: AutofillOperation.Add }
             }

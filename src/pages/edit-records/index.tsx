@@ -5,8 +5,8 @@ import React from 'react'
 import { useAppDispatch, useAppSelector } from 'src/hooks'
 import { IGeneral } from 'src/features/general'
 import ICompanyData from 'src/types/ICompanyData'
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Slide, Tab, Tabs, TextField } from '@mui/material'
-import { setCompanyCountry, setCompanyData, setCompanyName, setCompanyTicker } from 'src/features/newCompanyDataSlice'
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Slide, Tab, Tabs, TextField, Select, MenuItem, FormControl, InputLabel } from '@mui/material'
+import { setCompanyCountry, setCompanyCurrency, setCompanyData, setCompanyIsin, setCompanyName, setCompanyTicker, setCompanyWikipediaPage } from 'src/features/newCompanyDataSlice'
 import FinancialStatementsList from 'src/layouts/components/FinancialStatements/FinancialStatementsList'
 import SaveDataModal from 'src/layouts/components/SaveDataModal'
 import { initialState } from 'src/features/newCompanyDataSlice'
@@ -20,6 +20,7 @@ import ICompanyEthData from 'src/types/ICompanyEthData'
 import PageWrapper from 'src/layouts/components/PageWrapper'
 import type { IGetStaticPropsResult } from '../../lib/getStaticProps'
 import { getStaticProps } from '../../lib/getStaticProps'
+import { getISOCountries, getISOCurrencies } from 'src/lib/generalMethods'
 
 const EditRecords = ({ companies }: {
     companies: ICompanyEthData[]
@@ -27,10 +28,17 @@ const EditRecords = ({ companies }: {
     const [saveDataModalOpen, setSaveDataModalOpen] = useState(false)
     const [resetDataModalOpen, setResetDataModalOpen] = useState(false)
     const [tabIndex, setTabIndex] = React.useState(0)
+    const [companiesList, setCompaniesList] = React.useState<string[]>([])
+    const [currenciesList, setCurrenciesList] = React.useState<string[]>([])
 
     const store = useStore<RootState>()
     const dispatch = useAppDispatch()
     const companyLoading = useAppSelector((state: { general: IGeneral }) => state.general.companyLoading)
+
+    React.useEffect(() => {
+        getISOCountries().then(res => setCompaniesList(res.sort()))
+        getISOCurrencies().then(res => setCurrenciesList(res.sort()))
+    }, [])
 
     const resetData = () => {
         const companyData = store.getState().companyData
@@ -105,10 +113,31 @@ const EditRecords = ({ companies }: {
 
                     <TabPanel value={tabIndex} index={0}>
                         <React.Fragment>
-                            <CompanyName />
-                            <CompanyTicker />
-                            <CompanyCountry />
-                            {/* <CompanyCurrency /> */}
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} md={6}>
+                                    <CompanyName />
+                                </Grid>
+
+                                <Grid item xs={12} md={6}>
+                                    <CompanyTicker />
+                                </Grid>
+
+                                <Grid item xs={12} md={6}>
+                                    <CompanyCountry countries={companiesList} />
+                                </Grid>
+
+                                <Grid item xs={12} md={6}>
+                                    <CompanyCurrency currencies={currenciesList} />
+                                </Grid>
+
+                                <Grid item xs={12} md={6}>
+                                    <CompanyWikipediaPage />
+                                </Grid>
+
+                                <Grid item xs={12} md={6}>
+                                    <CompanyIsin />
+                                </Grid>
+                            </Grid>
                         </React.Fragment>
                     </TabPanel>
 
@@ -127,7 +156,7 @@ const EditRecords = ({ companies }: {
         id: `simple-tab-${index}`,
         'aria-controls': `simple-tabpanel-${index}`,
     })
-    
+
     const TabPanel = ({ children, value, index, ...other }: {
         children?: React.ReactNode;
         index: number;
@@ -167,10 +196,8 @@ const EditRecords = ({ companies }: {
         return (
             <TextField
                 required
-                id="address1"
-                name="address1"
                 label="Company name"
-                variant="standard"
+                variant="outlined"
                 autoComplete='off'
                 style={{
                     marginTop: '10px'
@@ -189,32 +216,93 @@ const EditRecords = ({ companies }: {
             <TextField
                 required
                 label="Ticker"
-                variant='standard'
+                variant='outlined'
                 autoComplete='off'
                 style={{
                     marginTop: '10px'
                 }}
                 value={companyTicker}
                 onChange={ev => dispatch(setCompanyTicker(ev.target.value))}
+                fullWidth
             />
         )
     }
 
-    const CompanyCountry = () => {
+    const CompanyCountry = ({ countries }: {
+        countries: string[]
+    }) => {
         const companyCountry = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.country)
 
         return (
+            <FormControl sx={{ marginTop: '10px' }} fullWidth>
+                <InputLabel>Contry</InputLabel>
+                <Select
+                    required
+                    label="Country"
+                    variant="outlined"
+                    value={companyCountry}
+                    onChange={ev => dispatch(setCompanyCountry(ev.target.value))}
+                >
+                    {countries.map((country, index) => <MenuItem value={country} key={index}>{country}</MenuItem>)}
+                </Select>
+            </FormControl>
+        )
+    }
+
+    const CompanyWikipediaPage = () => {
+        const companyDescription = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.wikipediaPage)
+
+        return (
             <TextField
-                required
-                label="Country"
-                variant="standard"
+                label="Wikipedia page"
+                variant="outlined"
                 autoComplete='off'
                 style={{
                     marginTop: '10px'
                 }}
-                value={companyCountry}
-                onChange={ev => dispatch(setCompanyCountry(ev.target.value))}
+                value={companyDescription}
+                onChange={ev => dispatch(setCompanyWikipediaPage(ev.target.value))}
+                fullWidth
             />
+        )
+    }
+
+    const CompanyIsin = () => {
+        const companyIsin = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.isin)
+
+        return (
+            <TextField
+                label="Isin"
+                variant="outlined"
+                autoComplete='off'
+                style={{
+                    marginTop: '10px'
+                }}
+                value={companyIsin}
+                onChange={ev => dispatch(setCompanyIsin(ev.target.value))}
+                fullWidth
+            />
+        )
+    }
+
+    const CompanyCurrency = ({currencies}: {
+        currencies: string[]
+    }) => {
+        const companyCurrency = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.currency)
+
+        return (
+            <FormControl sx={{ marginTop: '10px' }} fullWidth>
+                <InputLabel>Currency</InputLabel>
+                <Select
+                    required
+                    label="Currency"
+                    variant='outlined'
+                    value={companyCurrency}
+                    onChange={ev => dispatch(setCompanyCurrency(ev.target.value as unknown as number))}
+                >
+                    {currencies.map((currency, index) => <MenuItem value={currency} key={index}>{currency}</MenuItem>)}
+                </Select>
+            </FormControl>
         )
     }
 
@@ -228,7 +316,7 @@ const EditRecords = ({ companies }: {
         resetData: () => void
     }) => {
         return (
-    
+
             <Dialog
                 open={open}
                 TransitionComponent={Transition}

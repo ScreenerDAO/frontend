@@ -16,6 +16,12 @@ import LogarithmicScaleSwitch from '../LogarithmicScaleSwitch';
 import CloseIcon from '@mui/icons-material/Close';
 import Ratios from '../Ratios';
 import CashFlowStatement from './CashFlowStatement';
+import TradingViewWidget from '../TradingViewWidget';
+import StockPriceChart from '../StockPriceChart';
+import { CompanyProfile, FundamentalData } from 'react-ts-tradingview-widgets';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import BusinessIcon from '@mui/icons-material/Business';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 const getSelectedYearsArray = (yearsArray: number[], minAndMax: number[]) => {
     const newArray = []
@@ -45,7 +51,7 @@ const TabPanel = (props: {
             {...other}
         >
             {value === index && (
-                <Box sx={{ p: 3 }}>
+                <Box>
                     {children}
                 </Box>
             )}
@@ -66,7 +72,7 @@ interface IChartLabel {
     type: string
 }
 
-const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactElement => {
+const FinancialStatements = (props: { companyData: ICompanyData, wikipediaSumary: string }): React.ReactElement => {
     const [tabIndex, setTabIndex] = React.useState(0);
     const [yearsSelected, setYearsSelected] = React.useState<number[]>([]);
     const [selectedLabels, setSelectedLabels] = React.useState<IChartLabel[]>([
@@ -128,86 +134,7 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
     if (years.length > 0) {
         return (
             <>
-                <Grid item xs={12} md={12}>
-                    <Card>
-                        <Box sx={{ marginLeft: '5%', paddingTop: '10px', paddingBottom: '10px' }}>
-                            <MillionsSwitch />
-                            <LogarithmicScaleSwitch />
-                        </Box>
-
-                        <Slider
-                            value={yearsSelected}
-                            getAriaLabel={(value: number) => `${value}`}
-                            step={1}
-                            valueLabelDisplay="auto"
-                            marks
-                            min={years[0]}
-                            max={years[years.length - 1]}
-                            onChange={(event: Event, newValue: number | number[]) => setYearsSelected(newValue as number[])}
-                            sx={{ width: '90%', marginLeft: '5%' }}
-                        />
-                    </Card>
-                </Grid>
-
-                {tabIndex >= 0 && tabIndex <= 3 && selectedLabels.length > 0 ?
-                    <Grid item xs={12} md={12}>
-                        <Card style={{ paddingLeft: '20px', paddingRight: '20px', paddingTop: '10px', paddingBottom: '10px' }}>
-
-                            <div style={{ height: '300px' }}>
-                                <Chart
-                                    years={years}
-                                    yearsSelected={yearsSelected}
-                                    selectedLabels={selectedLabels}
-                                />
-                            </div>
-
-                            <Grid item xs={12} md={12} style={{ marginTop: '25px' }}>
-                                <Grid container spacing={2}>
-                                    {selectedLabels.map((label, index) => (
-                                        <Grid item xs={12} md={6} lg={4} key={index}>
-                                            <Paper sx={{ padding: '10px', height: '60px' }}>
-                                                <Grid container>
-                                                    <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                                        <Typography fontSize={16}>{getLabel(label)}</Typography>
-                                                    </Grid>
-
-                                                    <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                                        <FormControl size="small">
-                                                            <Select
-                                                                value={label.type}
-                                                                sx={{ width: '90px' }}
-                                                                onChange={ev => {
-                                                                    const newLabels = [...selectedLabels]
-                                                                    newLabels[index].type = ev.target.value as string
-                                                                    setSelectedLabels(newLabels)
-                                                                }}
-                                                            >
-                                                                <MenuItem value={'bar'}>Bar</MenuItem>
-                                                                <MenuItem value={'line'}>Line</MenuItem>
-                                                            </Select>
-                                                        </FormControl>
-                                                    </Grid>
-
-                                                    <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                                        <IconButton onClick={() => {
-                                                            const newLabels = [...selectedLabels]
-                                                            newLabels.splice(index, 1)
-                                                            setSelectedLabels(newLabels)
-                                                        }}>
-                                                            <CloseIcon />
-                                                        </IconButton>
-                                                    </Grid>
-                                                </Grid>
-                                            </Paper>
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            </Grid>
-                        </Card>
-                    </Grid> : null
-                }
-
-                <Grid item xs={12} md={12}>
+                <Grid item xs={12}>
                     <Card>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'center' }}>
                             <Tabs
@@ -218,61 +145,159 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                                 scrollButtons="auto"
                                 allowScrollButtonsMobile
                             >
-                                <Tab label="Balance sheet" {...a11yProps(0)} />
-                                <Tab label="Income statement" {...a11yProps(1)} />
-                                <Tab label="Cash flow" {...a11yProps(2)} />
-                                <Tab label="Ratios" {...a11yProps(3)} />
-                                <Tab label="Annual reports" {...a11yProps(4)} />
+                                <Tab icon={<BusinessIcon />} label="OVERVIEW" {...a11yProps(0)} />
+                                <Tab icon={<AccountBalanceIcon />} label="FINANCIALS" {...a11yProps(1)} />
+                                <Tab icon={<DescriptionIcon />} label="ANNUAL REPORTS" {...a11yProps(2)} />
                             </Tabs>
                         </Box >
-
-                        <TabPanel value={tabIndex} index={0}>
-                            <BalanceSheet
-                                data={props.companyData}
-                                yearsSelected={getSelectedYearsArray(years, yearsSelected)}
-                                selectedLabels={selectedLabels}
-                                setSelectedLabels={labels => {
-                                    setSelectedLabels(labels)
-                                }}
-
-                                // excludedLabels={excludedLabels["balanceSheet"]}
-                            />
-                        </TabPanel>
-
-                        <TabPanel value={tabIndex} index={1}>
-                            <IncomeStatement
-                                data={props.companyData}
-                                yearsSelected={getSelectedYearsArray(years, yearsSelected)}
-                                selectedLabels={selectedLabels}
-                                setSelectedLabels={labels => {
-                                    setSelectedLabels(labels)
-                                }}
-
-                                // excludedLabels={excludedLabels["incomeStatement"]}
-                            />
-                        </TabPanel>
-
-                        <TabPanel value={tabIndex} index={2}>
-                            <CashFlowStatement
-                                data={props.companyData}
-                                yearsSelected={getSelectedYearsArray(years, yearsSelected)}
-                                selectedLabels={selectedLabels}
-                                setSelectedLabels={labels => {
-                                    setSelectedLabels(labels)
-                                }}
-
-                                // excludedLabels={excludedLabels["cashFlow"]}
-                            />
-                        </TabPanel>
-
-                        <TabPanel value={tabIndex} index={3}>
-                            <Ratios yearsSelected={getSelectedYearsArray(years, yearsSelected)} />
-                        </TabPanel>
-
-                        <TabPanel value={tabIndex} index={4}>
-                            <AnnualReports data={props.companyData} />
-                        </TabPanel>
                     </Card>
+                </Grid>
+
+                <Grid item xs={12}>
+                    <TabPanel value={tabIndex} index={0}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <Paper sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
+                                    <StockPriceChart companyTicker={props.companyData.ticker} />
+                                </Paper>
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <Paper variant="outlined" sx={{ padding: '20px' }}>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={6}>
+                                            <div>Country</div>
+                                            <b>{props.companyData.country}</b>
+                                        </Grid>
+
+                                        <Grid item xs={6}>
+                                            <div>Currency</div>
+                                            <b>{props.companyData.currency ?? 'N/A'}</b>
+                                        </Grid>
+
+                                        <Grid item xs={6}>
+                                            <div>ISIN</div>
+                                            <b>{props.companyData.isin ?? 'N/A'}</b>
+                                        </Grid>
+                                    </Grid>
+                                </Paper>
+
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <Paper>
+                                    <CompanyProfile symbol={props.companyData.ticker} height="470" width="100%" isTransparent></CompanyProfile>
+                                </Paper>
+                                {/* <WikipediaSummary summary={props.wikipediaSumary} wikipediaPage={props.companyData.wikipediaPage as string} /> */}
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                {/* <FundamentalData symbol={props.companyData.ticker} height={800} width="100%" isTransparent></FundamentalData> */}
+                            </Grid>
+                        </Grid>
+                    </TabPanel>
+
+                    <TabPanel value={tabIndex} index={1}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                {/* {selectedLabels.length > 0 ? */}
+                                    <Card>
+                                        <Box sx={{ marginLeft: '5%', paddingTop: '10px', paddingBottom: '10px' }}>
+                                            <MillionsSwitch />
+                                            <LogarithmicScaleSwitch />
+                                        </Box>
+
+                                        <Slider
+                                            value={yearsSelected}
+                                            getAriaLabel={(value: number) => `${value}`}
+                                            step={1}
+                                            valueLabelDisplay="auto"
+                                            marks
+                                            min={years[0]}
+                                            max={years[years.length - 1]}
+                                            onChange={(event: Event, newValue: number | number[]) => setYearsSelected(newValue as number[])}
+                                            sx={{ width: '90%', marginLeft: '5%' }}
+                                        />
+                                    </Card> 
+                                    {/* : null} */}
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                {/* {selectedLabels.length > 0 ? */}
+                                    <Card style={{ paddingLeft: '20px', paddingRight: '20px', paddingTop: '10px', paddingBottom: '10px' }}>
+
+                                        <div style={{ height: '300px' }}>
+                                            <Chart
+                                                years={years}
+                                                yearsSelected={yearsSelected}
+                                                selectedLabels={selectedLabels}
+                                            />
+                                        </div>
+
+                                        <Grid item xs={12} style={{ marginTop: '25px' }}>
+                                            <Grid container spacing={2}>
+                                                {selectedLabels.map((label, index) => (
+                                                    <Grid item xs={12} md={6} lg={4} key={index}>
+                                                        <Paper sx={{ padding: '10px', height: '60px' }}>
+                                                            <Grid container>
+                                                                <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                                    <Typography fontSize={16}>{getLabel(label)}</Typography>
+                                                                </Grid>
+
+                                                                <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                                    <FormControl size="small">
+                                                                        <Select
+                                                                            value={label.type}
+                                                                            sx={{ width: '90px' }}
+                                                                            onChange={ev => {
+                                                                                const newLabels = [...selectedLabels]
+                                                                                newLabels[index].type = ev.target.value as string
+                                                                                setSelectedLabels(newLabels)
+                                                                            }}
+                                                                        >
+                                                                            <MenuItem value={'bar'}>Bar</MenuItem>
+                                                                            <MenuItem value={'line'}>Line</MenuItem>
+                                                                        </Select>
+                                                                    </FormControl>
+                                                                </Grid>
+
+                                                                <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                                    <IconButton onClick={() => {
+                                                                        const newLabels = [...selectedLabels]
+                                                                        newLabels.splice(index, 1)
+                                                                        setSelectedLabels(newLabels)
+                                                                    }}>
+                                                                        <CloseIcon />
+                                                                    </IconButton>
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Paper>
+                                                    </Grid>
+                                                ))}
+                                            </Grid>
+                                        </Grid>
+                                    </Card> 
+                                    {/* : null} */}
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Card>
+                                    <FinancialsTab
+                                        years={years}
+                                        companyData={props.companyData}
+                                        yearsSelected={yearsSelected}
+                                        selectedLabels={selectedLabels}
+                                        setSelectedLabels={setSelectedLabels}
+                                        setYearsSelected={setYearsSelected}
+                                    />
+                                </Card>
+                            </Grid>
+                        </Grid>
+                    </TabPanel>
+
+                    <TabPanel value={tabIndex} index={2}>
+                        <AnnualReports data={props.companyData} />
+                    </TabPanel>
                 </Grid>
             </>
         )
@@ -289,6 +314,101 @@ const FinancialStatements = (props: { companyData: ICompanyData }): React.ReactE
                 <div style={{ textAlign: 'center' }}>This company doesn't have any financials added yet!</div>
             </Card>
         </Grid>
+    )
+}
+
+const FinancialsTab = ({ companyData, selectedLabels, yearsSelected, years, setSelectedLabels, setYearsSelected }: {
+    companyData: ICompanyData,
+    selectedLabels: IChartLabel[],
+    yearsSelected: number[],
+    years: number[],
+    setSelectedLabels: React.Dispatch<React.SetStateAction<IChartLabel[]>>,
+    setYearsSelected: React.Dispatch<React.SetStateAction<number[]>>
+}) => {
+    const [tabIndex, setTabIndex] = React.useState(0);
+
+    return (
+        <>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'center' }}>
+                <Tabs
+                    value={tabIndex}
+                    onChange={(event: React.SyntheticEvent, newValue: number) => setTabIndex(newValue)}
+                    aria-label="basic tabs example"
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    allowScrollButtonsMobile
+                >
+                    <Tab label="Balance sheet" {...a11yProps(0)} />
+                    <Tab label="Income statement" {...a11yProps(1)} />
+                    <Tab label="Cash flow" {...a11yProps(2)} />
+                    <Tab label="Ratios" {...a11yProps(3)} />
+                </Tabs>
+            </Box >
+
+            <Card>
+                <TabPanel value={tabIndex} index={0}>
+                    <BalanceSheet
+                        data={companyData}
+                        yearsSelected={getSelectedYearsArray(years, yearsSelected)}
+                        selectedLabels={selectedLabels}
+                        setSelectedLabels={labels => {
+                            setSelectedLabels(labels)
+                        }}
+
+                    // excludedLabels={excludedLabels["balanceSheet"]}
+                    />
+                </TabPanel>
+
+                <TabPanel value={tabIndex} index={1}>
+                    <IncomeStatement
+                        data={companyData}
+                        yearsSelected={getSelectedYearsArray(years, yearsSelected)}
+                        selectedLabels={selectedLabels}
+                        setSelectedLabels={labels => {
+                            setSelectedLabels(labels)
+                        }}
+
+                    // excludedLabels={excludedLabels["incomeStatement"]}
+                    />
+                </TabPanel>
+
+                <TabPanel value={tabIndex} index={2}>
+                    <CashFlowStatement
+                        data={companyData}
+                        yearsSelected={getSelectedYearsArray(years, yearsSelected)}
+                        selectedLabels={selectedLabels}
+                        setSelectedLabels={labels => {
+                            setSelectedLabels(labels)
+                        }}
+
+                    // excludedLabels={excludedLabels["cashFlow"]}
+                    />
+                </TabPanel>
+
+                <TabPanel value={tabIndex} index={3}>
+                    <Ratios yearsSelected={getSelectedYearsArray(years, yearsSelected)} />
+                </TabPanel>
+            </Card>
+        </>
+    )
+}
+
+const WikipediaSummary = ({ summary, wikipediaPage }: {
+    summary: string,
+    wikipediaPage: string
+}) => {
+
+    return (
+        <Paper variant="outlined" sx={{ padding: '20px' }}>
+            {summary}
+
+            <a
+                href={`https://en.wikipedia.org/wiki/${wikipediaPage}`}
+                title='Wikipedia'
+                target='_blank'
+                style={{ color: '#1A0DAB', textDecoration: 'none' }}
+            >Wikipedia</a>
+        </Paper>
     )
 }
 

@@ -5,8 +5,9 @@ export default interface ICompanyData {
     companyName: string
     ticker: string
     country: string
-    
-    // currency: number | null
+    wikipediaPage?: string
+    isin?: string
+    currency?: number
     financialStatements: {
         [key: number | string]: IFinancialStatement
     },
