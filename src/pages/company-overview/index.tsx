@@ -16,9 +16,6 @@ import PageWrapper from 'src/layouts/components/PageWrapper';
 import { IGetStaticPropsResult } from '../../lib/getStaticProps';
 import { getStaticProps } from '../../lib/getStaticProps';
 import { getWikipediaSummary } from 'src/lib/generalMethods';
-import CompanyHeader2 from 'src/layouts/components/CompanyHeader2';
-import CompanyHeader from 'src/layouts/components/CompanyHeader';
-import CompanyHeader3 from 'src/layouts/components/CompanyHeader3';
 import { SymbolInfo } from 'react-ts-tradingview-widgets';
 
 const Dashboard = ({ companies }: IGetStaticPropsResult) => {
