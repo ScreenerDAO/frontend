@@ -328,14 +328,13 @@ const NewYearModal = ({newYearModalOpen, setNewYearModalOpen, addRecordListener,
                 </Typography>
 
                 <TextField
-                    id="filled-number"
                     label="Year"
                     type="number"
                     InputLabelProps={{
                         shrink: true,
                     }}
-                    variant="standard"
-                    style={{
+                    variant="outlined"
+                    sx={{
                         width: '200px',
                         marginTop: '20px',
                         alignSelf: 'center'

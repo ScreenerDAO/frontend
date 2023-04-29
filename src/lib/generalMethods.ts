@@ -181,7 +181,7 @@ const selectCompany = async (
 
         companyData = (await getCompanyData(item.dataHash)) ?? {} as ICompanyData
 
-        if (!companyData.id) {
+        if (!companyData?.id) {
             companyData.id = item.id
         }
     }
