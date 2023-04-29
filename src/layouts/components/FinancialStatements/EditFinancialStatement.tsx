@@ -86,14 +86,15 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
 
             const base64 = await readFileAsBase64(file)
 
-            const hash = await (await fetch('/api/SaveFile', {
+            const response = await fetch('/api/SaveFile', {
                 method: 'POST',
-                body: JSON.stringify({
-                    fileBase64: base64
-                })
-            })).text()
+                body: JSON.stringify({fileBase64: base64})
+            })
 
-            dispatch(setAnnualReportHash({ year: props.year, hash: hash }))
+            if (response.ok) {
+                const hash = await response.text()
+                dispatch(setAnnualReportHash({ year: props.year, hash: hash }))
+            }
         }
     }
 
