@@ -182,17 +182,16 @@ const FinancialStatements = (props: { companyData: ICompanyData, wikipediaSumary
                                     </Grid>
                                 </Paper>
 
+                                <Paper sx={{marginTop: '0.75rem'}}>
+                                    <FundamentalData symbol={props.companyData.ticker} height={800} width='100%' isTransparent></FundamentalData>
+                                </Paper>
                             </Grid>
 
                             <Grid item xs={12} md={6}>
                                 <Paper>
-                                    <CompanyProfile symbol={props.companyData.ticker} height="470" width="100%" isTransparent></CompanyProfile>
+                                    <CompanyProfile symbol={props.companyData.ticker} height="550" width="100%" isTransparent></CompanyProfile>
                                 </Paper>
                                 {/* <WikipediaSummary summary={props.wikipediaSumary} wikipediaPage={props.companyData.wikipediaPage as string} /> */}
-                            </Grid>
-
-                            <Grid item xs={12} md={6}>
-                                {/* <FundamentalData symbol={props.companyData.ticker} height={800} width="100%" isTransparent></FundamentalData> */}
                             </Grid>
                         </Grid>
                     </TabPanel>
