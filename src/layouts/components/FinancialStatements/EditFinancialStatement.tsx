@@ -79,7 +79,6 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
         });
     }
 
-    /*TODO: add error handling saving file */
     const handleFileUpload = async (ev: React.ChangeEvent<HTMLInputElement>) => {
         if (ev.target?.files && ev.target?.files.length > 0) {
             const file = ev.target.files[0]

@@ -28,7 +28,7 @@ const EditRecords = ({ companies }: {
     const [saveDataModalOpen, setSaveDataModalOpen] = useState(false)
     const [resetDataModalOpen, setResetDataModalOpen] = useState(false)
     const [tabIndex, setTabIndex] = React.useState(0)
-    const [companiesList, setCompaniesList] = React.useState<string[]>([])
+    const [countriesList, setCountriesList] = React.useState<string[]>([])
     const [currenciesList, setCurrenciesList] = React.useState<string[]>([])
 
     const store = useStore<RootState>()
@@ -36,7 +36,7 @@ const EditRecords = ({ companies }: {
     const companyLoading = useAppSelector((state: { general: IGeneral }) => state.general.companyLoading)
 
     React.useEffect(() => {
-        getISOCountries().then(res => setCompaniesList(res.sort()))
+        getISOCountries().then(res => setCountriesList(res.sort()))
         getISOCurrencies().then(res => setCurrenciesList(res.sort()))
     }, [])
 
@@ -123,7 +123,7 @@ const EditRecords = ({ companies }: {
                                 </Grid>
 
                                 <Grid item xs={12} md={6}>
-                                    <CompanyCountry countries={companiesList} />
+                                    <CompanyCountry countries={countriesList} />
                                 </Grid>
 
                                 <Grid item xs={12} md={6}>

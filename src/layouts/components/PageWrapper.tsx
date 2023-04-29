@@ -13,12 +13,18 @@ const PageWrapper = ({companies, children}: {
             store.dispatch(setCompanyLoading(true))
 
             const companyId = (new URLSearchParams(window.location.search)).get('id')
-            
-            if (!companyId && !store.getState().newCompanyData.id) {
-                selectCompany(companies[0], store.dispatch)
+            const isNewCompany = (new URLSearchParams(window.location.search)).get('isNewCompany')
+
+            if (!isNewCompany) {
+                if (!companyId && !store.getState().newCompanyData.id) {
+                    selectCompany(companies[0], store.dispatch)
+                }
+                else {
+                    selectCompany(companies[Number(companyId)], store.dispatch)
+                }
             }
             else {
-                selectCompany(companies[Number(companyId)], store.dispatch)
+                store.dispatch(setCompanyLoading(false))
             }
             
             store.dispatch(setCompanies(companies))

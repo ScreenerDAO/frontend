@@ -45,12 +45,12 @@ const Navigation = (): VerticalNavItemsType => {
         {
             title: 'Company overview',
             icon: Domain,
-            path: `/company-overview?id=${companyId}`
+            path: `/company-overview?id=${companyId ?? 0}`
         },
         {
             title: 'Edit records',
             icon: ArchiveEditOutline,
-            path: `/edit-records?id=${companyId}`
+            path: `/edit-records?id=${companyId ?? 0}`
         }
     ]
 }

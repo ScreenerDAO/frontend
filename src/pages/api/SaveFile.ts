@@ -6,7 +6,7 @@ import { File } from 'nft.storage';
 export const config = {
     api: {
         bodyParser: {
-            sizeLimit: '50mb'
+            sizeLimit: '80mb'
         },
     },
 }

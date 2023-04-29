@@ -87,7 +87,7 @@ const AppBarContent = (props: Props) => {
                         dispatch(setCompanyData(initialState))
                         dispatch(setNewCompanyData(newCompanyInitialState))
 
-                        router.push('/edit-records', undefined, { shallow: true })
+                        router.push('/edit-records?isNewCompany=true', undefined, { shallow: true })
                     }}>
                         <BriefcasePlusOutline />
                     </IconButton>
