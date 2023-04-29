@@ -13,7 +13,7 @@ const PageWrapper = ({companies, children}: {
             store.dispatch(setCompanyLoading(true))
 
             const companyId = (new URLSearchParams(window.location.search)).get('id')
-
+            
             if (!companyId && !store.getState().newCompanyData.id) {
                 selectCompany(companies[0], store.dispatch)
             }

@@ -5,8 +5,6 @@ import { StatementType } from 'src/types/IStatement';
 import { cashFlowStatementTypesNames } from 'src/types/FinancialStatementsTypes';
 import CellValue from './CellValue';
 
-console.log('adsfdsaf')
-
 const CashFlowStatement = (props: IStatementDisplayProps): React.ReactElement => (
     <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650, borderCollapse: 'separate' }} aria-label="simple table">

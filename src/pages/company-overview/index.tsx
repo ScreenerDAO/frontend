@@ -14,32 +14,44 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import { useRouter } from 'next/router'
 import PageWrapper from 'src/layouts/components/PageWrapper';
 import { IGetStaticPropsResult } from '../../lib/getStaticProps';
+import { getStaticProps } from '../../lib/getStaticProps';
+import { getWikipediaSummary } from 'src/lib/generalMethods';
+import { SymbolInfo } from 'react-ts-tradingview-widgets';
 
-const Dashboard = ({companies}: IGetStaticPropsResult) => {
+const Dashboard = ({ companies }: IGetStaticPropsResult) => {
     const data = useAppSelector((state: { companyData: ICompanyData }) => state.companyData)
     const companyLoading = useAppSelector((state: { general: IGeneral }) => state.general.companyLoading)
+    const [wikipediaSumary, setWikipediaSumary] = React.useState<string>("")
+
+    React.useEffect(() => {
+        if (data.wikipediaPage) {
+            getWikipediaSummary(data.wikipediaPage)
+                .then(res => setWikipediaSumary(res.extract))
+        }
+    }, [data])
 
     return (
         <PageWrapper companies={companies}>
             <ApexChartWrapper>
-                {companyLoading ?
+                {companyLoading || data.id === null ?
                     <div style={{
                         height: '400px',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
                         alignItems: 'center'
-                    }}><CircularProgress /></div>
+                    }}>
+                        <CircularProgress />
+                    </div>
                     :
-                    <CompanyDashboard data={data} />
-
+                    <CompanyDashboard data={data} wikipediaSumary={wikipediaSumary} />
                 }
             </ApexChartWrapper>
         </PageWrapper>
     )
 }
 
-const CompanyDashboard = ({ data }: { data: ICompanyData }) => {
+const CompanyDashboard = ({ data, wikipediaSumary }: { data: ICompanyData, wikipediaSumary: string }) => {
     return (
         <Grid container spacing={3}>
             <Grid
@@ -50,13 +62,18 @@ const CompanyDashboard = ({ data }: { data: ICompanyData }) => {
             >
                 <SearchBar />
             </Grid>
-            <Grid item xs={12} md={12}>
-                <Card sx={{ display: 'flex', alignItems: 'center', paddingRight: '5px' }}>
+
+            <Grid item xs={12}>
+                {/* <Card sx={{ display: 'flex', alignItems: 'center', paddingRight: '5px' }}>
                     <h2 style={{ marginLeft: '40px', flex: 1 }}>#{data.id} {data.companyName} ({data.ticker})</h2>
                     <CompanyMoreOptions data={data} />
+                </Card> */}
+                <Card>
+                    <SymbolInfo symbol={data.ticker} isTransparent={true} autosize></SymbolInfo>
                 </Card>
             </Grid>
-            <FinancialStatements companyData={data} />
+
+            <FinancialStatements companyData={data} wikipediaSumary={wikipediaSumary} />
         </Grid>
     );
 };
@@ -162,6 +179,6 @@ const StyledMenu = styled((props: MenuProps) => (
     },
 }));
 
-export { getStaticProps } from '../../lib/getStaticProps'
+export { getStaticProps }
 
 export default Dashboard

@@ -6,8 +6,9 @@ const initialState: ICompanyData = {
     companyName: "",
     ticker: "",
     country: "",
-    
-    // currency: null,
+    wikipediaPage: undefined,
+    isin: undefined,
+    currency: undefined,
     financialStatements: {},
     annualReports: {}
 }
@@ -21,8 +22,9 @@ export const companyDataSlice = createSlice({
             state.companyName = action.payload.companyName
             state.ticker = action.payload.ticker
             state.country = action.payload.country
-
-            // state.currency = action.payload.currency
+            state.wikipediaPage = action.payload.wikipediaPage
+            state.isin = action.payload.isin
+            state.currency = action.payload.currency
             state.financialStatements = action.payload.financialStatements
             state.annualReports = action.payload.annualReports 
         },

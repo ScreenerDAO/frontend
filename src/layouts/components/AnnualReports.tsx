@@ -2,7 +2,7 @@ import * as React from 'react';
 import { DataGrid, GridColumns, GridRenderCellParams, GridRowsProp } from '@mui/x-data-grid';
 import ICompanyData from 'src/types/ICompanyData';
 import { getYearsArray } from 'src/lib/financialStatements';
-import { Button } from '@mui/material';
+import { Button, Card } from '@mui/material';
 
 const AnnualReports = ({data}: {
     data: ICompanyData
@@ -33,12 +33,12 @@ const AnnualReports = ({data}: {
     }, [data])
 
     return (
-        <div style={{ height: '500px' }}>
+        <Card sx={{ height: '500px' }}>
             <DataGrid
                 rows={rows}
                 columns={columns}
             />
-        </div>
+        </Card>
     )
 }
 

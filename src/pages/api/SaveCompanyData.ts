@@ -1,5 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from "next/types";
 import { saveCompanyData } from 'src/lib/generalMethods'
+import zlib from 'zlib'
+
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '20mb'
+        },
+    },
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {

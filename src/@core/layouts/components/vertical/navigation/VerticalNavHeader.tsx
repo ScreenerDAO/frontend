@@ -10,6 +10,7 @@ import Image from 'next/image'
 interface Props {
   hidden: boolean
   settings: Settings
+  navVisible: boolean
   toggleNavVisibility: () => void
   saveSettings: (values: Settings) => void
   verticalNavMenuBranding?: (props?: any) => ReactNode
@@ -42,11 +43,20 @@ const VerticalNavHeader = (props: Props) => {
             userVerticalNavMenuBranding(props)
         ) : 
         (
-            <Link href='/' passHref style={{
-                display: 'flex',
-                alignItems: 'center',
-                textDecoration: 'none'
-            }}>
+            <Link 
+                href='/' 
+                passHref 
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    textDecoration: 'none',
+                }}
+                onClick={() => {
+                    if (props.navVisible) {
+                        props.toggleNavVisibility()
+                    }
+                }}
+            >
                 <Image src="/images/screener2.png" alt="Logo" width={40} height={40} />
 
                 <HeaderTitle variant='h6' sx={{ ml: 3 }}>

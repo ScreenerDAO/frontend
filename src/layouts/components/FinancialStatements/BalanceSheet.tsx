@@ -6,11 +6,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import ICompanyData from 'src/types/ICompanyData';
 import { StatementType } from 'src/types/IStatement';
 import { IElement, IElementsGroup, balanceSheetStructure, balanceSheetTypesNames } from 'src/types/FinancialStatementsTypes';
-import { useAppSelector } from 'src/hooks';
-import { IChartLabel } from './FinancialStatements';
 import IStatementDisplayProps from 'src/types/IStatementDisplayProps';
 import CellValue from './CellValue';
 
@@ -43,7 +40,7 @@ const BalanceSheet = (props: IStatementDisplayProps): React.ReactElement => {
         </>
     )
 
-    const ElementGroupRows = ({ element }: { element: IElementsGroup }): React.ReactElement => {        
+    const ElementGroupRows = ({ element }: { element: IElementsGroup }): React.ReactElement => {
         return (
             <>
                 {
@@ -114,7 +111,7 @@ const BalanceSheet = (props: IStatementDisplayProps): React.ReactElement => {
 
     return (
         <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650, }} aria-label="simple table">
+            <Table sx={{ minWidth: 650, }}>
                 <TableHead>
                     <TableRow>
                         <TableHeaders />

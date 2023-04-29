@@ -7,10 +7,7 @@ import Button from '@mui/material/Button';
 import EditableBalanceSheet from './EditableBalanceSheet';
 import EditableIncomeStatement from './EditableIncomeStatement';
 import EditableCashFlow from './EditableCashFlowStatement';
-import { UploadOutlined } from '@ant-design/icons';
-import { Button as AntButton, Upload } from 'antd';
-import { UploadChangeParam, UploadFile, UploadProps } from 'antd/es/upload/interface';
-import { useAppDispatch, useAppSelector } from 'src/hooks';
+import { useAppDispatch } from 'src/hooks';
 import { setAnnualReportHash } from 'src/features/newCompanyDataSlice';
 
 const steps = ['Balance sheet', 'Income statement', 'Cash flow statement'];
@@ -22,13 +19,7 @@ interface IEditFinancialStatementsProps {
 
 const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.ReactElement => {
     const [activeStep, setActiveStep] = React.useState(0);
-
     const dispatch = useAppDispatch()
-    const file = useAppSelector((state) => state.newCompanyData.annualReports[props.year])
-
-    const uploadProps: UploadProps = {
-        defaultFileList: file ? [{uid: '1', name: file, status: 'done'}] : [],
-    }
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -45,52 +36,64 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
     const StepContent = (_props: { activeStep: number }): React.ReactElement => {
         switch (_props.activeStep) {
             case 0:
-                return <EditableBalanceSheet 
-                            year={props.year} 
-                            activeStep={activeStep} 
-                            steps={steps} 
-                            handleBack={handleBack} 
-                            handleNext={handleNext} 
-                        />
+                return <EditableBalanceSheet
+                    year={props.year}
+                    activeStep={activeStep}
+                    steps={steps}
+                    handleBack={handleBack}
+                    handleNext={handleNext}
+                />
             case 1:
                 return <EditableIncomeStatement
-                            year={props.year} 
-                            activeStep={activeStep} 
-                            steps={steps} 
-                            handleBack={handleBack} 
-                            handleNext={handleNext} 
-                        />
+                    year={props.year}
+                    activeStep={activeStep}
+                    steps={steps}
+                    handleBack={handleBack}
+                    handleNext={handleNext}
+                />
             case 2:
                 return <EditableCashFlow
-                            year={props.year}
-                            activeStep={activeStep}
-                            steps={steps}
-                            handleBack={handleBack}
-                            handleNext={handleNext}
-                        />
+                    year={props.year}
+                    activeStep={activeStep}
+                    steps={steps}
+                    handleBack={handleBack}
+                    handleNext={handleNext}
+                />
             default:
                 return <></>
         }
     }
 
+    async function readFileAsBase64(file: File): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.addEventListener('load', () => {
+                const dataUrl = reader.result as string;
+                const base64 = dataUrl.split(',')[1];
+                resolve(base64);
+            });
+            reader.addEventListener('error', () => {
+                reject(reader.error);
+            });
+            reader.readAsDataURL(file);
+        });
+    }
+
     /*TODO: add error handling saving file */
-    const handleFileUpload = async (params: UploadChangeParam<UploadFile<any>>) => {
-        if (params.file.originFileObj) {
-            const formData = new FormData()
-            formData.append('file', params.file.originFileObj)
+    const handleFileUpload = async (ev: React.ChangeEvent<HTMLInputElement>) => {
+        if (ev.target?.files && ev.target?.files.length > 0) {
+            const file = ev.target.files[0]
+
+            const base64 = await readFileAsBase64(file)
 
             const hash = await (await fetch('/api/SaveFile', {
                 method: 'POST',
-                body: formData
+                body: JSON.stringify({
+                    fileBase64: base64
+                })
             })).text()
-            
-            dispatch(setAnnualReportHash({ year: props.year, hash: hash }))
-        }
-    }
 
-    const handleFileRemove = async (params: UploadFile<any>) => {
-        if (file == params.name) {
-            dispatch(setAnnualReportHash({ year: props.year, hash: "" }))
+            dispatch(setAnnualReportHash({ year: props.year, hash: hash }))
         }
     }
 
@@ -117,9 +120,7 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
                         <div>
                             <p>Upload the annual report to complete the process:</p>
 
-                            <Upload {...uploadProps} maxCount={1} onChange={handleFileUpload} onRemove={handleFileRemove}>
-                                <AntButton icon={<UploadOutlined />}>Upload</AntButton>
-                            </Upload>
+                            <input type='file' onChange={handleFileUpload} />
                         </ div>
 
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>

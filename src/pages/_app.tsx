@@ -12,6 +12,7 @@ import { SettingsConsumer, SettingsProvider } from 'src/@core/context/settingsCo
 import { createEmotionCache } from 'src/@core/utils/create-emotion-cache'
 import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { configureChains, createClient, WagmiConfig, mainnet, goerli } from 'wagmi';
+import { sepolia } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public';
 import { Provider } from 'react-redux'
 import store from '../store'
@@ -27,7 +28,7 @@ type ExtendedAppProps = AppProps & {
 const clientSideEmotionCache = createEmotionCache()
 
 const { chains, provider } = configureChains(
-    [mainnet, goerli],
+    [mainnet, goerli, sepolia ],
     [publicProvider()]
 )
 

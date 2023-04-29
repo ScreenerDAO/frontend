@@ -10,8 +10,9 @@ const initialState: ICompanyData = {
     companyName: "",
     ticker: "",
     country: "",
-    
-    // currency: null,
+    wikipediaPage: undefined,
+    isin: undefined,
+    currency: undefined,
     financialStatements: {},
     annualReports: {}
 }
@@ -25,8 +26,9 @@ export const newCompanyDataSlice = createSlice({
             state.companyName = action.payload.companyName
             state.ticker = action.payload.ticker
             state.country = action.payload.country
-            
-            // state.currency = action.payload.currency
+            state.wikipediaPage = action.payload.wikipediaPage
+            state.isin = action.payload.isin
+            state.currency = action.payload.currency
             state.financialStatements = action.payload.financialStatements ?? {}
             state.annualReports = action.payload.annualReports ?? {}
         },
@@ -39,10 +41,15 @@ export const newCompanyDataSlice = createSlice({
         setCompanyCountry: (state, action: PayloadAction<string>) => {
             state.country = action.payload
         },
-        
-        // setCompanyCurrency: (state, action: PayloadAction<number>) => {
-        //     state.currency = action.payload
-        // },
+        setCompanyWikipediaPage: (state, action: PayloadAction<string>) => {
+            state.wikipediaPage = action.payload
+        },
+        setCompanyIsin: (state, action: PayloadAction<string>) => {
+            state.isin = action.payload
+        },        
+        setCompanyCurrency: (state, action: PayloadAction<number>) => {
+            state.currency = action.payload
+        },
         addNewYear: (state, action: PayloadAction<number | string>) => {
             state.financialStatements[action.payload] = {
                 balanceSheet: {} ,
@@ -85,6 +92,9 @@ export const {
     setCompanyName, 
     setCompanyCountry, 
     setCompanyTicker,
+    setCompanyWikipediaPage,
+    setCompanyIsin,
+    setCompanyCurrency,
     addNewYear,
     setAnnualReportHash,
     setStatementElement,

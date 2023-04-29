@@ -1,14 +1,14 @@
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit"
 import ICompanyData from "src/types/ICompanyData"
 import ICompanyEthData from "src/types/ICompanyEthData"
-import IFinancialStatement from "src/types/IFinancialStatement"
 import { IGeneral, setCompanyLoading } from "src/features/general"
 import { setCompanyData } from "src/features/companyDataSlice"
 import { setCompanyData as setNewCompanyData } from 'src/features/newCompanyDataSlice'
 import { NFTStorage, Blob } from "nft.storage"
 import { Web3Storage } from "web3.storage"
+import FormData from "form-data"
 
-const saveCompanyData = async (data: ICompanyData) => {
+const saveCompanyData = async (data: string) => {
     let hashNftStorage = null
     let hashWeb3Storage = null
 
@@ -38,34 +38,27 @@ const saveCompanyData = async (data: ICompanyData) => {
     }
 }
 
-const saveCompanyDataNftStorage = async (data: ICompanyData): Promise<string> => {
-    try {
-        const client = new NFTStorage({ token: process.env.NFT_STORAGE_API_KEY as string })
+const saveCompanyDataNftStorage = async (data: string): Promise<string> => {
+    const client = new NFTStorage({ token: process.env.NFT_STORAGE_API_KEY as string })
 
-        const blob = new Blob([JSON.stringify(data)])
+    const blob = new Blob([data])
 
-        const { car } = await NFTStorage.encodeBlob(blob)
-
-        return await client.storeCar(car)
-    }
-    catch (error) {
-        throw error
-    }
+    return await client.storeBlob(blob)
 }
 
-const saveCompanyDataWeb3Storage = async (data: ICompanyData): Promise<string> => {
-    try {
-        const client = new Web3Storage({ token: process.env.WEB3_STORAGE_API_KEY as string })
+const saveCompanyDataWeb3Storage = async (data: string): Promise<string> => {
+    const blob = new Blob([data])
 
-        const blob = new Blob([JSON.stringify(data)])
+    const response = await fetch("https://api.web3.storage/upload", {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${process.env.WEB3_STORAGE_API_KEY}`,
+            "Content-Type": "application/octet-stream",
+        },
+        body: blob,
+    })
 
-        const { car } = await NFTStorage.encodeBlob(blob)
-
-        return await client.putCar(car)
-    }
-    catch (error) {
-        throw error
-    }
+    return (await response.json()).cid
 }
 
 const saveFile = async (file: File) => {
@@ -99,86 +92,79 @@ const saveFile = async (file: File) => {
 }
 
 const saveFileToNftStorage = async (file: File): Promise<string> => {
-    try {
-        const client = new NFTStorage({ token: process.env.NFT_STORAGE_API_KEY as string })
+    const client = new NFTStorage({ token: process.env.NFT_STORAGE_API_KEY as string })
 
-        const blob = new Blob([file], {type: 'application/pdf'})
-
-        const { car } = await NFTStorage.encodeBlob(blob)
-
-        return await client.storeCar(car)        
-    }
-    catch (error) {
-        throw error
-    }
+    return await client.storeBlob(file)
 }
 
 const saveFileToWeb3Storage = async (file: File): Promise<string> => {
-    try {
-        const client = new Web3Storage({ token: process.env.WEB3_STORAGE_API_KEY as string })
+    const client = new Web3Storage({ token: process.env.WEB3_STORAGE_API_KEY as string })
 
-        const blob = new Blob([file], {type: 'application/pdf'})
+    return await client.put([file])
+}
 
-        const { car } = await NFTStorage.encodeBlob(blob)
+const saveFileToEstuary = async (file: File): Promise<void> => {
+    const formData = new FormData();
+    formData.append('data', file);
 
-        return await client.putCar(car)
-    }
+    const headers = {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${process.env.ESTUARY_API_KEY}`,
+        'Content-Type': 'multipart/form-data'
+    };
 
-    catch (error) {
-        throw error
-    }
+    fetch('https://api.estuary.tech/content/add', {
+        method: 'POST',
+        headers,
+        body: formData as any
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(JSON.stringify(data));
+        })
+        .catch(error => {
+            console.error(error);
+        });
 }
 
 const getCompanyData = async (dataHash: string): Promise<ICompanyData | null> => {
-    try {
-        const companyDataNFTStorage = await getCompanyDataNFTStorage(dataHash)
+    const companyDataNFTStorage = await getCompanyDataNFTStorage(dataHash)
 
-        if (companyDataNFTStorage) {
-            return companyDataNFTStorage
-        }
-
-        const companyDataWeb3Storage = await getCompanyDataWeb3Storage(dataHash)
-
-        if (companyDataWeb3Storage) {
-            return companyDataWeb3Storage
-        }
-
-        throw new Error('Error fetching company data')
+    if (companyDataNFTStorage) {
+        return companyDataNFTStorage
     }
-    catch (error) {
-        throw error
+
+    const companyDataWeb3Storage = await getCompanyDataWeb3Storage(dataHash)
+
+    if (companyDataWeb3Storage) {
+        return companyDataWeb3Storage
     }
+
+    throw new Error('Error fetching company data')
 }
 
 const getCompanyDataWeb3Storage = async (dataHash: string): Promise<ICompanyData | null> => {
-    try {
-        const response = await fetch(`https://${dataHash}.ipfs.w3s.link`)
+    const response = await fetch(`https://${dataHash}.ipfs.w3s.link`)
 
-        if (response.ok) {
-            return (await response.json()) as ICompanyData
-        }
+    if (response.ok) {
+        return parseCompanyData(await response.text())
+    }
 
-        return null
-    }
-    catch (error) {
-        throw error
-    }
+    return null
 }
 
 const getCompanyDataNFTStorage = async (dataHash: string): Promise<ICompanyData | null> => {
-    try {
-        const response = await fetch(`https://nftstorage.link/ipfs/${dataHash}`)
+    const response = await fetch(`https://nftstorage.link/ipfs/${dataHash}`)
+    const responseText = await response.text()
 
-        if (response.ok) {
-            return (await response.json()) as ICompanyData
-        }
+    if (response.ok) {
+        return parseCompanyData(responseText)
+    }
 
-        return null
-    }
-    catch (error) {
-        throw error
-    }
+    return null
 }
+
+const parseCompanyData = (compressedData: string): Promise<ICompanyData> => JSON.parse(compressedData)
 
 const selectCompany = async (
     item: ICompanyEthData,
@@ -189,15 +175,18 @@ const selectCompany = async (
     }, undefined, AnyAction>
 ) => {
     let companyData = {} as ICompanyData
-    
-    // companyData.id = item.id
 
     try {
         dispatch(setCompanyLoading(true))
 
-        companyData = (await getCompanyData(item.dataHash)) ?? {} as ICompanyData        
+        companyData = (await getCompanyData(item.dataHash)) ?? {} as ICompanyData
+
+        if (!companyData.id) {
+            companyData.id = item.id
+        }
     }
     catch (error) {
+        companyData.id = item.id
         companyData.companyName = item.name
         companyData.ticker = item.ticker
         companyData.country = ""
@@ -205,31 +194,29 @@ const selectCompany = async (
         companyData.annualReports = {}
     }
     finally {
-        ///TODO
-        companyData.id = item.id
-
-        //Format old schema to new schema
-        for (const year in companyData.financialStatements) {
-            for (const statement in companyData.financialStatements[year]) {
-                for (const item in companyData.financialStatements[year][statement as keyof IFinancialStatement]) {
-                    if (typeof companyData.financialStatements[year][statement as keyof IFinancialStatement][item] === 'string') {
-                        companyData.financialStatements[year][statement as keyof IFinancialStatement][item] = {
-                            value: companyData.financialStatements[year][statement as keyof IFinancialStatement][item] as unknown as string,
-                            multipleValues: null
-                        }
-                    }
-                }
-            }
-        }
-
-        dispatch(setCompanyData(companyData as ICompanyData))
         dispatch(setNewCompanyData(companyData as ICompanyData))
+        dispatch(setCompanyData(companyData as ICompanyData))
         dispatch(setCompanyLoading(false))
     }
 }
 
 const isObjectEmpty = (obj: object) => Object.keys(obj).length === 0;
 
+const getWikipediaSummary = async (pageTitle: string) => {
+    const apiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${pageTitle}`;
+
+    const response = await fetch(apiUrl)
+
+    return await response.json()
+}
+
+const getISOCountries = () => fetch('https://restcountries.com/v3.1/all')
+    .then(response => response.json())
+    .then(data => data.map((country: any) => country.name.common))
+
+const getISOCurrencies = (): Promise<string[]> => fetch('https://openexchangerates.org/api/currencies.json')
+    .then(response => response.json())
+    .then(data => Object.values(data))
 
 export {
     saveCompanyData,
@@ -237,5 +224,9 @@ export {
     getCompanyData,
     isObjectEmpty,
     selectCompany,
-    saveFile
+    saveFile,
+    saveFileToEstuary,
+    getWikipediaSummary,
+    getISOCountries,
+    getISOCurrencies
 }
