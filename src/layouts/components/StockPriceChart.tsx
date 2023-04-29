@@ -1,7 +1,7 @@
 // TradingViewWidget.jsx
 import React, { useEffect, useRef, memo } from 'react';
 
-function TradingViewWidget({companyTicker}: {
+function StockPriceChart({companyTicker}: {
     companyTicker: string
 }) {
     const contariner = useRef<HTMLDivElement>();
@@ -57,4 +57,4 @@ function TradingViewWidget({companyTicker}: {
     );
 }
 
-export default memo(TradingViewWidget);
+export default memo(StockPriceChart);

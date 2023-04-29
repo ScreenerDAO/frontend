@@ -16,7 +16,6 @@ import LogarithmicScaleSwitch from '../LogarithmicScaleSwitch';
 import CloseIcon from '@mui/icons-material/Close';
 import Ratios from '../Ratios';
 import CashFlowStatement from './CashFlowStatement';
-import TradingViewWidget from '../TradingViewWidget';
 import StockPriceChart from '../StockPriceChart';
 import { CompanyProfile, FundamentalData } from 'react-ts-tradingview-widgets';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
