@@ -5,8 +5,8 @@ import React from 'react'
 import { useAppDispatch, useAppSelector } from 'src/hooks'
 import { IGeneral } from 'src/features/general'
 import ICompanyData from 'src/types/ICompanyData'
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Slide, Tab, Tabs, TextField, Select, MenuItem, FormControl, InputLabel } from '@mui/material'
-import { setCompanyCountry, setCompanyCurrency, setCompanyData, setCompanyIsin, setCompanyName, setCompanyTicker, setCompanyWikipediaPage } from 'src/features/newCompanyDataSlice'
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Slide, Tab, Tabs, TextField, Select, MenuItem, FormControl, InputLabel, Switch, FormControlLabel, Paper } from '@mui/material'
+import { setCompanyCountry, setCompanyCurrency, setCompanyData, setCompanyIsDelisted, setCompanyIsin, setCompanyName, setCompanyTicker, setCompanyWikipediaPage } from 'src/features/newCompanyDataSlice'
 import FinancialStatementsList from 'src/layouts/components/FinancialStatements/FinancialStatementsList'
 import SaveDataModal from 'src/layouts/components/SaveDataModal'
 import { initialState } from 'src/features/newCompanyDataSlice'
@@ -34,6 +34,7 @@ const EditRecords = ({ companies }: {
     const store = useStore<RootState>()
     const dispatch = useAppDispatch()
     const companyLoading = useAppSelector((state: { general: IGeneral }) => state.general.companyLoading)
+    const companyIsDelisted = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.isDelisted)
 
     React.useEffect(() => {
         getISOCountries().then(res => setCountriesList(res.sort()))
@@ -119,8 +120,24 @@ const EditRecords = ({ companies }: {
                                 </Grid>
 
                                 <Grid item xs={12} md={6}>
-                                    <CompanyTicker />
+                                    <CompanyIsDelisted />
                                 </Grid>
+
+                                {!companyIsDelisted ?
+                                    <Grid item xs={12} md={6}>
+                                        <CompanyTicker />
+                                    </Grid>
+                                    :
+                                    null}
+
+
+                                {!companyIsDelisted ?
+                                    <Grid item xs={12} md={6}>
+                                        <CompanyIsin />
+                                    </Grid>
+                                    :
+                                    null
+                                }
 
                                 <Grid item xs={12} md={6}>
                                     <CompanyCountry countries={countriesList} />
@@ -132,10 +149,6 @@ const EditRecords = ({ companies }: {
 
                                 <Grid item xs={12} md={6}>
                                     <CompanyWikipediaPage />
-                                </Grid>
-
-                                <Grid item xs={12} md={6}>
-                                    <CompanyIsin />
                                 </Grid>
                             </Grid>
                         </React.Fragment>
@@ -165,8 +178,6 @@ const EditRecords = ({ companies }: {
         <div
             role="tabpanel"
             hidden={value !== index}
-            id={`simple-tabpanel-${index}`}
-            aria-labelledby={`simple-tab-${index}`}
             {...other}
         >
             {value === index && (
@@ -235,7 +246,7 @@ const EditRecords = ({ companies }: {
 
         return (
             <FormControl sx={{ marginTop: '10px' }} fullWidth>
-                <InputLabel>Contry</InputLabel>
+                <InputLabel>Country</InputLabel>
                 <Select
                     required
                     label="Country"
@@ -285,7 +296,25 @@ const EditRecords = ({ companies }: {
         )
     }
 
-    const CompanyCurrency = ({currencies}: {
+    const CompanyIsDelisted = () => {
+        const companyIsDelisted = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.isDelisted)
+
+        return (
+            <Paper variant='outlined' sx={{ marginTop: '10px', height: '56px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={companyIsDelisted}
+                            onChange={() => dispatch(setCompanyIsDelisted(!companyIsDelisted))}
+                        />
+                    }
+                    label="Company delisted"
+                />
+            </Paper>
+        )
+    }
+
+    const CompanyCurrency = ({ currencies }: {
         currencies: string[]
     }) => {
         const companyCurrency = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.currency)
@@ -322,11 +351,10 @@ const EditRecords = ({ companies }: {
                 TransitionComponent={Transition}
                 keepMounted
                 onClose={handleClose}
-                aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle>{"Do you want to reset the data?"}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-slide-description">
+                    <DialogContentText>
                         All the data added deleted or updated in this session
                         will be lost
                     </DialogContentText>

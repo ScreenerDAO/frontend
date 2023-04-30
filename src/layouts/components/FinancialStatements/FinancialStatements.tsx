@@ -130,192 +130,238 @@ const FinancialStatements = (props: { companyData: ICompanyData, wikipediaSumary
     }, [props.companyData])
 
 
-    if (years.length > 0) {
-        return (
-            <>
-                <Grid item xs={12}>
-                    <Card>
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'center' }}>
-                            <Tabs
-                                value={tabIndex}
-                                onChange={(event: React.SyntheticEvent, newValue: number) => setTabIndex(newValue)}
-                                aria-label="basic tabs example"
-                                variant="scrollable"
-                                scrollButtons="auto"
-                                allowScrollButtonsMobile
-                            >
-                                <Tab icon={<BusinessIcon />} label="OVERVIEW" {...a11yProps(0)} />
-                                <Tab icon={<AccountBalanceIcon />} label="FINANCIALS" {...a11yProps(1)} />
-                                <Tab icon={<DescriptionIcon />} label="ANNUAL REPORTS" {...a11yProps(2)} />
-                            </Tabs>
-                        </Box >
-                    </Card>
-                </Grid>
+    // if (years.length > 0) {
+    return (
+        <>
+            <Grid item xs={12}>
+                <Card>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'center' }}>
+                        <Tabs
+                            value={tabIndex}
+                            onChange={(event: React.SyntheticEvent, newValue: number) => setTabIndex(newValue)}
+                            aria-label="basic tabs example"
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            allowScrollButtonsMobile
+                        >
+                            <Tab icon={<BusinessIcon />} label="OVERVIEW" {...a11yProps(0)} />
+                            <Tab icon={<AccountBalanceIcon />} label="FINANCIALS" {...a11yProps(1)} />
+                            <Tab icon={<DescriptionIcon />} label="ANNUAL REPORTS" {...a11yProps(2)} />
+                        </Tabs>
+                    </Box >
+                </Card>
+            </Grid>
 
-                <Grid item xs={12}>
-                    <TabPanel value={tabIndex} index={0}>
-                        <Grid container spacing={3}>
+            <Grid item xs={12}>
+                <TabPanel value={tabIndex} index={0}>
+                    <Grid container spacing={3}>
+                        {!props.companyData.isDelisted ?
                             <Grid item xs={12}>
                                 <Paper sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
                                     <StockPriceChart companyTicker={props.companyData.ticker} />
                                 </Paper>
                             </Grid>
+                            : null
+                        }
 
-                            <Grid item xs={12} md={6}>
-                                <Paper variant="outlined" sx={{ padding: '20px' }}>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={6}>
-                                            <div>Country</div>
-                                            <b>{props.companyData.country}</b>
-                                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <Paper variant="outlined" sx={{ padding: '20px' }}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6}>
+                                        <div>Country</div>
+                                        <b>{props.companyData.country}</b>
+                                    </Grid>
 
-                                        <Grid item xs={6}>
-                                            <div>Currency</div>
-                                            <b>{props.companyData.currency ?? 'N/A'}</b>
-                                        </Grid>
+                                    <Grid item xs={6}>
+                                        <div>Currency</div>
+                                        <b>{props.companyData.currency ?? 'N/A'}</b>
+                                    </Grid>
 
+                                    {!props.companyData.isDelisted ?
                                         <Grid item xs={6}>
                                             <div>ISIN</div>
                                             <b>{props.companyData.isin ?? 'N/A'}</b>
                                         </Grid>
-                                    </Grid>
-                                </Paper>
+                                        : null
+                                    }
+                                </Grid>
+                            </Paper>
 
-                                <Paper sx={{marginTop: '0.75rem'}}>
+                            {!props.companyData.isDelisted ?
+                                <Paper sx={{ marginTop: '0.75rem' }}>
                                     <FundamentalData symbol={props.companyData.ticker} height={800} width='100%' isTransparent></FundamentalData>
                                 </Paper>
-                            </Grid>
+                                : null
+                            }
+                        </Grid>
 
-                            <Grid item xs={12} md={6}>
+                        <Grid item xs={12} md={6}>
+                            {props.companyData.isDelisted ?
+                                <WikipediaSummary summary={props.wikipediaSumary} wikipediaPage={props.companyData.wikipediaPage as string} />
+                                :
                                 <Paper>
                                     <CompanyProfile symbol={props.companyData.ticker} height="550" width="100%" isTransparent></CompanyProfile>
                                 </Paper>
-                                {/* <WikipediaSummary summary={props.wikipediaSumary} wikipediaPage={props.companyData.wikipediaPage as string} /> */}
-                            </Grid>
+                            }
                         </Grid>
-                    </TabPanel>
+                    </Grid>
+                </TabPanel>
 
-                    <TabPanel value={tabIndex} index={1}>
-                        <Grid container spacing={3}>
-                            <Grid item xs={12}>
-                                {/* {selectedLabels.length > 0 ? */}
-                                    <Card>
-                                        <Box sx={{ marginLeft: '5%', paddingTop: '10px', paddingBottom: '10px' }}>
-                                            <MillionsSwitch />
-                                            <LogarithmicScaleSwitch />
-                                        </Box>
+                <TabPanel value={tabIndex} index={1}>
+                    {years.length > 0 ?
+                        <FinancialsTab
+                            years={years}
+                            companyData={props.companyData}
+                            yearsSelected={yearsSelected}
+                            selectedLabels={selectedLabels}
+                            setSelectedLabels={setSelectedLabels}
+                            setYearsSelected={setYearsSelected}
+                        />
+                        :
+                        <Grid item xs={12} md={12}>
+                            <Card sx={{
+                                height: '300px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center'
+                            }}>
+                                <div style={{ textAlign: 'center' }}>This company doesn't have any financials added yet!</div>
+                            </Card>
+                        </Grid>
+                    }
+                </TabPanel>
 
-                                        <Slider
-                                            value={yearsSelected}
-                                            getAriaLabel={(value: number) => `${value}`}
-                                            step={1}
-                                            valueLabelDisplay="auto"
-                                            marks
-                                            min={years[0]}
-                                            max={years[years.length - 1]}
-                                            onChange={(event: Event, newValue: number | number[]) => setYearsSelected(newValue as number[])}
-                                            sx={{ width: '90%', marginLeft: '5%' }}
-                                        />
-                                    </Card> 
-                                    {/* : null} */}
-                            </Grid>
+                <TabPanel value={tabIndex} index={2}>
+                    <AnnualReports data={props.companyData} />
+                </TabPanel>
+            </Grid>
+        </>
+    )
 
-                            <Grid item xs={12}>
-                                {/* {selectedLabels.length > 0 ? */}
-                                    <Card style={{ paddingLeft: '20px', paddingRight: '20px', paddingTop: '10px', paddingBottom: '10px' }}>
+    // }
 
-                                        <div style={{ height: '300px' }}>
-                                            <Chart
-                                                years={years}
-                                                yearsSelected={yearsSelected}
-                                                selectedLabels={selectedLabels}
-                                            />
-                                        </div>
+    // return (
+    //     <Grid item xs={12} md={12}>
+    //         <Card sx={{
+    //             height: '500px',
+    //             display: 'flex',
+    //             flexDirection: 'column',
+    //             justifyContent: 'center'
+    //         }}>
+    //             <div style={{ textAlign: 'center' }}>This company doesn't have any financials added yet!</div>
+    //         </Card>
+    //     </Grid>
+    // )
+}
 
-                                        <Grid item xs={12} style={{ marginTop: '25px' }}>
-                                            <Grid container spacing={2}>
-                                                {selectedLabels.map((label, index) => (
-                                                    <Grid item xs={12} md={6} lg={4} key={index}>
-                                                        <Paper sx={{ padding: '10px', height: '60px' }}>
-                                                            <Grid container>
-                                                                <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                                                    <Typography fontSize={16}>{getLabel(label)}</Typography>
-                                                                </Grid>
+const FinancialsTab = ({ companyData, selectedLabels, yearsSelected, years, setSelectedLabels, setYearsSelected }: {
+    companyData: ICompanyData,
+    selectedLabels: IChartLabel[],
+    yearsSelected: number[],
+    years: number[],
+    setSelectedLabels: React.Dispatch<React.SetStateAction<IChartLabel[]>>,
+    setYearsSelected: React.Dispatch<React.SetStateAction<number[]>>
+}) => {
+    return (
+        <Grid container spacing={3}>
+            <Grid item xs={12}>
+                {/* {selectedLabels.length > 0 ? */}
+                <Card>
+                    <Box sx={{ marginLeft: '5%', paddingTop: '10px', paddingBottom: '10px' }}>
+                        <MillionsSwitch />
+                        <LogarithmicScaleSwitch />
+                    </Box>
 
-                                                                <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                                                    <FormControl size="small">
-                                                                        <Select
-                                                                            value={label.type}
-                                                                            sx={{ width: '90px' }}
-                                                                            onChange={ev => {
-                                                                                const newLabels = [...selectedLabels]
-                                                                                newLabels[index].type = ev.target.value as string
-                                                                                setSelectedLabels(newLabels)
-                                                                            }}
-                                                                        >
-                                                                            <MenuItem value={'bar'}>Bar</MenuItem>
-                                                                            <MenuItem value={'line'}>Line</MenuItem>
-                                                                        </Select>
-                                                                    </FormControl>
-                                                                </Grid>
+                    <Slider
+                        value={yearsSelected}
+                        getAriaLabel={(value: number) => `${value}`}
+                        step={1}
+                        valueLabelDisplay="auto"
+                        marks
+                        min={years[0]}
+                        max={years[years.length - 1]}
+                        onChange={(event: Event, newValue: number | number[]) => setYearsSelected(newValue as number[])}
+                        sx={{ width: '90%', marginLeft: '5%' }}
+                    />
+                </Card>
+                {/* : null} */}
+            </Grid>
 
-                                                                <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                                                    <IconButton onClick={() => {
-                                                                        const newLabels = [...selectedLabels]
-                                                                        newLabels.splice(index, 1)
-                                                                        setSelectedLabels(newLabels)
-                                                                    }}>
-                                                                        <CloseIcon />
-                                                                    </IconButton>
-                                                                </Grid>
-                                                            </Grid>
-                                                        </Paper>
-                                                    </Grid>
-                                                ))}
+            <Grid item xs={12}>
+                {/* {selectedLabels.length > 0 ? */}
+                <Card style={{ paddingLeft: '20px', paddingRight: '20px', paddingTop: '10px', paddingBottom: '10px' }}>
+
+                    <div style={{ height: '300px' }}>
+                        <Chart
+                            years={years}
+                            yearsSelected={yearsSelected}
+                            selectedLabels={selectedLabels}
+                        />
+                    </div>
+
+                    <Grid item xs={12} style={{ marginTop: '25px' }}>
+                        <Grid container spacing={2}>
+                            {selectedLabels.map((label, index) => (
+                                <Grid item xs={12} md={6} lg={4} key={index}>
+                                    <Paper sx={{ padding: '10px', height: '60px' }}>
+                                        <Grid container>
+                                            <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Typography fontSize={16}>{getLabel(label)}</Typography>
+                                            </Grid>
+
+                                            <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                <FormControl size="small">
+                                                    <Select
+                                                        value={label.type}
+                                                        sx={{ width: '90px' }}
+                                                        onChange={ev => {
+                                                            const newLabels = [...selectedLabels]
+                                                            newLabels[index].type = ev.target.value as string
+                                                            setSelectedLabels(newLabels)
+                                                        }}
+                                                    >
+                                                        <MenuItem value={'bar'}>Bar</MenuItem>
+                                                        <MenuItem value={'line'}>Line</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                            </Grid>
+
+                                            <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                <IconButton onClick={() => {
+                                                    const newLabels = [...selectedLabels]
+                                                    newLabels.splice(index, 1)
+                                                    setSelectedLabels(newLabels)
+                                                }}>
+                                                    <CloseIcon />
+                                                </IconButton>
                                             </Grid>
                                         </Grid>
-                                    </Card> 
-                                    {/* : null} */}
-                            </Grid>
-
-                            <Grid item xs={12}>
-                                <Card>
-                                    <FinancialsTab
-                                        years={years}
-                                        companyData={props.companyData}
-                                        yearsSelected={yearsSelected}
-                                        selectedLabels={selectedLabels}
-                                        setSelectedLabels={setSelectedLabels}
-                                        setYearsSelected={setYearsSelected}
-                                    />
-                                </Card>
-                            </Grid>
+                                    </Paper>
+                                </Grid>
+                            ))}
                         </Grid>
-                    </TabPanel>
+                    </Grid>
+                </Card>
+                {/* : null} */}
+            </Grid>
 
-                    <TabPanel value={tabIndex} index={2}>
-                        <AnnualReports data={props.companyData} />
-                    </TabPanel>
-                </Grid>
-            </>
-        )
-    }
-
-    return (
-        <Grid item xs={12} md={12}>
-            <Card sx={{
-                height: '500px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center'
-            }}>
-                <div style={{ textAlign: 'center' }}>This company doesn't have any financials added yet!</div>
-            </Card>
+            <Grid item xs={12}>
+                <Card>
+                    <Financials
+                        years={years}
+                        companyData={companyData}
+                        yearsSelected={yearsSelected}
+                        selectedLabels={selectedLabels}
+                        setSelectedLabels={setSelectedLabels}
+                        setYearsSelected={setYearsSelected}
+                    />
+                </Card>
+            </Grid>
         </Grid>
     )
 }
 
-const FinancialsTab = ({ companyData, selectedLabels, yearsSelected, years, setSelectedLabels, setYearsSelected }: {
+const Financials = ({ companyData, selectedLabels, yearsSelected, years, setSelectedLabels, setYearsSelected }: {
     companyData: ICompanyData,
     selectedLabels: IChartLabel[],
     yearsSelected: number[],
