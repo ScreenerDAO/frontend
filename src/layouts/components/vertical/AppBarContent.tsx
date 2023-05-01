@@ -31,16 +31,6 @@ const AppBarContent = (props: Props) => {
 
     return (
         <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            {/* {hidden ? (
-                <IconButton
-                    color='inherit'
-                    onClick={toggleNavVisibility}
-                    sx={{ ml: -2.75, ...(hiddenSm ? {} : { mr: 3.5 }) }}
-                >
-                    <Menu />
-                </IconButton>
-            ) : null} */}
-
             <IconButton
                 color='inherit'
                 onClick={toggleNavVisibility}
@@ -49,21 +39,12 @@ const AppBarContent = (props: Props) => {
                 <Menu />
             </IconButton>
 
-            {/* {!hidden ? (
-                <div style={{ width: 400, zIndex: 1000 }}>
+            <Box sx={{ paddingTop: '10px', paddingBottom: '10px', flex: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
+                <div style={{ maxWidth: '700px', width: '100%' }}>
                     <SearchBar />
                 </div>
-            ) : null} */}
+            </Box>
 
-            {!hidden ?
-                <div style={{ paddingTop: '10px', paddingBottom: '10px', flex: 1, display: 'flex', justifyContent: 'center' }}>
-                    <div style={{maxWidth: '700px', width: '100%'}}>
-                        <SearchBar />
-                    </div>
-                </div>
-                :
-                null
-            }
 
             <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
                 {/* {hiddenSm ? null : (
@@ -87,7 +68,7 @@ const AppBarContent = (props: Props) => {
                         dispatch(setCompanyData(initialState))
                         dispatch(setNewCompanyData(newCompanyInitialState))
 
-                        router.push('/edit-records', undefined, { shallow: true })
+                        router.push('/edit-records?isNewCompany=true', undefined, { shallow: true })
                     }}>
                         <BriefcasePlusOutline />
                     </IconButton>
@@ -98,7 +79,7 @@ const AppBarContent = (props: Props) => {
                 <NotificationDropdown />
                 {/* <UserDropdown /> */}
 
-                <div style={{marginLeft: '10px'}}>
+                <div style={{ marginLeft: '10px' }}>
                     <Box sx={{ display: { xs: 'none', md: 'initial' } }}>
                         <ConnectButton chainStatus={'icon'} accountStatus={'avatar'} showBalance={false} />
                     </Box>

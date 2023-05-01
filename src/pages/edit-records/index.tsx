@@ -5,8 +5,8 @@ import React from 'react'
 import { useAppDispatch, useAppSelector } from 'src/hooks'
 import { IGeneral } from 'src/features/general'
 import ICompanyData from 'src/types/ICompanyData'
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Slide, Tab, Tabs, TextField, Select, MenuItem, FormControl, InputLabel } from '@mui/material'
-import { setCompanyCountry, setCompanyCurrency, setCompanyData, setCompanyIsin, setCompanyName, setCompanyTicker, setCompanyWikipediaPage } from 'src/features/newCompanyDataSlice'
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Slide, Tab, Tabs, TextField, Select, MenuItem, FormControl, InputLabel, Switch, FormControlLabel, Paper, Chip } from '@mui/material'
+import { setCompanyCountry, setCompanyCurrency, setCompanyData, setCompanyIsDelisted, setCompanyIsin, setCompanyName, setCompanyTicker, setCompanyWikipediaPage } from 'src/features/newCompanyDataSlice'
 import FinancialStatementsList from 'src/layouts/components/FinancialStatements/FinancialStatementsList'
 import SaveDataModal from 'src/layouts/components/SaveDataModal'
 import { initialState } from 'src/features/newCompanyDataSlice'
@@ -28,15 +28,16 @@ const EditRecords = ({ companies }: {
     const [saveDataModalOpen, setSaveDataModalOpen] = useState(false)
     const [resetDataModalOpen, setResetDataModalOpen] = useState(false)
     const [tabIndex, setTabIndex] = React.useState(0)
-    const [companiesList, setCompaniesList] = React.useState<string[]>([])
+    const [countriesList, setCountriesList] = React.useState<string[]>([])
     const [currenciesList, setCurrenciesList] = React.useState<string[]>([])
 
     const store = useStore<RootState>()
     const dispatch = useAppDispatch()
     const companyLoading = useAppSelector((state: { general: IGeneral }) => state.general.companyLoading)
+    const companyIsDelisted = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.isDelisted)
 
     React.useEffect(() => {
-        getISOCountries().then(res => setCompaniesList(res.sort()))
+        getISOCountries().then(res => setCountriesList(res.sort()))
         getISOCurrencies().then(res => setCurrenciesList(res.sort()))
     }, [])
 
@@ -52,105 +53,136 @@ const EditRecords = ({ companies }: {
         dispatch(setCompanyData(companyData))
     }
 
-    const CompanyDashboard = () => (
-        <>
-            <Grid item xs={12} md={12}>
-                <Card style={{ display: 'flex' }}>
-                    <CompanyNameAndTicker />
+    const CompanyDashboard = () => {
+        const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["companyName"] as string)
+        const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["ticker"] as string)
+        const companyId = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.id)
+        const companyIsDelisted = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.isDelisted)
 
-                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto', marginRight: '15px' }}>
-                        <Button
-                            variant='contained'
-                            color="secondary"
-                            onClick={() => setResetDataModalOpen(true)}
-                            sx={{ display: { xs: 'none', md: 'block' } }}
-                        >Reset</Button>
+        return (
+            <>
+                <Grid item xs={12} md={12}>
+                    <Card style={{ display: 'flex', alignItems: 'center' }}>
+                        <Box sx={{ paddingLeft: { xs: '15px', md: '40px' } }}>
+                            <h2>
+                                {/* {(companyName == "" && companyTicker == "") ? "New company" : `${companyName} (${companyTicker})`} */}
+                                {!companyId ? "New company" : `#${companyId} ${companyName}`}
+                                {!companyIsDelisted ? ` (${companyTicker})` : null}
+                            </h2>
+                        </Box>
 
-                        <DeleteOutlineIcon
-                            onClick={() => setResetDataModalOpen(true)}
-                            sx={{
-                                display: { xs: 'block', md: 'none' },
-                                marginLeft: '15px',
-                                fontSize: '35px'
-                            }}
-                        />
+                        {companyIsDelisted ?
+                            <Box sx={{ flex: 1, marginLeft: { xs: '5px', md: '20px' } }}>
+                                <Chip label="DELISTED" color="primary" />
+                            </Box>
+                            : null}
 
-                        <Button
-                            variant='contained'
-                            color="primary"
-                            style={{ marginLeft: '15px' }}
-                            onClick={() => setSaveDataModalOpen(true)}
-                            sx={{ display: { xs: 'none', md: 'block' } }}
-                        >Submit</Button>
+                        <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto', marginRight: '15px' }}>
+                            <Button
+                                variant='contained'
+                                color="secondary"
+                                onClick={() => setResetDataModalOpen(true)}
+                                sx={{ display: { xs: 'none', md: 'block' } }}
+                            >Reset</Button>
 
-                        <SaveIcon
-                            onClick={() => setSaveDataModalOpen(true)}
-                            sx={{
-                                display: { xs: 'block', md: 'none' },
-                                marginLeft: '15px',
-                                fontSize: '35px'
-                            }}
-                        />
-                    </div>
-                </Card>
-            </Grid>
+                            <DeleteOutlineIcon
+                                onClick={() => setResetDataModalOpen(true)}
+                                sx={{
+                                    display: { xs: 'block', md: 'none' },
+                                    marginLeft: '15px',
+                                    fontSize: '35px'
+                                }}
+                            />
 
-            <Grid item xs={12} md={12}>
-                <Card>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'center' }}>
-                        <Tabs
-                            value={tabIndex}
-                            onChange={(event: React.SyntheticEvent, newValue: number) => setTabIndex(newValue)}
-                            aria-label="basic tabs example"
-                            variant="scrollable"
-                            scrollButtons
-                            allowScrollButtonsMobile
-                        >
-                            <Tab label="Company info" {...a11yProps(0)} />
-                            <Tab label="Financials" {...a11yProps(0)} />
-                        </Tabs>
-                    </Box>
+                            <Button
+                                variant='contained'
+                                color="primary"
+                                style={{ marginLeft: '15px' }}
+                                onClick={() => setSaveDataModalOpen(true)}
+                                sx={{ display: { xs: 'none', md: 'block' } }}
+                            >Submit</Button>
 
-                    <TabPanel value={tabIndex} index={0}>
-                        <React.Fragment>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} md={6}>
-                                    <CompanyName />
+                            <SaveIcon
+                                onClick={() => setSaveDataModalOpen(true)}
+                                sx={{
+                                    display: { xs: 'block', md: 'none' },
+                                    marginLeft: '15px',
+                                    fontSize: '35px'
+                                }}
+                            />
+                        </div>
+                    </Card>
+                </Grid>
+
+                <Grid item xs={12} md={12}>
+                    <Card>
+                        <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'center' }}>
+                            <Tabs
+                                value={tabIndex}
+                                onChange={(event: React.SyntheticEvent, newValue: number) => setTabIndex(newValue)}
+                                aria-label="basic tabs example"
+                                variant="scrollable"
+                                scrollButtons
+                                allowScrollButtonsMobile
+                            >
+                                <Tab label="Company info" {...a11yProps(0)} />
+                                <Tab label="Financials" {...a11yProps(0)} />
+                            </Tabs>
+                        </Box>
+
+                        <TabPanel value={tabIndex} index={0}>
+                            <React.Fragment>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} md={6}>
+                                        <CompanyName />
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <CompanyIsDelisted />
+                                    </Grid>
+
+                                    {!companyIsDelisted ?
+                                        <Grid item xs={12} md={6}>
+                                            <CompanyTicker />
+                                        </Grid>
+                                        :
+                                        null}
+
+
+                                    {!companyIsDelisted ?
+                                        <Grid item xs={12} md={6}>
+                                            <CompanyIsin />
+                                        </Grid>
+                                        :
+                                        null
+                                    }
+
+                                    <Grid item xs={12} md={6}>
+                                        <CompanyCountry countries={countriesList} />
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <CompanyCurrency currencies={currenciesList} />
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <CompanyWikipediaPage />
+                                    </Grid>
                                 </Grid>
+                            </React.Fragment>
+                        </TabPanel>
 
-                                <Grid item xs={12} md={6}>
-                                    <CompanyTicker />
-                                </Grid>
+                        <TabPanel value={tabIndex} index={1}>
+                            <FinancialStatementsList />
+                        </TabPanel>
+                    </Card>
+                </Grid>
 
-                                <Grid item xs={12} md={6}>
-                                    <CompanyCountry countries={companiesList} />
-                                </Grid>
-
-                                <Grid item xs={12} md={6}>
-                                    <CompanyCurrency currencies={currenciesList} />
-                                </Grid>
-
-                                <Grid item xs={12} md={6}>
-                                    <CompanyWikipediaPage />
-                                </Grid>
-
-                                <Grid item xs={12} md={6}>
-                                    <CompanyIsin />
-                                </Grid>
-                            </Grid>
-                        </React.Fragment>
-                    </TabPanel>
-
-                    <TabPanel value={tabIndex} index={1}>
-                        <FinancialStatementsList />
-                    </TabPanel>
-                </Card>
-            </Grid>
-
-            {saveDataModalOpen ? <SaveDataModal handleClose={() => setSaveDataModalOpen(false)} /> : null}
-            {resetDataModalOpen ? <ResetDataModal open={resetDataModalOpen} handleClose={() => setResetDataModalOpen(false)} resetData={resetData} /> : null}
-        </>
-    )
+                {saveDataModalOpen ? <SaveDataModal handleClose={() => setSaveDataModalOpen(false)} /> : null}
+                {resetDataModalOpen ? <ResetDataModal open={resetDataModalOpen} handleClose={() => setResetDataModalOpen(false)} resetData={resetData} /> : null}
+            </>
+        )
+    }
 
     const a11yProps = (index: number) => ({
         id: `simple-tab-${index}`,
@@ -165,8 +197,6 @@ const EditRecords = ({ companies }: {
         <div
             role="tabpanel"
             hidden={value !== index}
-            id={`simple-tabpanel-${index}`}
-            aria-labelledby={`simple-tab-${index}`}
             {...other}
         >
             {value === index && (
@@ -174,21 +204,6 @@ const EditRecords = ({ companies }: {
             )}
         </div>
     );
-
-    const CompanyNameAndTicker = () => {
-        const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["companyName"] as string)
-        const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["ticker"] as string)
-        const companyId = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.id)
-
-        return (
-            <div>
-                <h2 style={{ marginLeft: '30px' }}>
-                    {/* {(companyName == "" && companyTicker == "") ? "New company" : `${companyName} (${companyTicker})`} */}
-                    {!companyId ? "New company" : `${companyName} (${companyTicker})`}
-                </h2>
-            </div>
-        )
-    }
 
     const CompanyName = () => {
         const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["companyName"])
@@ -235,7 +250,7 @@ const EditRecords = ({ companies }: {
 
         return (
             <FormControl sx={{ marginTop: '10px' }} fullWidth>
-                <InputLabel>Contry</InputLabel>
+                <InputLabel>Country</InputLabel>
                 <Select
                     required
                     label="Country"
@@ -285,7 +300,25 @@ const EditRecords = ({ companies }: {
         )
     }
 
-    const CompanyCurrency = ({currencies}: {
+    const CompanyIsDelisted = () => {
+        const companyIsDelisted = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.isDelisted)
+
+        return (
+            <Paper variant='outlined' sx={{ marginTop: '10px', height: '56px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={companyIsDelisted}
+                            onChange={() => dispatch(setCompanyIsDelisted(!companyIsDelisted))}
+                        />
+                    }
+                    label="Company delisted"
+                />
+            </Paper>
+        )
+    }
+
+    const CompanyCurrency = ({ currencies }: {
         currencies: string[]
     }) => {
         const companyCurrency = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.currency)
@@ -322,11 +355,10 @@ const EditRecords = ({ companies }: {
                 TransitionComponent={Transition}
                 keepMounted
                 onClose={handleClose}
-                aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle>{"Do you want to reset the data?"}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-slide-description">
+                    <DialogContentText>
                         All the data added deleted or updated in this session
                         will be lost
                     </DialogContentText>

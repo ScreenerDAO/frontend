@@ -12,6 +12,12 @@ const AnnualReports = ({data}: {
         { field: 'year', headerName: 'Year', width: 100, editable: false },
         { field: 'ipfsLink', headerName: 'PDF link', flex: 1, headerAlign: 'center', align: 'center', editable: false, renderCell: RenderIpfs },
     ]
+    const sortModel = [
+        {
+            field: 'year',
+            sort: 'desc'
+        }
+    ]
 
     React.useEffect(() => {
         const yearsArray = getYearsArray(data.financialStatements)
@@ -37,6 +43,7 @@ const AnnualReports = ({data}: {
             <DataGrid
                 rows={rows}
                 columns={columns}
+                sortModel={sortModel as any}
             />
         </Card>
     )

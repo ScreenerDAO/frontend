@@ -29,16 +29,20 @@ const SaveDataModal = (props: ISaveDataModalProps) => {
         const callback = async () => {
             const localErrors: React.ReactElement[] = []
 
-            if (newCompanyData.companyName == null || newCompanyData.companyName == "") {
+            if (!newCompanyData.companyName || newCompanyData.companyName == "") {
                 localErrors.push(<Alert key="1" severity='error' style={{ marginBottom: '10px' }}>Company name must be set</Alert>)
             }
 
-            if (newCompanyData.ticker == null || newCompanyData.ticker == "") {
+            if (!newCompanyData.isDelisted && (!newCompanyData.ticker || newCompanyData.ticker == "")) {
                 localErrors.push(<Alert key="2" severity='error' style={{ marginBottom: '10px' }}>Company ticker must be set</Alert>)
             }
 
-            if (newCompanyData.country == null || newCompanyData.country == "") {
+            if (!newCompanyData.country || newCompanyData.country == "") {
                 localErrors.push(<Alert key="3" severity='error' style={{ marginBottom: '10px' }}>Company country must be set</Alert>)
+            }
+
+            if (!newCompanyData.currency || newCompanyData.country == "") {
+                localErrors.push(<Alert key="4" severity='error' style={{marginBottom: '10px'}}>Company currency must be set</Alert>)
             }
 
             // if (newCompanyData.financialStatements == undefined || getYearsArray(newCompanyData.financialStatements).length == 0) {

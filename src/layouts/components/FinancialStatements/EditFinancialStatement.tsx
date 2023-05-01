@@ -9,6 +9,7 @@ import EditableIncomeStatement from './EditableIncomeStatement';
 import EditableCashFlow from './EditableCashFlowStatement';
 import { useAppDispatch } from 'src/hooks';
 import { setAnnualReportHash } from 'src/features/newCompanyDataSlice';
+import { Alert, CircularProgress } from '@mui/material';
 
 const steps = ['Balance sheet', 'Income statement', 'Cash flow statement'];
 
@@ -64,6 +65,87 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
         }
     }
 
+    /*TODO: use react query */
+    const LastStep = () => {
+        const [uploadingFile, setUploadingFile] = React.useState<boolean>(false)
+        const [errorUploadingFile, setErrorUploadingFile] = React.useState<boolean>(false)
+        const [successUploadingFile, setSuccessUploadingFile] = React.useState<boolean>(false)
+
+        const handleFileUpload = async (ev: React.ChangeEvent<HTMLInputElement>) => {
+            if (ev.target?.files && ev.target?.files.length > 0) {
+                setUploadingFile(true)
+
+                if (errorUploadingFile) {
+                    setErrorUploadingFile(false)
+                }
+                if (successUploadingFile) {
+                    setSuccessUploadingFile(false)
+                }
+
+                try {
+                    const file = ev.target.files[0]
+
+                    const base64 = await readFileAsBase64(file)
+    
+                    const response = await fetch('/api/SaveFile', {
+                        method: 'POST',
+                        body: JSON.stringify({ fileBase64: base64 })
+                    })
+    
+                    if (response.ok) {
+                        const hash = await response.text()
+                        dispatch(setAnnualReportHash({ year: props.year, hash: hash }))
+                        setSuccessUploadingFile(true)
+                    }
+                    else {
+                        setErrorUploadingFile(true)
+                    }
+                }
+                catch {
+                    setErrorUploadingFile(true)
+                }
+                finally {
+                    setUploadingFile(false)
+                }
+            }
+        }
+
+        const StepSpinner = () => {
+            return (
+                <>
+                    <p style={{marginBottom: 0}}>Uploading file...</p>
+
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}>
+                        <CircularProgress />
+                    </Box>
+                </>
+            )
+        }
+
+        return (
+            <React.Fragment>
+                <div>
+                    <p>Upload the annual report to complete the process:</p>
+
+                    <input type='file' onChange={handleFileUpload} />
+
+                    {uploadingFile ? <StepSpinner /> : null}
+                    {successUploadingFile ? <Alert severity="success" sx={{marginTop: '20px'}}>Annual report successfully saved!</Alert> : null}
+                    {errorUploadingFile ? <Alert severity="error" sx={{marginTop: '20px'}}>There was an error uploading the document</Alert> : null}
+                </ div>
+
+                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                    <Box sx={{ flex: '1 1 auto' }} />
+                    <Button onClick={handleSubmit}>Done</Button>
+                </Box>
+            </React.Fragment>
+        )
+    }
+
     async function readFileAsBase64(file: File): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
@@ -77,25 +159,6 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
             });
             reader.readAsDataURL(file);
         });
-    }
-
-    /*TODO: add error handling saving file */
-    const handleFileUpload = async (ev: React.ChangeEvent<HTMLInputElement>) => {
-        if (ev.target?.files && ev.target?.files.length > 0) {
-            const file = ev.target.files[0]
-
-            const base64 = await readFileAsBase64(file)
-
-            const response = await fetch('/api/SaveFile', {
-                method: 'POST',
-                body: JSON.stringify({fileBase64: base64})
-            })
-
-            if (response.ok) {
-                const hash = await response.text()
-                dispatch(setAnnualReportHash({ year: props.year, hash: hash }))
-            }
-        }
     }
 
     return (
@@ -116,27 +179,13 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
             </Stepper>
 
             {activeStep === steps.length ?
-                (
-                    <React.Fragment>
-                        <div>
-                            <p>Upload the annual report to complete the process:</p>
-
-                            <input type='file' onChange={handleFileUpload} />
-                        </ div>
-
-                        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                            <Box sx={{ flex: '1 1 auto' }} />
-                            <Button onClick={handleSubmit}>Done</Button>
-                        </Box>
-                    </React.Fragment>
-                )
+                <LastStep />
                 :
-                (
-                    <React.Fragment>
-                        <StepContent activeStep={activeStep} />
-                    </React.Fragment>
-                )}
-        </Box>
+                <React.Fragment>
+                    <StepContent activeStep={activeStep} />
+                </React.Fragment>
+            }
+        </Box >
     )
 }
 

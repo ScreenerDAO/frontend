@@ -13,6 +13,7 @@ const initialState: ICompanyData = {
     wikipediaPage: undefined,
     isin: undefined,
     currency: undefined,
+    isDelisted: false,
     financialStatements: {},
     annualReports: {}
 }
@@ -29,6 +30,7 @@ export const newCompanyDataSlice = createSlice({
             state.wikipediaPage = action.payload.wikipediaPage
             state.isin = action.payload.isin
             state.currency = action.payload.currency
+            state.isDelisted = action.payload.isDelisted
             state.financialStatements = action.payload.financialStatements ?? {}
             state.annualReports = action.payload.annualReports ?? {}
         },
@@ -49,6 +51,9 @@ export const newCompanyDataSlice = createSlice({
         },        
         setCompanyCurrency: (state, action: PayloadAction<number>) => {
             state.currency = action.payload
+        },
+        setCompanyIsDelisted: (state, action: PayloadAction<boolean>) => {
+            state.isDelisted = action.payload
         },
         addNewYear: (state, action: PayloadAction<number | string>) => {
             state.financialStatements[action.payload] = {
@@ -95,6 +100,7 @@ export const {
     setCompanyWikipediaPage,
     setCompanyIsin,
     setCompanyCurrency,
+    setCompanyIsDelisted,
     addNewYear,
     setAnnualReportHash,
     setStatementElement,

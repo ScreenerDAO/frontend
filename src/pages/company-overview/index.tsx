@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CircularProgress, Grid, IconButton, MenuItem } from '@mui/material';
+import { Box, Card, Chip, CircularProgress, Grid, IconButton, MenuItem, Typography } from '@mui/material';
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts';
 import FinancialStatements from 'src/layouts/components/FinancialStatements/FinancialStatements';
 import SearchBar from 'src/layouts/components/SearchBar';
@@ -64,13 +64,23 @@ const CompanyDashboard = ({ data, wikipediaSumary }: { data: ICompanyData, wikip
             </Grid>
 
             <Grid item xs={12}>
-                {/* <Card sx={{ display: 'flex', alignItems: 'center', paddingRight: '5px' }}>
-                    <h2 style={{ marginLeft: '40px', flex: 1 }}>#{data.id} {data.companyName} ({data.ticker})</h2>
-                    <CompanyMoreOptions data={data} />
-                </Card> */}
-                <Card>
-                    <SymbolInfo symbol={data.ticker} isTransparent={true} autosize></SymbolInfo>
-                </Card>
+                {data.isDelisted ?
+                    <Card sx={{ display: 'flex', alignItems: 'center', paddingRight: '5px' }}>
+                        <Box sx={{ paddingLeft: {xs: '15px', md: '40px'} }}>
+                            <h2>#{data.id} {data.companyName}</h2>
+                        </Box>
+
+                        <Box sx={{ flex: 1, marginLeft: { xs: '5px', md: '20px' } }}>
+                            <Chip label="DELISTED" color="primary" />
+                        </Box>
+
+                        <CompanyMoreOptions data={data} />
+                    </Card>
+                    :
+                    <Card>
+                        <SymbolInfo symbol={data.ticker} isTransparent={true} autosize></SymbolInfo>
+                    </Card>
+                }
             </Grid>
 
             <FinancialStatements companyData={data} wikipediaSumary={wikipediaSumary} />
