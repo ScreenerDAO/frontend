@@ -11,13 +11,16 @@ import { IGetStaticPropsResult } from 'src/lib/getStaticProps'
 const ListCompanies = ({ companies }: IGetStaticPropsResult) => {
     return (
         <PageWrapper companies={companies}>
-            <Grid container spacing={3}>
+            <Grid container spacing={3} sx={{height: 'calc(100%)'}}>
                 <Grid item xs={12} md={12}>
                     <Card>
                         <DataGrid
                             rows={companies}
                             columns={columns}
-                            sx={{ minHeight: '500px' }}
+                            sx={{ minHeight: {
+                                xs: 'calc(100vh - 64px - 56px - 3rem)',
+                                md: 'calc(100vh - 76px - 56px - 3rem)'
+                            } }}
                         />
                     </Card>
                 </Grid>
