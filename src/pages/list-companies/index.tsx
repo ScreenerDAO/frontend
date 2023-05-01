@@ -31,7 +31,8 @@ const RenderTicker = (params: {
         id: number,
         name: string,
         ticker: string,
-        dataHash: string
+        dataHash: string,
+        isDelisted: boolean
     }
 }) => {
     const dispatch = useAppDispatch()
@@ -43,7 +44,7 @@ const RenderTicker = (params: {
             onClick={() => selectCompany(params.row, dispatch)}
             style={{ color: theme.palette.primary.main }}
         >
-            {params.row.ticker}
+            {params.row.ticker === '' ? 'DELISTED' : params.row.ticker}
         </Link>
     )
 }

@@ -5,7 +5,7 @@ import React from 'react'
 import { useAppDispatch, useAppSelector } from 'src/hooks'
 import { IGeneral } from 'src/features/general'
 import ICompanyData from 'src/types/ICompanyData'
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Slide, Tab, Tabs, TextField, Select, MenuItem, FormControl, InputLabel, Switch, FormControlLabel, Paper } from '@mui/material'
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Slide, Tab, Tabs, TextField, Select, MenuItem, FormControl, InputLabel, Switch, FormControlLabel, Paper, Chip } from '@mui/material'
 import { setCompanyCountry, setCompanyCurrency, setCompanyData, setCompanyIsDelisted, setCompanyIsin, setCompanyName, setCompanyTicker, setCompanyWikipediaPage } from 'src/features/newCompanyDataSlice'
 import FinancialStatementsList from 'src/layouts/components/FinancialStatements/FinancialStatementsList'
 import SaveDataModal from 'src/layouts/components/SaveDataModal'
@@ -53,117 +53,136 @@ const EditRecords = ({ companies }: {
         dispatch(setCompanyData(companyData))
     }
 
-    const CompanyDashboard = () => (
-        <>
-            <Grid item xs={12} md={12}>
-                <Card style={{ display: 'flex' }}>
-                    <CompanyNameAndTicker />
+    const CompanyDashboard = () => {
+        const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["companyName"] as string)
+        const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["ticker"] as string)
+        const companyId = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.id)
+        const companyIsDelisted = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.isDelisted)
 
-                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto', marginRight: '15px' }}>
-                        <Button
-                            variant='contained'
-                            color="secondary"
-                            onClick={() => setResetDataModalOpen(true)}
-                            sx={{ display: { xs: 'none', md: 'block' } }}
-                        >Reset</Button>
+        return (
+            <>
+                <Grid item xs={12} md={12}>
+                    <Card style={{ display: 'flex', alignItems: 'center' }}>
+                        <Box sx={{ paddingLeft: { xs: '15px', md: '40px' } }}>
+                            <h2>
+                                {/* {(companyName == "" && companyTicker == "") ? "New company" : `${companyName} (${companyTicker})`} */}
+                                {!companyId ? "New company" : `#${companyId} ${companyName}`}
+                                {!companyIsDelisted ? ` (${companyTicker})` : null}
+                            </h2>
+                        </Box>
 
-                        <DeleteOutlineIcon
-                            onClick={() => setResetDataModalOpen(true)}
-                            sx={{
-                                display: { xs: 'block', md: 'none' },
-                                marginLeft: '15px',
-                                fontSize: '35px'
-                            }}
-                        />
+                        {companyIsDelisted ?
+                            <Box sx={{ flex: 1, marginLeft: { xs: '5px', md: '20px' } }}>
+                                <Chip label="DELISTED" color="primary" />
+                            </Box>
+                            : null}
 
-                        <Button
-                            variant='contained'
-                            color="primary"
-                            style={{ marginLeft: '15px' }}
-                            onClick={() => setSaveDataModalOpen(true)}
-                            sx={{ display: { xs: 'none', md: 'block' } }}
-                        >Submit</Button>
+                        <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto', marginRight: '15px' }}>
+                            <Button
+                                variant='contained'
+                                color="secondary"
+                                onClick={() => setResetDataModalOpen(true)}
+                                sx={{ display: { xs: 'none', md: 'block' } }}
+                            >Reset</Button>
 
-                        <SaveIcon
-                            onClick={() => setSaveDataModalOpen(true)}
-                            sx={{
-                                display: { xs: 'block', md: 'none' },
-                                marginLeft: '15px',
-                                fontSize: '35px'
-                            }}
-                        />
-                    </div>
-                </Card>
-            </Grid>
+                            <DeleteOutlineIcon
+                                onClick={() => setResetDataModalOpen(true)}
+                                sx={{
+                                    display: { xs: 'block', md: 'none' },
+                                    marginLeft: '15px',
+                                    fontSize: '35px'
+                                }}
+                            />
 
-            <Grid item xs={12} md={12}>
-                <Card>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'center' }}>
-                        <Tabs
-                            value={tabIndex}
-                            onChange={(event: React.SyntheticEvent, newValue: number) => setTabIndex(newValue)}
-                            aria-label="basic tabs example"
-                            variant="scrollable"
-                            scrollButtons
-                            allowScrollButtonsMobile
-                        >
-                            <Tab label="Company info" {...a11yProps(0)} />
-                            <Tab label="Financials" {...a11yProps(0)} />
-                        </Tabs>
-                    </Box>
+                            <Button
+                                variant='contained'
+                                color="primary"
+                                style={{ marginLeft: '15px' }}
+                                onClick={() => setSaveDataModalOpen(true)}
+                                sx={{ display: { xs: 'none', md: 'block' } }}
+                            >Submit</Button>
 
-                    <TabPanel value={tabIndex} index={0}>
-                        <React.Fragment>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} md={6}>
-                                    <CompanyName />
-                                </Grid>
+                            <SaveIcon
+                                onClick={() => setSaveDataModalOpen(true)}
+                                sx={{
+                                    display: { xs: 'block', md: 'none' },
+                                    marginLeft: '15px',
+                                    fontSize: '35px'
+                                }}
+                            />
+                        </div>
+                    </Card>
+                </Grid>
 
-                                <Grid item xs={12} md={6}>
-                                    <CompanyIsDelisted />
-                                </Grid>
+                <Grid item xs={12} md={12}>
+                    <Card>
+                        <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'center' }}>
+                            <Tabs
+                                value={tabIndex}
+                                onChange={(event: React.SyntheticEvent, newValue: number) => setTabIndex(newValue)}
+                                aria-label="basic tabs example"
+                                variant="scrollable"
+                                scrollButtons
+                                allowScrollButtonsMobile
+                            >
+                                <Tab label="Company info" {...a11yProps(0)} />
+                                <Tab label="Financials" {...a11yProps(0)} />
+                            </Tabs>
+                        </Box>
 
-                                {!companyIsDelisted ?
+                        <TabPanel value={tabIndex} index={0}>
+                            <React.Fragment>
+                                <Grid container spacing={2}>
                                     <Grid item xs={12} md={6}>
-                                        <CompanyTicker />
+                                        <CompanyName />
                                     </Grid>
-                                    :
-                                    null}
 
-
-                                {!companyIsDelisted ?
                                     <Grid item xs={12} md={6}>
-                                        <CompanyIsin />
+                                        <CompanyIsDelisted />
                                     </Grid>
-                                    :
-                                    null
-                                }
 
-                                <Grid item xs={12} md={6}>
-                                    <CompanyCountry countries={countriesList} />
+                                    {!companyIsDelisted ?
+                                        <Grid item xs={12} md={6}>
+                                            <CompanyTicker />
+                                        </Grid>
+                                        :
+                                        null}
+
+
+                                    {!companyIsDelisted ?
+                                        <Grid item xs={12} md={6}>
+                                            <CompanyIsin />
+                                        </Grid>
+                                        :
+                                        null
+                                    }
+
+                                    <Grid item xs={12} md={6}>
+                                        <CompanyCountry countries={countriesList} />
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <CompanyCurrency currencies={currenciesList} />
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <CompanyWikipediaPage />
+                                    </Grid>
                                 </Grid>
+                            </React.Fragment>
+                        </TabPanel>
 
-                                <Grid item xs={12} md={6}>
-                                    <CompanyCurrency currencies={currenciesList} />
-                                </Grid>
+                        <TabPanel value={tabIndex} index={1}>
+                            <FinancialStatementsList />
+                        </TabPanel>
+                    </Card>
+                </Grid>
 
-                                <Grid item xs={12} md={6}>
-                                    <CompanyWikipediaPage />
-                                </Grid>
-                            </Grid>
-                        </React.Fragment>
-                    </TabPanel>
-
-                    <TabPanel value={tabIndex} index={1}>
-                        <FinancialStatementsList />
-                    </TabPanel>
-                </Card>
-            </Grid>
-
-            {saveDataModalOpen ? <SaveDataModal handleClose={() => setSaveDataModalOpen(false)} /> : null}
-            {resetDataModalOpen ? <ResetDataModal open={resetDataModalOpen} handleClose={() => setResetDataModalOpen(false)} resetData={resetData} /> : null}
-        </>
-    )
+                {saveDataModalOpen ? <SaveDataModal handleClose={() => setSaveDataModalOpen(false)} /> : null}
+                {resetDataModalOpen ? <ResetDataModal open={resetDataModalOpen} handleClose={() => setResetDataModalOpen(false)} resetData={resetData} /> : null}
+            </>
+        )
+    }
 
     const a11yProps = (index: number) => ({
         id: `simple-tab-${index}`,
@@ -185,21 +204,6 @@ const EditRecords = ({ companies }: {
             )}
         </div>
     );
-
-    const CompanyNameAndTicker = () => {
-        const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["companyName"] as string)
-        const companyTicker = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["ticker"] as string)
-        const companyId = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData.id)
-
-        return (
-            <div>
-                <h2 style={{ marginLeft: '30px' }}>
-                    {/* {(companyName == "" && companyTicker == "") ? "New company" : `${companyName} (${companyTicker})`} */}
-                    {!companyId ? "New company" : `${companyName} (${companyTicker})`}
-                </h2>
-            </div>
-        )
-    }
 
     const CompanyName = () => {
         const companyName = useAppSelector((state: { newCompanyData: ICompanyData }) => state.newCompanyData["companyName"])
