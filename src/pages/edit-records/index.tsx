@@ -67,7 +67,7 @@ const EditRecords = ({ companies }: {
                             <h2>
                                 {/* {(companyName == "" && companyTicker == "") ? "New company" : `${companyName} (${companyTicker})`} */}
                                 {!companyId ? "New company" : `#${companyId} ${companyName}`}
-                                {!companyIsDelisted ? ` (${companyTicker})` : null}
+                                {!companyIsDelisted && companyId ? ` (${companyTicker})` : null}
                             </h2>
                         </Box>
 

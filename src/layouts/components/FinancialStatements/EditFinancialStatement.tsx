@@ -10,6 +10,7 @@ import EditableCashFlow from './EditableCashFlowStatement';
 import { useAppDispatch } from 'src/hooks';
 import { setAnnualReportHash } from 'src/features/newCompanyDataSlice';
 import { Alert, CircularProgress } from '@mui/material';
+import { saveFile } from 'src/lib/generalMethods';
 
 const steps = ['Balance sheet', 'Income statement', 'Cash flow statement'];
 
@@ -83,19 +84,33 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
                 }
 
                 try {
-                    const file = ev.target.files[0]
+                    const formData = new FormData()
+                    formData.append('file', ev.target.files[0])
 
-                    const base64 = await readFileAsBase64(file)
-    
-                    const response = await fetch('/api/SaveFile', {
+                    const auth = 'Basic ' + Buffer.from(`${process.env.NEXT_PUBLIC_INFURA_API_KEY}:${process.env.NEXT_PUBLIC_INFURA_API_SECRET}`).toString('base64');
+                    const response = await fetch(`https://ipfs.infura.io:5001/api/v0/add?pin=true&cid-version=1`, {
                         method: 'POST',
-                        body: JSON.stringify({ fileBase64: base64 })
+                        headers: {
+                            'Authorization': auth
+                        },
+                        body: formData
                     })
     
                     if (response.ok) {
-                        const hash = await response.text()
-                        dispatch(setAnnualReportHash({ year: props.year, hash: hash }))
-                        setSuccessUploadingFile(true)
+                        const hash = (await response.json()).Hash
+
+                        const responsePin = await fetch(`/api/PinFile?cid=${hash}`, {
+                            method: 'POST'
+                        })
+
+                        if (responsePin.ok) {
+
+                            dispatch(setAnnualReportHash({ year: props.year, hash: hash }))
+                            setSuccessUploadingFile(true)
+                        }
+                        else {
+                            setErrorUploadingFile(true)
+                        }
                     }
                     else {
                         setErrorUploadingFile(true)
