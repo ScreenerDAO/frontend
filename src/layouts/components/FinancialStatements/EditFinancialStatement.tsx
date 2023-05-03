@@ -84,33 +84,17 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
                 }
 
                 try {
-                    const formData = new FormData()
-                    formData.append('file', ev.target.files[0])
+                    const base64 = await readFileAsBase64(ev.target.files[0])
 
-                    const auth = 'Basic ' + Buffer.from(`${process.env.NEXT_PUBLIC_INFURA_API_KEY}:${process.env.NEXT_PUBLIC_INFURA_API_SECRET}`).toString('base64');
-                    const response = await fetch(`https://ipfs.infura.io:5001/api/v0/add?pin=true&cid-version=1`, {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_AZURE_FUNCTIONS_ENDPOINT}/SaveFile`, {
                         method: 'POST',
-                        headers: {
-                            'Authorization': auth
-                        },
-                        body: formData
+                        body: JSON.stringify({file: base64})
                     })
-    
+
                     if (response.ok) {
-                        const hash = (await response.json()).Hash
-
-                        const responsePin = await fetch(`/api/PinFile?cid=${hash}`, {
-                            method: 'POST'
-                        })
-
-                        if (responsePin.ok) {
-
-                            dispatch(setAnnualReportHash({ year: props.year, hash: hash }))
-                            setSuccessUploadingFile(true)
-                        }
-                        else {
-                            setErrorUploadingFile(true)
-                        }
+                        const hash = await response.text()
+                        dispatch(setAnnualReportHash({ year: props.year, hash: hash }))
+                        setSuccessUploadingFile(true)
                     }
                     else {
                         setErrorUploadingFile(true)
@@ -128,7 +112,7 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
         const StepSpinner = () => {
             return (
                 <>
-                    <p style={{marginBottom: 0}}>Uploading file...</p>
+                    <p style={{ marginBottom: 0 }}>Uploading file...</p>
 
                     <Box sx={{
                         display: 'flex',
@@ -149,8 +133,8 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
                     <input type='file' onChange={handleFileUpload} />
 
                     {uploadingFile ? <StepSpinner /> : null}
-                    {successUploadingFile ? <Alert severity="success" sx={{marginTop: '20px'}}>Annual report successfully saved!</Alert> : null}
-                    {errorUploadingFile ? <Alert severity="error" sx={{marginTop: '20px'}}>There was an error uploading the document</Alert> : null}
+                    {successUploadingFile ? <Alert severity="success" sx={{ marginTop: '20px' }}>Annual report successfully saved!</Alert> : null}
+                    {errorUploadingFile ? <Alert severity="error" sx={{ marginTop: '20px' }}>There was an error uploading the document</Alert> : null}
                 </ div>
 
                 <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
