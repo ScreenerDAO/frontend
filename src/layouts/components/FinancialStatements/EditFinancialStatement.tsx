@@ -12,6 +12,7 @@ import { setAnnualReportHash } from 'src/features/newCompanyDataSlice';
 import { Alert, CircularProgress } from '@mui/material';
 import { saveFile } from 'src/lib/generalMethods';
 
+const azureFunctionsEndpoint = process.env.NEXT_PUBLIC_AZURE_FUNCTIONS_ENDPOINT 
 const steps = ['Balance sheet', 'Income statement', 'Cash flow statement'];
 
 interface IEditFinancialStatementsProps {
@@ -86,7 +87,7 @@ const EditFinancialStatements = (props: IEditFinancialStatementsProps): React.Re
                 try {
                     const base64 = await readFileAsBase64(ev.target.files[0])
 
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_AZURE_FUNCTIONS_ENDPOINT}/SaveFile`, {
+                    const response = await fetch(`${azureFunctionsEndpoint}/SaveFile`, {
                         method: 'POST',
                         body: JSON.stringify({file: base64})
                     })
