@@ -55,7 +55,7 @@ export default async function RootLayout({
                 <link rel='preconnect' href='https://fonts.googleapis.com' />
                 <link rel='preconnect' href='https://fonts.gstatic.com' />
                 <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap' />
-                <link rel='apple-touch-icon' sizes='180x180' href='/images/apple-touch-icon.png' />
+                <link rel='apple-touch-icon' sizes='180x180' href='/images/screener2.png' />
                 <link rel='shortcut icon' href='/images/screener2.png' />
             </head>
 
