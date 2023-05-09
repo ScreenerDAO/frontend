@@ -13,6 +13,7 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction, useAc
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { setCompanyData } from '@/features/companyDataSlice';
 
+const azureFunctionsEndpoint = process.env.NEXT_PUBLIC_AZURE_FUNCTIONS_ENDPOINT 
 const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 const registriesContractAddress = process.env.NEXT_PUBLIC_REGISTRIES_CONTRACT_ADDRESS
 const registriesContractABI = process.env.NEXT_PUBLIC_REGISTRIES_CONTRACT_ABI
@@ -132,7 +133,7 @@ const SaveDataToFilecoinStep = ({newCompanyData, state, setState}: {
 
     React.useEffect(() => {
         const callback = async() => {
-            const response = await fetch('/api/SaveCompanyData', {
+            const response = await fetch(`${azureFunctionsEndpoint}/SaveCompanyData`, {
                 method: 'POST',
                 body: JSON.stringify(newCompanyData) 
             })
