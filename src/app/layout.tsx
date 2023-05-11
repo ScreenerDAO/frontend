@@ -33,6 +33,8 @@ const client = new ApolloClient({
     cache: new InMemoryCache()
 })
 
+export const revalidate = 60
+
 export interface IRootLayoutParams {
     companies: ICompanyEthData[]
     events: IEvent[]
@@ -48,6 +50,8 @@ export default async function RootLayout({
     const thegraphData: IRootLayoutParams = (await client.query({ query: query })).data
     params.companies = thegraphData.companies
     params.events = thegraphData.events
+
+    console.log(thegraphData)
 
     return (
         <html lang="en">
