@@ -51,8 +51,6 @@ export default async function RootLayout({
     params.companies = thegraphData.companies
     params.events = thegraphData.events
 
-    console.log(thegraphData)
-
     return (
         <html lang="en">
             <head>

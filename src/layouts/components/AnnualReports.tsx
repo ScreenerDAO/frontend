@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { DataGrid, GridColDef, GridRenderCellParams, GridRowsProp } from '@mui/x-data-grid';
 import ICompanyData from '@/lib/types/ICompanyData';
-import { getYearsArray } from '@/lib/methods/financialStatements';
 import { Button, Card } from '@mui/material';
 
 const AnnualReports = ({data}: {
@@ -20,7 +19,7 @@ const AnnualReports = ({data}: {
     ]
 
     React.useEffect(() => {
-        const yearsArray = getYearsArray(data.financialStatements)
+        const yearsArray = Object.keys(data.annualReports).map(key => Number(key)).sort()
 
         if (yearsArray?.length > 0) {
             const initialRows = []
